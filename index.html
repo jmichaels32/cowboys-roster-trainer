@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#041e42" />
+    <meta
+      name="description"
+      content="A mobile-friendly flashcard trainer for learning the Dallas Cowboys roster."
+    />
+    <title>Cowboys Roster Trainer</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css?v=9" />
+    <script src="data/roster.js?v=9" defer></script>
+    <script src="app.js?v=9" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="site-header">
+      <button class="brand" type="button" data-action="home" aria-label="Cowboys Roster Trainer home">
+        <span class="brand-star" aria-hidden="true">★</span>
+        <span>
+          <strong>Cowboys</strong>
+          <small>Roster Trainer</small>
+        </span>
+      </button>
+      <button class="header-link" type="button" data-action="browse">Browse roster</button>
+    </header>
+
+    <main id="main-content">
+      <section class="view dashboard-view is-active" data-view="dashboard" aria-labelledby="home-title">
+        <div class="hero-shell">
+          <div class="hero-copy">
+            <p class="eyebrow" id="roster-kicker">2026 roster study guide</p>
+            <h1 id="home-title">Learn the Cowboys roster.</h1>
+            <p class="hero-lede">
+              Structured player quizzes covering names, jersey numbers, positions, and colleges.
+              Progress is saved on this device.
+            </p>
+            <div class="hero-actions">
+              <button class="button button-primary" type="button" data-action="quick-start">
+                Start with key players
+                <span aria-hidden="true">→</span>
+              </button>
+              <button class="button button-quiet" type="button" data-action="browse">See all players</button>
+            </div>
+          </div>
+
+          <aside class="progress-card" aria-label="Learning progress">
+            <span class="progress-card-label">Progress</span>
+            <div>
+              <strong id="learned-total">0</strong>
+              <span>players verified</span>
+            </div>
+            <div class="mini-progress" aria-hidden="true">
+              <span id="overall-progress-bar"></span>
+            </div>
+            <p id="study-total">Ready for your first card</p>
+          </aside>
+        </div>
+
+        <section class="daily-summary" aria-labelledby="daily-title">
+          <div class="daily-summary-header">
+            <div>
+              <p class="eyebrow">Today’s training</p>
+              <h2 id="daily-title">Daily summary</h2>
+            </div>
+            <button class="button button-quiet daily-share-button" id="daily-share-button" type="button" data-action="share-summary">
+              Share summary
+            </button>
+          </div>
+          <div class="daily-metrics">
+            <div><strong id="daily-verified">0</strong><span>Players verified</span></div>
+            <div><strong id="daily-accuracy">0/0</strong><span id="daily-accuracy-label">Answers correct</span></div>
+            <div><strong id="daily-sessions">0</strong><span>Sessions</span></div>
+          </div>
+          <div class="daily-results" id="daily-results" aria-label="Today’s answer results"></div>
+          <p class="daily-note">Saved only on this device. Share the summary to compare progress with someone else.</p>
+        </section>
+
+        <section class="mastery-explainer" aria-labelledby="mastery-title">
+          <div>
+            <p class="eyebrow">Mastery standard</p>
+            <h2 id="mastery-title">How a player becomes learned</h2>
+          </div>
+          <p>
+            Progress from <strong>multiple-choice recognition</strong> to <strong>typed recall</strong>, then
+            pass the typed Mastery Check for full name, jersey number, position, and college. Only the
+            Mastery Check verifies a player as learned.
+          </p>
+        </section>
+
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Choose your roster group</p>
+            <h2>Build up the roster</h2>
+          </div>
+          <p>Each session prioritizes the players you know least.</p>
+        </div>
+
+        <div class="deck-grid" id="deck-grid"></div>
+
+        <section class="how-it-works" aria-labelledby="how-title">
+          <div>
+            <p class="eyebrow">The game plan</p>
+            <h2 id="how-title">How training works</h2>
+          </div>
+          <ol>
+            <li><span>1</span><strong>Pick a group</strong><small>Stars, core, offense, defense, or everyone.</small></li>
+            <li><span>2</span><strong>Build recall</strong><small>Move from multiple choice to typed answers.</small></li>
+            <li><span>3</span><strong>Verify mastery</strong><small>Type all four answers correctly in one mastery check.</small></li>
+          </ol>
+        </section>
+      </section>
+
+      <section class="view setup-view" data-view="setup" aria-labelledby="setup-title" hidden>
+        <div class="narrow-shell">
+          <button class="back-button" type="button" data-action="home"><span aria-hidden="true">←</span> Roster groups</button>
+
+          <div class="setup-intro">
+            <p class="eyebrow" id="setup-level">Group 1</p>
+            <h1 id="setup-title">Key players</h1>
+            <p id="setup-description"></p>
+            <div class="deck-progress-row">
+              <span id="setup-player-count"></span>
+              <span id="setup-mastery"></span>
+            </div>
+          </div>
+
+          <fieldset class="option-group">
+            <legend>Training level</legend>
+            <div class="stage-grid" id="stage-grid"></div>
+          </fieldset>
+
+          <fieldset class="option-group" id="mode-option-group">
+            <legend>What do you want to learn?</legend>
+            <div class="mode-grid" id="mode-grid"></div>
+          </fieldset>
+
+          <fieldset class="option-group">
+            <legend>Session length</legend>
+            <div class="segment-control" id="length-options">
+              <button class="is-selected" type="button" data-length="5">Quick 5</button>
+              <button type="button" data-length="10">10 players</button>
+              <button type="button" data-length="all">Whole deck</button>
+            </div>
+          </fieldset>
+
+          <button class="button button-primary button-full" type="button" data-action="start-session">
+            Start training <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="view training-view" data-view="training" aria-labelledby="question-title" hidden>
+        <div class="game-shell">
+          <div class="game-header">
+            <button class="icon-button" type="button" data-action="exit-session" aria-label="Exit session">×</button>
+            <div class="game-status">
+              <div>
+                <span id="game-deck-name">Key players</span>
+                <strong id="game-progress-text">1 of 10</strong>
+              </div>
+              <div
+                class="game-progress"
+                role="progressbar"
+                aria-label="Session progress"
+                aria-valuemin="0"
+                aria-valuemax="10"
+                aria-valuenow="1"
+              >
+                <span id="game-progress-bar"></span>
+              </div>
+            </div>
+            <div class="score-badge" aria-label="Correct answers"><strong id="game-score">0</strong><span>right</span></div>
+          </div>
+
+          <article class="question-card">
+            <div class="question-copy">
+              <p class="eyebrow" id="question-type">Face check</p>
+              <h1 id="question-title">Who is this Cowboy?</h1>
+            </div>
+
+            <div class="question-visual" id="question-visual"></div>
+            <div class="answer-grid" id="answer-grid" aria-label="Typed answer"></div>
+
+            <div class="answer-feedback" id="answer-feedback" aria-live="polite" hidden></div>
+          </article>
+
+          <div class="next-wrap" id="next-wrap" hidden>
+            <button class="button button-primary button-full" type="button" data-action="next-question">
+              Next card <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="view results-view" data-view="results" aria-labelledby="results-title" hidden>
+        <div class="narrow-shell results-shell">
+          <div class="result-mark" id="result-mark" aria-hidden="true">★</div>
+          <p class="eyebrow">Session complete</p>
+          <h1 id="results-title">Nice work.</h1>
+          <p class="result-score" id="result-score"></p>
+          <p class="result-note" id="result-note"></p>
+
+          <div class="result-actions">
+            <button class="button button-primary" id="next-stage-button" type="button" data-action="next-stage" hidden></button>
+            <button class="button button-primary" type="button" data-action="repeat-session">Practice again</button>
+            <button class="button button-quiet" id="result-share-button" type="button" data-action="share-summary">Share today’s summary</button>
+            <button class="button button-quiet" type="button" data-action="home">Choose another level</button>
+          </div>
+
+          <section class="missed-section" id="missed-section" hidden>
+            <h2>Review these players</h2>
+            <div class="missed-list" id="missed-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view roster-view" data-view="roster" aria-labelledby="roster-title" hidden>
+        <div class="wide-shell">
+          <button class="back-button" type="button" data-action="home"><span aria-hidden="true">←</span> Home</button>
+          <div class="roster-heading">
+            <div>
+              <p class="eyebrow">Official roster</p>
+              <h1 id="roster-title">Meet the whole team</h1>
+            </div>
+            <p id="roster-summary"></p>
+          </div>
+
+          <div class="roster-tools">
+            <label class="search-box">
+              <span class="visually-hidden">Search players</span>
+              <span aria-hidden="true">⌕</span>
+              <input id="roster-search" type="search" placeholder="Search a player, number, or college" />
+            </label>
+            <label class="position-filter">
+              <span class="visually-hidden">Filter by position</span>
+              <select id="position-filter">
+                <option value="all">All positions</option>
+              </select>
+            </label>
+          </div>
+
+          <p class="roster-count" id="roster-count" aria-live="polite"></p>
+          <div class="player-grid" id="player-grid"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Unofficial fan-made study tool. Roster data and headshots from the
+        <a href="https://www.dallascowboys.com/team/players-roster/" target="_blank" rel="noreferrer">official Cowboys roster</a>.
+        Last checked <span id="data-date">July 31, 2026</span>.
+      </p>
+    </footer>
+  </body>
+</html>
