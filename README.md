@@ -2,6 +2,8 @@
 
 A dependency-free, mobile-first flashcard trainer for learning the Dallas Cowboys roster. It is ready to host on GitHub Pages and stores learning progress locally in each browser.
 
+**Live site:** <https://jmichaels32.github.io/cowboys-roster-trainer/>
+
 ## What it teaches
 
 - Six progressive decks: starter pack, game-day core, offense, defense, bench/newcomers, and the whole roster
