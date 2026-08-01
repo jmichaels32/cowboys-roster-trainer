@@ -7,12 +7,13 @@ A dependency-free, mobile-first flashcard trainer for learning the Dallas Cowboy
 ## What it teaches
 
 - Six progressive decks: starter pack, game-day core, offense, defense, bench/newcomers, and the whole roster
+- One-tap recommended lessons that advance from recognition to recall and mastery as you improve
 - Three training levels: multiple-choice recognition, typed recall, and a typed mastery check
 - Practice for faces and names, jersey numbers, positions, and colleges
 - Four-part mastery: a player only counts as learned after all four answers are typed correctly in the same mastery check
-- Adaptive practice that prioritizes players with missing facts
+- Adaptive practice that tracks misses, accuracy, streaks, and recency by player and fact
 - Device-local daily reports with answer totals, accuracy, players verified, and a Wordle-style share summary
-- Searchable roster browser with official player profile links
+- Searchable roster browser with position/status filters, learning labels, and sorting by practice priority, name, number, position, or progress
 
 The checked-in data was generated from the [official Cowboys roster](https://www.dallascowboys.com/team/players-roster/). Headshots remain hosted by the official NFL/Cowboys image CDN.
 

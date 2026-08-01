@@ -10,9 +10,9 @@
     />
     <title>Cowboys Roster Trainer</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=9" />
-    <script src="data/roster.js?v=9" defer></script>
-    <script src="app.js?v=9" defer></script>
+    <link rel="stylesheet" href="styles.css?v=10" />
+    <script src="data/roster.js?v=10" defer></script>
+    <script src="app.js?v=10" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -38,12 +38,17 @@
               Structured player quizzes covering names, jersey numbers, positions, and colleges.
               Progress is saved on this device.
             </p>
+            <div class="lesson-recommendation">
+              <span>Recommended next</span>
+              <strong id="recommended-lesson">Recognition · Key players</strong>
+              <small id="recommended-detail">5 questions chosen from the players and facts that need the most work.</small>
+            </div>
             <div class="hero-actions">
               <button class="button button-primary" type="button" data-action="quick-start">
-                Start with key players
+                Start recommended lesson
                 <span aria-hidden="true">→</span>
               </button>
-              <button class="button button-quiet" type="button" data-action="browse">See all players</button>
+              <button class="button button-quiet" type="button" data-action="show-lessons">Choose another lesson</button>
             </div>
           </div>
 
@@ -79,39 +84,47 @@
           <p class="daily-note">Saved only on this device. Share the summary to compare progress with someone else.</p>
         </section>
 
-        <section class="mastery-explainer" aria-labelledby="mastery-title">
-          <div>
-            <p class="eyebrow">Mastery standard</p>
-            <h2 id="mastery-title">How a player becomes learned</h2>
-          </div>
-          <p>
-            Progress from <strong>multiple-choice recognition</strong> to <strong>typed recall</strong>, then
-            pass the typed Mastery Check for full name, jersey number, position, and college. Only the
-            Mastery Check verifies a player as learned.
-          </p>
-        </section>
+        <details class="training-library" id="training-library">
+          <summary>
+            <span><strong>About & all training options</strong><small>How mastery works, every roster group, and the full study plan.</small></span>
+            <span aria-hidden="true">+</span>
+          </summary>
+          <div class="training-library-content">
+            <section class="mastery-explainer" aria-labelledby="mastery-title">
+              <div>
+                <p class="eyebrow">Mastery standard</p>
+                <h2 id="mastery-title">How a player becomes learned</h2>
+              </div>
+              <p>
+                Progress from <strong>multiple-choice recognition</strong> to <strong>typed recall</strong>, then
+                pass the typed Mastery Check for full name, jersey number, position, and college. Only the
+                Mastery Check verifies a player as learned.
+              </p>
+            </section>
 
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Choose your roster group</p>
-            <h2>Build up the roster</h2>
-          </div>
-          <p>Each session prioritizes the players you know least.</p>
-        </div>
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Choose your roster group</p>
+                <h2>Build up the roster</h2>
+              </div>
+              <p>Each session prioritizes the players you know least.</p>
+            </div>
 
-        <div class="deck-grid" id="deck-grid"></div>
+            <div class="deck-grid" id="deck-grid"></div>
 
-        <section class="how-it-works" aria-labelledby="how-title">
-          <div>
-            <p class="eyebrow">The game plan</p>
-            <h2 id="how-title">How training works</h2>
+            <section class="how-it-works" aria-labelledby="how-title">
+              <div>
+                <p class="eyebrow">The game plan</p>
+                <h2 id="how-title">How training works</h2>
+              </div>
+              <ol>
+                <li><span>1</span><strong>Pick a group</strong><small>Stars, core, offense, defense, or everyone.</small></li>
+                <li><span>2</span><strong>Build recall</strong><small>Move from multiple choice to typed answers.</small></li>
+                <li><span>3</span><strong>Verify mastery</strong><small>Type all four answers correctly in one mastery check.</small></li>
+              </ol>
+            </section>
           </div>
-          <ol>
-            <li><span>1</span><strong>Pick a group</strong><small>Stars, core, offense, defense, or everyone.</small></li>
-            <li><span>2</span><strong>Build recall</strong><small>Move from multiple choice to typed answers.</small></li>
-            <li><span>3</span><strong>Verify mastery</strong><small>Type all four answers correctly in one mastery check.</small></li>
-          </ol>
-        </section>
+        </details>
       </section>
 
       <section class="view setup-view" data-view="setup" aria-labelledby="setup-title" hidden>
@@ -146,6 +159,8 @@
               <button type="button" data-length="all">Whole deck</button>
             </div>
           </fieldset>
+
+          <aside class="practice-focus" id="practice-focus" aria-live="polite"></aside>
 
           <button class="button button-primary button-full" type="button" data-action="start-session">
             Start training <span aria-hidden="true">→</span>
@@ -235,10 +250,30 @@
               <span aria-hidden="true">⌕</span>
               <input id="roster-search" type="search" placeholder="Search a player, number, or college" />
             </label>
-            <label class="position-filter">
+            <label class="roster-select">
               <span class="visually-hidden">Filter by position</span>
               <select id="position-filter">
                 <option value="all">All positions</option>
+              </select>
+            </label>
+            <label class="roster-select">
+              <span class="visually-hidden">Filter by learning status</span>
+              <select id="progress-filter">
+                <option value="all">All learning statuses</option>
+                <option value="needs-practice">Needs practice</option>
+                <option value="unseen">Not started</option>
+                <option value="in-progress">In progress</option>
+                <option value="verified">Verified</option>
+              </select>
+            </label>
+            <label class="roster-select">
+              <span class="visually-hidden">Sort roster</span>
+              <select id="roster-sort">
+                <option value="practice">Sort: Practice priority</option>
+                <option value="name">Sort: Name A–Z</option>
+                <option value="number">Sort: Jersey number</option>
+                <option value="position">Sort: Position</option>
+                <option value="progress">Sort: Learning progress</option>
               </select>
             </label>
           </div>

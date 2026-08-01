@@ -136,6 +136,9 @@
     learnedTotal: document.querySelector("#learned-total"),
     overallProgressBar: document.querySelector("#overall-progress-bar"),
     studyTotal: document.querySelector("#study-total"),
+    recommendedLesson: document.querySelector("#recommended-lesson"),
+    recommendedDetail: document.querySelector("#recommended-detail"),
+    trainingLibrary: document.querySelector("#training-library"),
     dailyVerified: document.querySelector("#daily-verified"),
     dailyAccuracy: document.querySelector("#daily-accuracy"),
     dailyAccuracyLabel: document.querySelector("#daily-accuracy-label"),
@@ -149,6 +152,7 @@
     setupDescription: document.querySelector("#setup-description"),
     setupPlayerCount: document.querySelector("#setup-player-count"),
     setupMastery: document.querySelector("#setup-mastery"),
+    practiceFocus: document.querySelector("#practice-focus"),
     stageGrid: document.querySelector("#stage-grid"),
     modeGrid: document.querySelector("#mode-grid"),
     modeOptionGroup: document.querySelector("#mode-option-group"),
@@ -175,6 +179,8 @@
     rosterSummary: document.querySelector("#roster-summary"),
     rosterSearch: document.querySelector("#roster-search"),
     positionFilter: document.querySelector("#position-filter"),
+    progressFilter: document.querySelector("#progress-filter"),
+    rosterSort: document.querySelector("#roster-sort"),
     rosterCount: document.querySelector("#roster-count"),
     playerGrid: document.querySelector("#player-grid"),
   };
@@ -265,6 +271,23 @@
     return players.filter(deck.filter);
   }
 
+  function getPracticeBucket(savedBucket = {}) {
+    return Object.fromEntries(
+      SKILLS.map((skill) => {
+        const stats = savedBucket?.[skill] ?? {};
+        return [
+          skill,
+          {
+            attempts: stats.attempts ?? 0,
+            correct: stats.correct ?? 0,
+            streak: stats.streak ?? 0,
+            lastSeen: stats.lastSeen ?? 0,
+          },
+        ];
+      }),
+    );
+  }
+
   function getPlayerProgress(playerId) {
     const saved = progress.players[playerId] ?? {};
     const isTypedRecall = saved.verificationMethod === VERIFICATION_METHOD;
@@ -282,6 +305,10 @@
         numbers: saved.recognitionSkills?.numbers ?? 0,
         positions: saved.recognitionSkills?.positions ?? 0,
         colleges: saved.recognitionSkills?.colleges ?? 0,
+      },
+      practice: {
+        recognition: getPracticeBucket(saved.practice?.recognition),
+        recall: getPracticeBucket(saved.practice?.recall),
       },
     };
     return {
@@ -432,6 +459,9 @@
     elements.studyTotal.textContent = progress.totalAnswers
       ? `${progress.totalAnswers} cards answered · ${totalSeen} players seen`
       : "Ready for your first card";
+    const recommendation = getRecommendedLesson();
+    elements.recommendedLesson.textContent = `${recommendation.stage.title} · ${recommendation.deck.title}`;
+    elements.recommendedDetail.textContent = `${recommendation.questionCount} ${recommendation.stage.id === "mastery" ? "players" : "questions"}, selected from the players and facts that need the most work.`;
     renderDailySummary();
 
     elements.deckGrid.innerHTML = decks
@@ -456,6 +486,41 @@
           </button>`;
       })
       .join("");
+  }
+
+  function getRecommendedLesson() {
+    const deck =
+      decks.find((candidate) => learnedCount(getDeckPlayers(candidate)) < getDeckPlayers(candidate).length) ??
+      decks[decks.length - 1];
+    const deckPlayers = getDeckPlayers(deck);
+    const totalFacts = deckPlayers.length * SKILLS.length;
+    const recognitionFacts = deckPlayers.reduce(
+      (total, player) =>
+        total + SKILLS.filter((skill) => getPlayerProgress(player.id).recognitionSkills[skill] === 1).length,
+      0,
+    );
+    const typedFacts = learnedFactCount(deckPlayers);
+    const stage =
+      recognitionFacts / totalFacts < 0.75
+        ? stages[0]
+        : typedFacts / totalFacts < 0.75
+          ? stages[1]
+          : stages[2];
+    return { deck, stage, questionCount: Math.min(5, deckPlayers.length) };
+  }
+
+  function startRecommendedLesson() {
+    const recommendation = getRecommendedLesson();
+    state.deckId = recommendation.deck.id;
+    state.stage = recommendation.stage.id;
+    state.mode = "mixed";
+    state.length = recommendation.questionCount;
+    startSession();
+  }
+
+  function showTrainingLibrary() {
+    elements.trainingLibrary.open = true;
+    elements.trainingLibrary.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   function renderSetup() {
@@ -490,6 +555,7 @@
       )
       .join("");
     renderLengthOptions();
+    renderPracticeFocus();
   }
 
   function renderLengthOptions() {
@@ -508,22 +574,104 @@
     showView("setup");
   }
 
+  function practiceTrack(stage) {
+    return stage === "recognition" ? "recognition" : "recall";
+  }
+
+  function skillPracticeNeed(playerProgress, track, skill) {
+    const facts = track === "recognition" ? playerProgress.recognitionSkills : playerProgress.skills;
+    const confirmed = facts[skill] === 1;
+    const stats = playerProgress.practice[track][skill];
+    if (!stats.attempts) return confirmed ? 24 : 64;
+
+    const accuracy = stats.correct / stats.attempts;
+    let need = (confirmed ? 18 : 52) + (1 - accuracy) * 38;
+    need += stats.streak === 0 ? 34 : -Math.min(stats.streak, 4) * 6;
+
+    const answersAgo = progress.totalAnswers - stats.lastSeen;
+    if (answersAgo >= 0 && answersAgo < 4) need -= (4 - answersAgo) * 3;
+    return need;
+  }
+
+  function playerPracticePriority(player, stage, requestedMode) {
+    const playerProgress = getPlayerProgress(player.id);
+    const track = practiceTrack(stage);
+    const relevantSkills = requestedMode === "mixed" ? SKILLS : [requestedMode];
+    const needs = relevantSkills.map((skill) => skillPracticeNeed(playerProgress, track, skill));
+    const highestNeed = Math.max(...needs);
+    const averageNeed = needs.reduce((total, need) => total + need, 0) / needs.length;
+    let priority = highestNeed + averageNeed * 0.2;
+
+    if (stage === "mastery" && !playerProgress.verified) priority += 24;
+    if (playerProgress.verified) priority -= 45;
+    return priority;
+  }
+
+  function rankPracticePlayers(deckPlayers, stage, requestedMode, randomize = false) {
+    return [...deckPlayers]
+      .map((player) => ({
+        player,
+        priority:
+          playerPracticePriority(player, stage, requestedMode) + (randomize ? Math.random() * 10 : 0),
+      }))
+      .sort(
+        (left, right) =>
+          right.priority - left.priority || left.player.name.localeCompare(right.player.name),
+      );
+  }
+
   function chooseSessionPlayers(deckPlayers, requestedLength, requestedMode) {
     const count = requestedLength === "all" ? deckPlayers.length : Math.min(Number(requestedLength), deckPlayers.length);
-    return [...deckPlayers]
-      .map((player) => {
-        const playerProgress = getPlayerProgress(player.id);
-        const skillProgress =
-          state.stage === "recognition" ? playerProgress.recognitionSkills : playerProgress.skills;
-        const knowledge =
-          requestedMode === "mixed"
-            ? SKILLS.reduce((total, skill) => total + skillProgress[skill], 0)
-            : skillProgress[requestedMode];
-        return { player, priority: knowledge * 10 + Math.random() * 7 };
-      })
-      .sort((left, right) => left.priority - right.priority)
+    return rankPracticePlayers(deckPlayers, state.stage, requestedMode, true)
       .slice(0, count)
       .map(({ player }) => player);
+  }
+
+  function choosePracticeSkill(player, stage) {
+    const playerProgress = getPlayerProgress(player.id);
+    const track = practiceTrack(stage);
+    return SKILLS.map((skill) => ({
+      skill,
+      need: skillPracticeNeed(playerProgress, track, skill) + Math.random() * 8,
+    })).sort((left, right) => right.need - left.need)[0].skill;
+  }
+
+  function playerPracticeReason(player, stage, requestedMode) {
+    const playerProgress = getPlayerProgress(player.id);
+    const track = practiceTrack(stage);
+    const relevantSkills = requestedMode === "mixed" ? SKILLS : [requestedMode];
+    const recentMisses = relevantSkills.filter((skill) => {
+      const stats = playerProgress.practice[track][skill];
+      return stats.attempts > 0 && stats.streak === 0;
+    });
+    if (recentMisses.length) return `Missed ${SKILL_LABELS[recentMisses[0]]}`;
+
+    const facts = track === "recognition" ? playerProgress.recognitionSkills : playerProgress.skills;
+    const unconfirmed = relevantSkills.find((skill) => facts[skill] !== 1);
+    if (unconfirmed) return `Learn ${SKILL_LABELS[unconfirmed]}`;
+    return playerProgress.verified ? "Ready for review" : "Build toward mastery";
+  }
+
+  function renderPracticeFocus() {
+    const deckPlayers = getDeckPlayers();
+    const requestedMode = state.stage === "mastery" ? "mixed" : state.mode;
+    const count = state.length === "all" ? deckPlayers.length : Math.min(Number(state.length), deckPlayers.length);
+    const focusPlayers = rankPracticePlayers(deckPlayers, state.stage, requestedMode)
+      .slice(0, Math.min(count, 5))
+      .map(({ player }) => player);
+    elements.practiceFocus.innerHTML = `
+      <div class="practice-focus-heading">
+        <div><span>Smart practice</span><strong>Likely focus players</strong></div>
+        <small>Misses first, then unseen facts; confident facts appear less often.</small>
+      </div>
+      <div class="practice-focus-list">
+        ${focusPlayers
+          .map(
+            (player) =>
+              `<span><strong>${h(player.name)}</strong><small>${h(playerPracticeReason(player, state.stage, requestedMode))}</small></span>`,
+          )
+          .join("")}
+      </div>`;
   }
 
   function buildChoiceValues(correct, deckPlayers, getter, numeric = false) {
@@ -657,7 +805,7 @@
             })),
           )
         : sessionPlayers.map((player) => {
-            const mode = state.mode === "mixed" ? SKILLS[Math.floor(Math.random() * SKILLS.length)] : state.mode;
+            const mode = state.mode === "mixed" ? choosePracticeSkill(player, state.stage) : state.mode;
             return buildQuestion(player, mode, deckPlayers);
           });
     state.questionIndex = 0;
@@ -749,6 +897,20 @@
   function recordProgress(playerId, skill, correct, stage) {
     const current = getPlayerProgress(playerId);
     const typed = stage !== "recognition";
+    const track = practiceTrack(stage);
+    const previousStats = current.practice[track][skill];
+    const practice = {
+      ...current.practice,
+      [track]: {
+        ...current.practice[track],
+        [skill]: {
+          attempts: previousStats.attempts + 1,
+          correct: previousStats.correct + (correct ? 1 : 0),
+          streak: correct ? previousStats.streak + 1 : 0,
+          lastSeen: progress.totalAnswers + 1,
+        },
+      },
+    };
     progress.players[playerId] = {
       seen: current.seen + 1,
       correct: current.correct + (correct ? 1 : 0),
@@ -759,6 +921,7 @@
           : current.recognitionSkills,
       verified: correct ? current.verified : false,
       verificationMethod: typed ? VERIFICATION_METHOD : current.verificationMethod,
+      practice,
     };
     progress.totalAnswers += 1;
     progress.totalCorrect += correct ? 1 : 0;
@@ -886,32 +1049,98 @@
     );
   }
 
+  function playerLearningStatus(player) {
+    const playerProgress = getPlayerProgress(player.id);
+    const typedFacts = SKILLS.filter((skill) => playerProgress.skills[skill] === 1).length;
+    const recognitionFacts = SKILLS.filter((skill) => playerProgress.recognitionSkills[skill] === 1).length;
+    if (playerProgress.verified) return { id: "verified", label: "Verified", detail: "4/4 mastery passed" };
+    if (playerProgress.seen === 0) return { id: "unseen", label: "Not started", detail: "No answers yet" };
+    if (typedFacts) return { id: "in-progress", label: "In progress", detail: `${typedFacts}/4 typed facts` };
+    if (recognitionFacts) {
+      return { id: "in-progress", label: "Recognition", detail: `${recognitionFacts}/4 facts recognized` };
+    }
+    return { id: "in-progress", label: "Needs review", detail: "No facts currently confirmed" };
+  }
+
+  function rosterPracticePriority(player) {
+    return (
+      playerPracticePriority(player, "mastery", "mixed") +
+      playerPracticePriority(player, "recognition", "mixed") * 0.25
+    );
+  }
+
+  function rosterFocusLabel(player) {
+    const playerProgress = getPlayerProgress(player.id);
+    if (playerProgress.verified) return "Mastery passed; review occasionally";
+    const missed = SKILLS.filter((skill) => {
+      const recall = playerProgress.practice.recall[skill];
+      const recognition = playerProgress.practice.recognition[skill];
+      return (recall.attempts > 0 && recall.streak === 0) || (recognition.attempts > 0 && recognition.streak === 0);
+    });
+    const missing = SKILLS.filter((skill) => playerProgress.skills[skill] !== 1);
+    const focusSkills = [...new Set([...missed, ...missing])].slice(0, 2);
+    return focusSkills.length
+      ? `Next focus: ${focusSkills.map((skill) => SKILL_LABELS[skill]).join(" and ")}`
+      : "Next focus: mastery check";
+  }
+
+  function compareRosterPlayers(left, right, sort) {
+    if (sort === "name") return left.name.localeCompare(right.name);
+    if (sort === "number") {
+      return Number(left.number) - Number(right.number) || left.name.localeCompare(right.name);
+    }
+    if (sort === "position") {
+      return left.position.localeCompare(right.position) || Number(left.number) - Number(right.number);
+    }
+    if (sort === "progress") {
+      const statusOrder = { "in-progress": 0, unseen: 1, verified: 2 };
+      return (
+        statusOrder[playerLearningStatus(left).id] - statusOrder[playerLearningStatus(right).id] ||
+        knownSkillCount(right.id) - knownSkillCount(left.id) ||
+        left.name.localeCompare(right.name)
+      );
+    }
+    return rosterPracticePriority(right) - rosterPracticePriority(left) || left.name.localeCompare(right.name);
+  }
+
   function renderRoster() {
     const query = elements.rosterSearch.value.trim().toLowerCase();
     const selectedPosition = elements.positionFilter.value;
+    const selectedProgress = elements.progressFilter.value;
+    const selectedSort = elements.rosterSort.value;
     const filtered = players.filter((player) => {
+      const learningStatus = playerLearningStatus(player);
       const matchesPosition = selectedPosition === "all" || player.position === selectedPosition;
+      const matchesProgress =
+        selectedProgress === "all" ||
+        (selectedProgress === "needs-practice" && learningStatus.id !== "verified") ||
+        selectedProgress === learningStatus.id;
       const haystack = `${player.name} ${player.number} ${player.position} ${player.college}`.toLowerCase();
-      return matchesPosition && haystack.includes(query);
-    });
+      return matchesPosition && matchesProgress && haystack.includes(query);
+    }).sort((left, right) => compareRosterPlayers(left, right, selectedSort));
 
-    elements.rosterCount.textContent = `Showing ${filtered.length} of ${players.length} players`;
+    elements.rosterCount.textContent = `Showing ${filtered.length} of ${players.length} players${selectedSort === "practice" ? " · highest practice priority first" : ""}`;
     elements.playerGrid.innerHTML = filtered.length
       ? filtered
           .map(
-            (player) => `
+            (player) => {
+              const learningStatus = playerLearningStatus(player);
+              return `
               <article class="player-card">
                 ${headshot(player)}
                 <div class="player-card-body">
+                  <span class="learning-status is-${h(learningStatus.id)}">${h(learningStatus.label)}</span>
                   <div class="player-card-topline">
                     <h2>${h(player.name)}</h2>
                     <span class="jersey-number">#${h(player.number)}</span>
                   </div>
                   <p class="player-position">${h(positionName(player.position))}${player.status !== "Active" ? ` · ${h(player.status)}` : ""}</p>
                   <p class="player-college"><strong>College:</strong> ${h(player.college)}</p>
+                  <p class="player-learning"><strong>${h(learningStatus.detail)}</strong><span>${h(rosterFocusLabel(player))}</span></p>
                   <a href="${h(player.profile)}" target="_blank" rel="noreferrer">Official profile ↗</a>
                 </div>
-              </article>`,
+              </article>`;
+            },
           )
           .join("")
       : '<p class="empty-roster">No players match that search.</p>';
@@ -934,7 +1163,9 @@
       } else if (action === "browse") {
         openRoster();
       } else if (action === "quick-start") {
-        openDeck("stars");
+        startRecommendedLesson();
+      } else if (action === "show-lessons") {
+        showTrainingLibrary();
       } else if (action === "start-session" || action === "repeat-session") {
         startSession();
       } else if (action === "next-stage") {
@@ -973,6 +1204,7 @@
         button.classList.toggle("is-selected", selected);
         button.setAttribute("aria-pressed", selected);
       });
+      renderPracticeFocus();
       return;
     }
 
@@ -980,6 +1212,7 @@
     if (lengthTarget && !lengthTarget.disabled) {
       state.length = lengthTarget.dataset.length === "all" ? "all" : Number(lengthTarget.dataset.length);
       renderLengthOptions();
+      renderPracticeFocus();
       return;
     }
 
@@ -1009,6 +1242,8 @@
 
   elements.rosterSearch.addEventListener("input", renderRoster);
   elements.positionFilter.addEventListener("change", renderRoster);
+  elements.progressFilter.addEventListener("change", renderRoster);
+  elements.rosterSort.addEventListener("change", renderRoster);
   document.addEventListener("keydown", (event) => {
     if (document.querySelector('[data-view="training"].is-active') && state.answerLocked && event.key === "Enter") {
       nextQuestion();
