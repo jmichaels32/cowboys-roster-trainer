@@ -1,12 +1,17 @@
-# Cowboys Roster Trainer
+# Player Decks
 
-A dependency-free, mobile-first flashcard trainer for learning the Dallas Cowboys roster. It is ready to host on GitHub Pages and stores learning progress locally in each browser.
+A dependency-free, mobile-first flashcard trainer for learning football players from selectable decks. It is ready for GitHub Pages and iOS through Capacitor; progress is stored locally on each device.
 
 **Live site:** <https://jmichaels32.github.io/cowboys-roster-trainer/>
 
-## What it teaches
+## Decks
 
-- Six progressive decks: starter pack, game-day core, offense, defense, bench/newcomers, and the whole roster
+- Cowboys roster: available now, using the official roster data
+- NFL Top 100: product skeleton added; player data is not installed yet
+
+## Training
+
+- Six Cowboys lesson groups: key players, core contributors, offense, defense, newcomers, and the complete roster
 - One-tap recommended lessons that advance from recognition to recall and mastery as you improve
 - Three training levels: multiple-choice recognition, typed recall, and a typed mastery check
 - Practice for faces and names, jersey numbers, positions, and colleges
@@ -15,7 +20,7 @@ A dependency-free, mobile-first flashcard trainer for learning the Dallas Cowboy
 - Device-local daily reports with answer totals, accuracy, players verified, and a Wordle-style share summary
 - Searchable roster browser with position/status filters, learning labels, and sorting by practice priority, name, number, position, or progress
 
-The checked-in data was generated from the [official Cowboys roster](https://www.dallascowboys.com/team/players-roster/). Headshots remain hosted by the official NFL/Cowboys image CDN.
+The Cowboys data was generated from the [official Cowboys roster](https://www.dallascowboys.com/team/players-roster/). Headshots remain hosted by the official NFL/Cowboys image CDN.
 
 ## Run locally
 
@@ -26,6 +31,19 @@ python3 -m http.server 8000
 ```
 
 Then open <http://localhost:8000>.
+
+## Run on iOS
+
+The iOS app uses Capacitor to bundle the existing web interface in a native Xcode project. It does not require a separate web build framework.
+
+```bash
+npm install
+npm run ios:open
+```
+
+Select an Apple development team in Xcode, choose a simulator or connected iPhone, and run the `App` scheme. Run `npm run ios:sync` after changing the web files so the native project receives the latest copy. Always open `ios/App/App.xcworkspace`, not the `.xcodeproj` file, so CocoaPods dependencies are included.
+
+For the configured development team and a paired iPhone, `npm run ios:run` builds, installs, and launches the app directly from the terminal.
 
 ## Publish with GitHub Pages
 

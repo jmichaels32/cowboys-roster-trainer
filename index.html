@@ -3,168 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#041e42" />
+    <meta name="theme-color" content="#f6f7fb" />
     <meta
       name="description"
-      content="A mobile-friendly flashcard trainer for learning the Dallas Cowboys roster."
+      content="A mobile-friendly flashcard trainer for learning football players."
     />
-    <title>Cowboys Roster Trainer</title>
+    <title>Player Decks</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=10" />
-    <script src="data/roster.js?v=10" defer></script>
-    <script src="app.js?v=10" defer></script>
+    <link rel="stylesheet" href="styles.css?v=19" />
+    <script src="data/roster.js?v=19" defer></script>
+    <script src="data/college-marks.js?v=19" defer></script>
+    <script src="app.js?v=19" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
 
     <header class="site-header">
-      <button class="brand" type="button" data-action="home" aria-label="Cowboys Roster Trainer home">
-        <span class="brand-star" aria-hidden="true">★</span>
-        <span>
-          <strong>Cowboys</strong>
-          <small>Roster Trainer</small>
-        </span>
-      </button>
-      <button class="header-link" type="button" data-action="browse">Browse roster</button>
+      <button class="header-back" id="header-back" type="button" data-action="home" aria-label="Back to decks" hidden><span aria-hidden="true">←</span></button>
+      <strong class="header-context" id="header-context">Decks</strong>
+      <button class="header-link" id="browse-players" type="button" data-action="browse" hidden>Players</button>
     </header>
 
     <main id="main-content">
       <section class="view dashboard-view is-active" data-view="dashboard" aria-labelledby="home-title">
-        <div class="hero-shell">
-          <div class="hero-copy">
-            <p class="eyebrow" id="roster-kicker">2026 roster study guide</p>
-            <h1 id="home-title">Learn the Cowboys roster.</h1>
-            <p class="hero-lede">
-              Structured player quizzes covering names, jersey numbers, positions, and colleges.
-              Progress is saved on this device.
-            </p>
-            <div class="lesson-recommendation">
-              <span>Recommended next</span>
-              <strong id="recommended-lesson">Recognition · Key players</strong>
-              <small id="recommended-detail">5 questions chosen from the players and facts that need the most work.</small>
-            </div>
-            <div class="hero-actions">
-              <button class="button button-primary" type="button" data-action="quick-start">
-                Start recommended lesson
-                <span aria-hidden="true">→</span>
-              </button>
-              <button class="button button-quiet" type="button" data-action="show-lessons">Choose another lesson</button>
-            </div>
-          </div>
-
-          <aside class="progress-card" aria-label="Learning progress">
-            <span class="progress-card-label">Progress</span>
-            <div>
-              <strong id="learned-total">0</strong>
-              <span>players verified</span>
-            </div>
-            <div class="mini-progress" aria-hidden="true">
-              <span id="overall-progress-bar"></span>
-            </div>
-            <p id="study-total">Ready for your first card</p>
-          </aside>
+        <div class="player-decks-shell">
+          <h1 class="visually-hidden" id="home-title">Player decks</h1>
+          <div class="player-deck-list" id="player-deck-list" aria-label="Choose a player deck"></div>
         </div>
-
-        <section class="daily-summary" aria-labelledby="daily-title">
-          <div class="daily-summary-header">
-            <div>
-              <p class="eyebrow">Today’s training</p>
-              <h2 id="daily-title">Daily summary</h2>
-            </div>
-            <button class="button button-quiet daily-share-button" id="daily-share-button" type="button" data-action="share-summary">
-              Share summary
-            </button>
-          </div>
-          <div class="daily-metrics">
-            <div><strong id="daily-verified">0</strong><span>Players verified</span></div>
-            <div><strong id="daily-accuracy">0/0</strong><span id="daily-accuracy-label">Answers correct</span></div>
-            <div><strong id="daily-sessions">0</strong><span>Sessions</span></div>
-          </div>
-          <div class="daily-results" id="daily-results" aria-label="Today’s answer results"></div>
-          <p class="daily-note">Saved only on this device. Share the summary to compare progress with someone else.</p>
-        </section>
-
-        <details class="training-library" id="training-library">
-          <summary>
-            <span><strong>About & all training options</strong><small>How mastery works, every roster group, and the full study plan.</small></span>
-            <span aria-hidden="true">+</span>
-          </summary>
-          <div class="training-library-content">
-            <section class="mastery-explainer" aria-labelledby="mastery-title">
-              <div>
-                <p class="eyebrow">Mastery standard</p>
-                <h2 id="mastery-title">How a player becomes learned</h2>
-              </div>
-              <p>
-                Progress from <strong>multiple-choice recognition</strong> to <strong>typed recall</strong>, then
-                pass the typed Mastery Check for full name, jersey number, position, and college. Only the
-                Mastery Check verifies a player as learned.
-              </p>
-            </section>
-
-            <div class="section-heading">
-              <div>
-                <p class="eyebrow">Choose your roster group</p>
-                <h2>Build up the roster</h2>
-              </div>
-              <p>Each session prioritizes the players you know least.</p>
-            </div>
-
-            <div class="deck-grid" id="deck-grid"></div>
-
-            <section class="how-it-works" aria-labelledby="how-title">
-              <div>
-                <p class="eyebrow">The game plan</p>
-                <h2 id="how-title">How training works</h2>
-              </div>
-              <ol>
-                <li><span>1</span><strong>Pick a group</strong><small>Stars, core, offense, defense, or everyone.</small></li>
-                <li><span>2</span><strong>Build recall</strong><small>Move from multiple choice to typed answers.</small></li>
-                <li><span>3</span><strong>Verify mastery</strong><small>Type all four answers correctly in one mastery check.</small></li>
-              </ol>
-            </section>
-          </div>
-        </details>
       </section>
 
       <section class="view setup-view" data-view="setup" aria-labelledby="setup-title" hidden>
-        <div class="narrow-shell">
-          <button class="back-button" type="button" data-action="home"><span aria-hidden="true">←</span> Roster groups</button>
-
-          <div class="setup-intro">
-            <p class="eyebrow" id="setup-level">Group 1</p>
-            <h1 id="setup-title">Key players</h1>
-            <p id="setup-description"></p>
-            <div class="deck-progress-row">
-              <span id="setup-player-count"></span>
-              <span id="setup-mastery"></span>
-            </div>
-          </div>
-
-          <fieldset class="option-group">
-            <legend>Training level</legend>
-            <div class="stage-grid" id="stage-grid"></div>
-          </fieldset>
-
-          <fieldset class="option-group" id="mode-option-group">
-            <legend>What do you want to learn?</legend>
-            <div class="mode-grid" id="mode-grid"></div>
-          </fieldset>
-
-          <fieldset class="option-group">
-            <legend>Session length</legend>
-            <div class="segment-control" id="length-options">
-              <button class="is-selected" type="button" data-length="5">Quick 5</button>
-              <button type="button" data-length="10">10 players</button>
-              <button type="button" data-length="all">Whole deck</button>
-            </div>
-          </fieldset>
-
-          <aside class="practice-focus" id="practice-focus" aria-live="polite"></aside>
-
-          <button class="button button-primary button-full" type="button" data-action="start-session">
-            Start training <span aria-hidden="true">→</span>
+        <div class="setup-shell">
+          <button class="package-selector" id="setup-package" type="button" data-setup-control="package" aria-label="Key players package. Change package">
+            <span id="setup-title">Key players</span><span aria-hidden="true">⌄</span>
           </button>
+          <div class="session-sentence-card">
+            <p>
+              Practice
+              <button class="session-token" id="setup-stage-value" type="button" data-setup-control="stage">recognition</button>
+              with
+              <button class="session-token" id="setup-mode-value" type="button" data-setup-control="mode">mixed facts</button>
+              for
+              <button class="session-token" id="setup-length-value" type="button" data-setup-control="length">5 cards</button>.
+            </p>
+          </div>
+          <button class="button button-primary button-full" id="setup-start" type="button" data-action="start-session">Start 5 cards</button>
         </div>
       </section>
 
@@ -194,7 +77,7 @@
           <article class="question-card">
             <div class="question-copy">
               <p class="eyebrow" id="question-type">Face check</p>
-              <h1 id="question-title">Who is this Cowboy?</h1>
+              <h1 id="question-title">Who is this player?</h1>
             </div>
 
             <div class="question-visual" id="question-visual"></div>
@@ -213,7 +96,7 @@
 
       <section class="view results-view" data-view="results" aria-labelledby="results-title" hidden>
         <div class="narrow-shell results-shell">
-          <div class="result-mark" id="result-mark" aria-hidden="true">★</div>
+          <div class="result-mark" id="result-mark" aria-hidden="true">✓</div>
           <p class="eyebrow">Session complete</p>
           <h1 id="results-title">Nice work.</h1>
           <p class="result-score" id="result-score"></p>
@@ -223,7 +106,7 @@
             <button class="button button-primary" id="next-stage-button" type="button" data-action="next-stage" hidden></button>
             <button class="button button-primary" type="button" data-action="repeat-session">Practice again</button>
             <button class="button button-quiet" id="result-share-button" type="button" data-action="share-summary">Share today’s summary</button>
-            <button class="button button-quiet" type="button" data-action="home">Choose another level</button>
+            <button class="button button-quiet" type="button" data-action="home">Decks</button>
           </div>
 
           <section class="missed-section" id="missed-section" hidden>
@@ -235,60 +118,96 @@
 
       <section class="view roster-view" data-view="roster" aria-labelledby="roster-title" hidden>
         <div class="wide-shell">
-          <button class="back-button" type="button" data-action="home"><span aria-hidden="true">←</span> Home</button>
-          <div class="roster-heading">
-            <div>
-              <p class="eyebrow">Official roster</p>
-              <h1 id="roster-title">Meet the whole team</h1>
-            </div>
-            <p id="roster-summary"></p>
+          <div class="roster-nav">
+            <h1 id="roster-title">Players</h1>
           </div>
 
-          <div class="roster-tools">
-            <label class="search-box">
-              <span class="visually-hidden">Search players</span>
-              <span aria-hidden="true">⌕</span>
-              <input id="roster-search" type="search" placeholder="Search a player, number, or college" />
-            </label>
-            <label class="roster-select">
-              <span class="visually-hidden">Filter by position</span>
-              <select id="position-filter">
-                <option value="all">All positions</option>
-              </select>
-            </label>
-            <label class="roster-select">
-              <span class="visually-hidden">Filter by learning status</span>
-              <select id="progress-filter">
-                <option value="all">All learning statuses</option>
-                <option value="needs-practice">Needs practice</option>
-                <option value="unseen">Not started</option>
-                <option value="in-progress">In progress</option>
-                <option value="verified">Verified</option>
-              </select>
-            </label>
-            <label class="roster-select">
-              <span class="visually-hidden">Sort roster</span>
-              <select id="roster-sort">
-                <option value="practice">Sort: Practice priority</option>
-                <option value="name">Sort: Name A–Z</option>
-                <option value="number">Sort: Jersey number</option>
-                <option value="position">Sort: Position</option>
-                <option value="progress">Sort: Learning progress</option>
-              </select>
-            </label>
+          <div class="search-box">
+            <label class="visually-hidden" for="roster-search">Search players</label>
+            <span aria-hidden="true">⌕</span>
+            <input id="roster-search" type="search" placeholder="Search players" autocomplete="off" />
+            <button class="search-clear" id="roster-search-clear" type="button" data-action="clear-roster-search" aria-label="Clear search" hidden>×</button>
           </div>
 
-          <p class="roster-count" id="roster-count" aria-live="polite"></p>
+          <div class="roster-results-heading">
+            <p class="roster-count" id="roster-count" aria-live="polite"></p>
+            <button class="refine-button" id="roster-controls-button" type="button" data-action="open-roster-controls">
+              Refine<span id="roster-filter-count" hidden></span>
+            </button>
+          </div>
           <div class="player-grid" id="player-grid"></div>
         </div>
       </section>
     </main>
 
+    <dialog class="roster-controls-dialog" id="roster-controls-dialog" aria-labelledby="roster-controls-title">
+      <form class="roster-controls-sheet" id="roster-controls-form" novalidate>
+        <div class="dialog-heading">
+          <h2 id="roster-controls-title">Refine</h2>
+          <button class="dialog-close" type="button" data-action="close-roster-controls" aria-label="Close">×</button>
+        </div>
+        <fieldset class="roster-control-group">
+          <legend>Group</legend>
+          <div class="roster-choice-grid">
+            <label class="roster-choice"><input type="radio" name="group" value="all" checked /><span>Full roster</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="stars" /><span>Key players</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="core" /><span>Core contributors</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="offense" /><span>Offense</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="defense" /><span>Defense</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="new-faces" /><span>Depth &amp; newcomers</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="roster-control-group">
+          <legend>Position</legend>
+          <div class="roster-choice-grid" id="position-filter-options">
+            <label class="roster-choice"><input type="radio" name="position" value="all" checked /><span>All</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="roster-control-group">
+          <legend>Learning</legend>
+          <div class="roster-choice-grid">
+            <label class="roster-choice"><input type="radio" name="progress" value="all" checked /><span>All</span></label>
+            <label class="roster-choice"><input type="radio" name="progress" value="needs-practice" /><span>Needs practice</span></label>
+            <label class="roster-choice"><input type="radio" name="progress" value="unseen" /><span>Not started</span></label>
+            <label class="roster-choice"><input type="radio" name="progress" value="in-progress" /><span>In progress</span></label>
+            <label class="roster-choice"><input type="radio" name="progress" value="verified" /><span>Verified</span></label>
+          </div>
+        </fieldset>
+        <fieldset class="roster-control-group">
+          <legend>Sort</legend>
+          <div class="roster-choice-grid">
+            <label class="roster-choice"><input type="radio" name="sort" value="practice" checked /><span>Practice priority</span></label>
+            <label class="roster-choice"><input type="radio" name="sort" value="name" /><span>Name A–Z</span></label>
+            <label class="roster-choice"><input type="radio" name="sort" value="number" /><span>Jersey number</span></label>
+            <label class="roster-choice"><input type="radio" name="sort" value="position" /><span>Position</span></label>
+            <label class="roster-choice"><input type="radio" name="sort" value="college" /><span>College A–Z</span></label>
+            <label class="roster-choice"><input type="radio" name="sort" value="height" /><span>Tallest first</span></label>
+            <label class="roster-choice"><input type="radio" name="sort" value="weight" /><span>Heaviest first</span></label>
+            <label class="roster-choice"><input type="radio" name="sort" value="progress" /><span>Learning progress</span></label>
+          </div>
+        </fieldset>
+        <div class="dialog-actions">
+          <button class="button button-quiet" type="button" data-action="clear-roster-controls">Clear</button>
+          <button class="button button-primary" type="submit">Apply</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="session-option-dialog" id="session-option-dialog" aria-labelledby="session-option-title">
+      <div class="session-option-sheet">
+        <div class="dialog-heading">
+          <h2 id="session-option-title">Level</h2>
+          <button class="dialog-close" type="button" data-action="close-session-options" aria-label="Close">×</button>
+        </div>
+        <div class="session-option-list" id="session-option-list"></div>
+      </div>
+    </dialog>
+
     <footer class="site-footer">
       <p>
-        Unofficial fan-made study tool. Roster data and headshots from the
-        <a href="https://www.dallascowboys.com/team/players-roster/" target="_blank" rel="noreferrer">official Cowboys roster</a>.
-        Last checked <span id="data-date">July 31, 2026</span>.
+        Unofficial. Cowboys data from the
+        <a href="https://www.dallascowboys.com/team/players-roster/" target="_blank" rel="noreferrer">official roster</a>
+        · <span id="data-date">July 31, 2026</span>.
       </p>
     </footer>
   </body>

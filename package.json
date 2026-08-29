@@ -1,0 +1,21 @@
+{
+  "name": "player-decks",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:native": "node scripts/build-native.mjs",
+    "update:college-marks": "node scripts/update-college-marks.mjs",
+    "ios:sync": "npm run build:native && LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 cap sync ios",
+    "ios:open": "npm run ios:sync && cap open ios",
+    "ios:run": "npm run ios:sync && zsh scripts/run-ios-device.zsh",
+    "verify": "npm run build:native && node scripts/verify-app.mjs"
+  },
+  "dependencies": {
+    "@capacitor/core": "7.6.8",
+    "@capacitor/ios": "7.6.8"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "7.6.8"
+  }
+}

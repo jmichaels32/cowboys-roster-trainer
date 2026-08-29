@@ -1,0 +1,6 @@
+node_modules/
+www/
+# Xcode user-specific state
+xcuserdata/
+*.xcuserstate
+DerivedData/
