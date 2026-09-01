@@ -101,8 +101,8 @@ try {
       cardCount: cards.length,
       header: document.querySelector('#header-context').textContent,
       oldBrandVisible: document.querySelector('.site-header').textContent.includes('Player Decks'),
-      unavailableDisabled: cards[1].disabled,
-      unavailableLabel: cards[1].textContent.replace(/\\s+/g, ' ').trim(),
+      nflEnabled: !cards[1].disabled,
+      nflLabel: cards[1].textContent.replace(/\\s+/g, ' ').trim(),
       studyRosterVisible: /Study\\s+Cowboys\\s+roster/i.test(document.body.textContent),
       playersShortcutHidden: document.querySelector('#browse-players').hidden,
       touchAction: getComputedStyle(document.body).touchAction,
@@ -116,7 +116,7 @@ try {
     cards[0].click();
     return { ...landing, enteredDeck: document.querySelector('[data-view="setup"]').classList.contains('is-active') };
   })()`);
-  if (deckStates.cardCount !== 2 || deckStates.header !== "Decks" || deckStates.oldBrandVisible || !deckStates.unavailableDisabled || !deckStates.unavailableLabel.includes("Coming next") || deckStates.studyRosterVisible || !deckStates.playersShortcutHidden || deckStates.touchAction !== "manipulation" || deckStates.palette.canvas !== "rgb(246, 247, 251)" || deckStates.palette.header !== "rgb(255, 255, 255)" || deckStates.palette.text !== "rgb(27, 30, 40)" || deckStates.overflow || !deckStates.enteredDeck) throw new Error(`Deck home failed: ${JSON.stringify(deckStates)}`);
+  if (deckStates.cardCount !== 2 || deckStates.header !== "Decks" || deckStates.oldBrandVisible || !deckStates.nflEnabled || !deckStates.nflLabel.includes("0 of 100 learned") || deckStates.studyRosterVisible || !deckStates.playersShortcutHidden || deckStates.touchAction !== "manipulation" || deckStates.palette.canvas !== "rgb(246, 247, 251)" || deckStates.palette.header !== "rgb(255, 255, 255)" || deckStates.palette.text !== "rgb(27, 30, 40)" || deckStates.overflow || !deckStates.enteredDeck) throw new Error(`Deck home failed: ${JSON.stringify(deckStates)}`);
 
   const setup = await evaluate(client, `(() => {
     const setupView = document.querySelector('[data-view="setup"]');
@@ -370,6 +370,113 @@ try {
     };
   })()`);
   if (cleared.value || !cleared.focused || !cleared.clearHidden || cleared.cards !== cleared.total || cleared.marks !== cleared.total || cleared.marksWithImages < cleared.total - 2 || cleared.maxCardHeight > 116) throw new Error(`Roster clear failed: ${JSON.stringify(cleared)}`);
+
+  const nflDeck = await evaluate(client, `(() => {
+    document.querySelector('#header-back').click();
+    document.querySelector('#header-back').click();
+    document.querySelector('[data-player-deck="nfl-top-100"]').click();
+    const visibleStudyTypes = [...document.querySelectorAll('[data-study-type]')]
+      .filter((button) => !button.hidden)
+      .map((button) => button.textContent.trim());
+    const setup = {
+      header: document.querySelector('#header-context').textContent,
+      title: document.querySelector('#setup-title').textContent,
+      visibleStudyTypes,
+      lineupHidden: document.querySelector('[data-study-type="lineup"]').hidden,
+      rosterHidden: document.querySelector('#browse-players').hidden,
+      switchColumns: getComputedStyle(document.querySelector('.study-type-switch')).gridTemplateColumns,
+      dataDate: document.querySelector('#data-date').textContent,
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+    };
+    document.querySelector('#setup-package').click();
+    const packageOptions = [...document.querySelectorAll('[data-setup-kind="package"]')].map((option) => ({
+      title: option.querySelector('strong').textContent,
+      detail: option.querySelector('small').textContent
+    }));
+    document.querySelector('[data-setup-kind="package"][data-setup-value="top-100"]').click();
+    document.querySelector('#setup-mode-value').click();
+    const modeOptions = [...document.querySelectorAll('[data-setup-kind="mode"]')].map((option) => option.textContent.trim());
+    document.querySelector('[data-setup-kind="mode"][data-setup-value="teams"]').click();
+    document.querySelector('#setup-start').click();
+    const firstChoice = document.querySelector('.answer-button');
+    const firstChoiceStyle = getComputedStyle(firstChoice);
+    const playerOptionSignature = [firstChoiceStyle.minHeight, firstChoiceStyle.padding, firstChoiceStyle.backgroundColor, firstChoiceStyle.borderTopWidth, firstChoiceStyle.borderRadius, firstChoiceStyle.textAlign].join('|');
+    const playerQuestion = {
+      training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
+      localHeadshot: document.querySelector('#question-visual img')?.getAttribute('src')?.startsWith('assets/nfl-top-100/') ?? false,
+      promptMentionsTeam: document.querySelector('#question-title').textContent.startsWith('Which team does '),
+      fourChoices: document.querySelectorAll('.answer-button').length === 4
+    };
+    firstChoice.click();
+    const feedbackLabels = [...document.querySelectorAll('.feedback-facts span')].map((label) => label.textContent);
+    const playerFeedback = {
+      teamAndRank: feedbackLabels.includes('Team') && feedbackLabels.includes('Rank'),
+      cowboyFactsAbsent: !feedbackLabels.includes('Number') && !feedbackLabels.includes('College')
+    };
+    document.querySelector('[data-action="exit-session"]').click();
+    document.querySelector('[data-study-type="trivia"]').click();
+    const triviaSetup = {
+      selected: document.querySelector('[data-study-type="trivia"]').getAttribute('aria-pressed') === 'true',
+      title: document.querySelector('#setup-title').textContent,
+      contentHidden: document.querySelector('#setup-content-choice').hidden
+    };
+    document.querySelector('#setup-package').click();
+    const triviaPacks = [...document.querySelectorAll('[data-setup-kind="package"]')].map((option) => option.querySelector('strong').textContent);
+    document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();
+    document.querySelector('#setup-start').click();
+    const triviaChoice = document.querySelector('.answer-button');
+    const triviaChoiceStyle = getComputedStyle(triviaChoice);
+    const triviaOptionSignature = [triviaChoiceStyle.minHeight, triviaChoiceStyle.padding, triviaChoiceStyle.backgroundColor, triviaChoiceStyle.borderTopWidth, triviaChoiceStyle.borderRadius, triviaChoiceStyle.textAlign].join('|');
+    const triviaQuestion = {
+      visualAbsent: document.querySelector('#question-visual').hidden,
+      labelHidden: document.querySelector('#question-type').hidden,
+      fourChoices: document.querySelectorAll('.answer-button').length === 4
+    };
+    triviaChoice.click();
+    const triviaFeedback = {
+      answer: Boolean(document.querySelector('.trivia-answer-copy h2')?.textContent.trim()),
+      fact: Boolean(document.querySelector('.trivia-fact')?.textContent.trim()),
+      imageAbsent: !document.querySelector('.trivia-reveal')
+    };
+    document.querySelector('[data-action="exit-session"]').click();
+    document.querySelector('#header-back').click();
+    document.querySelector('[data-player-deck="cowboys"]').click();
+    document.querySelector('#browse-players').click();
+    return { setup, packageOptions, modeOptions, playerQuestion, playerFeedback, playerOptionSignature, triviaSetup, triviaPacks, triviaQuestion, triviaFeedback, triviaOptionSignature, returnedToCowboysRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active') };
+  })()`);
+  const expectedGroups = [
+    { title: 'Top 10', detail: '10 players' },
+    { title: 'Top 25', detail: '25 players' },
+    { title: 'Top 50', detail: '50 players' },
+    { title: 'Top 75', detail: '75 players' },
+    { title: 'Top 100', detail: '100 players' },
+  ];
+  if (nflDeck.setup.header !== 'NFL Top 100' || nflDeck.setup.title !== 'Top 10' || nflDeck.setup.visibleStudyTypes.join('|') !== 'Players|Trivia' || !nflDeck.setup.lineupHidden || !nflDeck.setup.rosterHidden || nflDeck.setup.switchColumns.split(' ').length !== 2 || !nflDeck.setup.dataDate.includes('2026') || nflDeck.setup.overflow || JSON.stringify(nflDeck.packageOptions) !== JSON.stringify(expectedGroups) || !nflDeck.modeOptions.some((mode) => mode.includes('Teams')) || !nflDeck.modeOptions.some((mode) => mode.includes('Rankings')) || !nflDeck.playerQuestion.training || !nflDeck.playerQuestion.localHeadshot || !nflDeck.playerQuestion.promptMentionsTeam || !nflDeck.playerQuestion.fourChoices || !nflDeck.playerFeedback.teamAndRank || !nflDeck.playerFeedback.cowboyFactsAbsent || nflDeck.playerOptionSignature !== knowledgeModes.lineupOptionSignature || !nflDeck.triviaSetup.selected || nflDeck.triviaSetup.title !== 'Mixed' || !nflDeck.triviaSetup.contentHidden || nflDeck.triviaPacks.join('|') !== 'Mixed|Divisions|League structure|Schedule' || !nflDeck.triviaQuestion.visualAbsent || !nflDeck.triviaQuestion.labelHidden || !nflDeck.triviaQuestion.fourChoices || !nflDeck.triviaFeedback.answer || !nflDeck.triviaFeedback.fact || !nflDeck.triviaFeedback.imageAbsent || nflDeck.triviaOptionSignature !== knowledgeModes.lineupOptionSignature || !nflDeck.returnedToCowboysRoster) throw new Error(`NFL deck failed: ${JSON.stringify(nflDeck)}`);
+
+  if (process.env.CAPTURE_DIR) {
+    await evaluate(client, `(() => {
+      document.querySelector('#header-back').click();
+      document.querySelector('#header-back').click();
+      document.querySelector('[data-player-deck="nfl-top-100"]').click();
+    })()`);
+    await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 200))');
+    let screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await writeFile(join(process.env.CAPTURE_DIR, 'nfl-top-100-setup.png'), Buffer.from(screenshot.data, 'base64'));
+    await evaluate(client, `(() => {
+      document.querySelector('#setup-mode-value').click();
+      document.querySelector('[data-setup-kind="mode"][data-setup-value="teams"]').click();
+      document.querySelector('#setup-start').click();
+    })()`);
+    await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 320))');
+    screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await writeFile(join(process.env.CAPTURE_DIR, 'nfl-top-100-player-question.png'), Buffer.from(screenshot.data, 'base64'));
+    await evaluate(client, `(() => {
+      document.querySelector('[data-action="exit-session"]').click();
+      document.querySelector('#header-back').click();
+      document.querySelector('[data-player-deck="cowboys"]').click();
+      document.querySelector('#browse-players').click();
+    })()`);
+  }
 
   await client.call("Emulation.setDeviceMetricsOverride", { width: 320, height: 700, deviceScaleFactor: 3, mobile: true });
   const narrow = await evaluate(client, `(() => {

@@ -9,19 +9,25 @@
   }
 
   const players = rosterData.players;
+  const nflTop100Data = window.NFL_TOP_100 ?? { meta: {}, players: [] };
+  const nflTop100Players = nflTop100Data.players ?? [];
   const collegeMarks = window.COLLEGE_MARKS ?? {};
-  const triviaData = window.COWBOYS_TRIVIA ?? { packs: [], questions: [] };
+  const cowboysTriviaData = window.COWBOYS_TRIVIA ?? { packs: [], questions: [] };
+  const nflTriviaData = window.NFL_TRIVIA ?? { packs: [], questions: [] };
   const STORAGE_KEY = "cowboys-roster-lab-v1";
   const PLAYER_DECK_KEY = "player-decks-selected-v1";
   const STUDY_SETTINGS_KEY = "cowboys-study-settings-v1";
   const OFFENSE = new Set(["QB", "RB", "FB", "WR", "TE", "C", "G", "T", "OL"]);
   const DEFENSE = new Set(["DT", "OLB", "LB", "CB", "S", "DB"]);
-  const SKILLS = ["faces", "numbers", "positions", "colleges"];
+  const COWBOYS_SKILLS = ["faces", "numbers", "positions", "colleges"];
+  const NFL_SKILLS = ["faces", "teams", "positions", "rankings"];
   const SKILL_LABELS = {
     faces: "face & name",
     numbers: "number",
     positions: "position",
     colleges: "college",
+    teams: "team",
+    rankings: "ranking",
   };
   const VERIFICATION_METHOD = "typed-recall-v1";
   const POSITION_NAMES = {
@@ -34,21 +40,22 @@
     G: "Guard",
     T: "Tackle",
     OL: "Offensive line",
+    OT: "Offensive tackle",
+    DE: "Defensive end",
     DT: "Defensive tackle",
     OLB: "Outside linebacker",
+    ILB: "Inside linebacker",
+    MLB: "Middle linebacker",
     LB: "Linebacker",
     CB: "Cornerback",
+    FS: "Free safety",
+    SAF: "Safety",
     S: "Safety",
     DB: "Defensive back",
     K: "Kicker",
     P: "Punter",
     LS: "Long snapper",
   };
-
-  const playerDecks = [
-    { id: "cowboys", title: "Cowboys roster", mark: "DAL", size: players.length, available: true },
-    { id: "nfl-top-100", title: "NFL Top 100", mark: "100", size: 100, available: false },
-  ];
 
   const cowboysGroups = [
     {
@@ -93,11 +100,51 @@
     },
   ];
 
-  const modes = [
+  const nflTop100Groups = [10, 25, 50, 75, 100].map((limit) => ({
+    id: `top-${limit}`,
+    title: `Top ${limit}`,
+    filter: (player) => player.rank === null || player.rank <= limit,
+  }));
+
+  const playerDecks = [
+    {
+      id: "cowboys",
+      title: "Cowboys roster",
+      mark: "DAL",
+      players,
+      groups: cowboysGroups,
+      skills: COWBOYS_SKILLS,
+      studyTypes: ["players", "lineup", "trivia"],
+      trivia: cowboysTriviaData,
+      updated: rosterData.meta.updated,
+      available: true,
+    },
+    {
+      id: "nfl-top-100",
+      title: "NFL Top 100",
+      mark: "100",
+      players: nflTop100Players,
+      groups: nflTop100Groups,
+      skills: NFL_SKILLS,
+      studyTypes: ["players", "trivia"],
+      trivia: nflTriviaData,
+      updated: nflTop100Data.meta.updated,
+      available: nflTop100Players.length === 100,
+    },
+  ].map((deck) => ({ ...deck, size: deck.players.length }));
+
+  const cowboysModes = [
     { id: "faces", title: "Faces & names" },
     { id: "numbers", title: "Jersey numbers" },
     { id: "positions", title: "Positions" },
     { id: "colleges", title: "Colleges" },
+    { id: "mixed", title: "Mixed facts" },
+  ];
+  const nflModes = [
+    { id: "faces", title: "Faces & names" },
+    { id: "teams", title: "Teams" },
+    { id: "positions", title: "Positions" },
+    { id: "rankings", title: "Rankings" },
     { id: "mixed", title: "Mixed facts" },
   ];
 
@@ -155,6 +202,7 @@
     browsePlayers: document.querySelector("#browse-players"),
     dataDate: document.querySelector("#data-date"),
     setupView: document.querySelector('[data-view="setup"]'),
+    studyTypeSwitch: document.querySelector(".study-type-switch"),
     studyTypeButtons: [...document.querySelectorAll("[data-study-type]")],
     setupPackage: document.querySelector("#setup-package"),
     setupTitle: document.querySelector("#setup-title"),
@@ -343,12 +391,41 @@
     return result;
   }
 
+  function getPlayerDeck() {
+    return playerDecks.find((deck) => deck.id === state.playerDeckId) ?? playerDecks[0];
+  }
+
+  function getAllPlayers() {
+    return getPlayerDeck().players;
+  }
+
+  function getSkills() {
+    return getPlayerDeck().skills;
+  }
+
+  function getModes() {
+    return state.playerDeckId === "nfl-top-100" ? nflModes : cowboysModes;
+  }
+
+  function getTriviaData() {
+    return getPlayerDeck().trivia;
+  }
+
+  function getPlayerGroups() {
+    return getPlayerDeck().groups;
+  }
+
+  function getSupportedStudyTypes() {
+    return getPlayerDeck().studyTypes;
+  }
+
   function getDeck(deckId = state.deckId) {
-    return cowboysGroups.find((deck) => deck.id === deckId) ?? cowboysGroups[0];
+    const groups = getPlayerGroups();
+    return groups.find((deck) => deck.id === deckId) ?? groups[0];
   }
 
   function getDeckPlayers(deck = getDeck()) {
-    return players.filter(deck.filter);
+    return getAllPlayers().filter(deck.filter);
   }
 
   function activeDepthPlayers(depthPosition) {
@@ -468,7 +545,7 @@
   function getKnowledgeQuestions(studyType = state.studyType, packageId = getActivePackageId()) {
     const allQuestions = studyType === "lineup"
       ? getLineupQuestions()
-      : triviaData.questions.map((question) => ({
+      : getTriviaData().questions.map((question) => ({
           ...question,
           kind: "knowledge",
           studyType: "trivia",
@@ -479,14 +556,16 @@
   }
 
   function getStudyPacks(studyType = state.studyType) {
-    if (studyType === "players") return cowboysGroups;
+    if (studyType === "players") return getPlayerGroups();
     if (studyType === "lineup") return lineupPacks;
-    return triviaData.packs;
+    return getTriviaData().packs;
   }
 
   function getActivePack() {
     const packs = getStudyPacks();
-    return packs.find((pack) => pack.id === getActivePackageId()) ?? packs[0];
+    const pack = packs.find((candidate) => candidate.id === getActivePackageId()) ?? packs[0];
+    if (pack && pack.id !== getActivePackageId()) setActivePackageId(pack.id);
+    return pack;
   }
 
   function getActiveQuestionCount() {
@@ -495,7 +574,7 @@
 
   function getPracticeBucket(savedBucket = {}) {
     return Object.fromEntries(
-      SKILLS.map((skill) => {
+      getSkills().map((skill) => {
         const stats = savedBucket?.[skill] ?? {};
         return [
           skill,
@@ -513,21 +592,12 @@
   function getPlayerProgress(playerId) {
     const saved = progress.players[playerId] ?? {};
     const isTypedRecall = saved.verificationMethod === VERIFICATION_METHOD;
+    const skills = getSkills();
     const playerProgress = {
       seen: saved.seen ?? 0,
       correct: saved.correct ?? 0,
-      skills: {
-        faces: isTypedRecall ? (saved.skills?.faces ?? 0) : 0,
-        numbers: isTypedRecall ? (saved.skills?.numbers ?? 0) : 0,
-        positions: isTypedRecall ? (saved.skills?.positions ?? 0) : 0,
-        colleges: isTypedRecall ? (saved.skills?.colleges ?? 0) : 0,
-      },
-      recognitionSkills: {
-        faces: saved.recognitionSkills?.faces ?? 0,
-        numbers: saved.recognitionSkills?.numbers ?? 0,
-        positions: saved.recognitionSkills?.positions ?? 0,
-        colleges: saved.recognitionSkills?.colleges ?? 0,
-      },
+      skills: Object.fromEntries(skills.map((skill) => [skill, isTypedRecall ? (saved.skills?.[skill] ?? 0) : 0])),
+      recognitionSkills: Object.fromEntries(skills.map((skill) => [skill, saved.recognitionSkills?.[skill] ?? 0])),
       practice: {
         recognition: getPracticeBucket(saved.practice?.recognition),
         recall: getPracticeBucket(saved.practice?.recall),
@@ -541,7 +611,7 @@
   }
 
   function knownSkillCount(playerId) {
-    return SKILLS.filter((skill) => getPlayerProgress(playerId).skills[skill] === 1).length;
+    return getSkills().filter((skill) => getPlayerProgress(playerId).skills[skill] === 1).length;
   }
 
   function learnedCount(deckPlayers) {
@@ -609,7 +679,7 @@
     });
     document.body.classList.toggle("is-training", viewName === "training");
     elements.footer.hidden = viewName === "training";
-    const playerDeck = playerDecks.find((deck) => deck.id === state.playerDeckId) ?? playerDecks[0];
+    const playerDeck = getPlayerDeck();
     elements.headerContext.textContent = viewName === "dashboard" ? "Decks" : playerDeck.title;
     const viewTitles = {
       dashboard: "Decks — Player Decks",
@@ -623,7 +693,8 @@
     elements.headerBack.parentElement.classList.toggle("has-back", viewName !== "dashboard");
     elements.headerBack.dataset.action = viewName === "roster" ? "deck" : "home";
     elements.headerBack.setAttribute("aria-label", viewName === "roster" ? `Back to ${playerDeck.title}` : "Back to decks");
-    elements.browsePlayers.hidden = viewName !== "setup";
+    elements.browsePlayers.hidden = viewName !== "setup" || playerDeck.id !== "cowboys";
+    elements.dataDate.textContent = formatDate(playerDeck.updated);
     if (viewName !== "roster" && elements.rosterControlsDialog.open) elements.rosterControlsDialog.close();
     if (viewName !== "setup" && elements.sessionOptionDialog.open) elements.sessionOptionDialog.close();
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -654,13 +725,13 @@
       .filter(([, stats]) => stats.questions > 0)
       .map(([stage, stats]) => `${stageLabels[stage]} ${stats.correct}/${stats.questions}`);
     return [
-      `Player Decks — Cowboys roster — ${date}`,
+      `Player Decks — ${getPlayerDeck().title} — ${date}`,
       `🏈 ${today.verifiedPlayers.length} ${today.verifiedPlayers.length === 1 ? "player" : "players"} verified today`,
       `✅ ${today.correct}/${today.questions} answers · ${percent}%`,
       `📚 ${today.sessions} ${today.sessions === 1 ? "session" : "sessions"}`,
       stageRows.length ? stageRows.join(" · ") : "",
       resultRows.join("\n"),
-      `Total roster: ${learnedCount(players)}/${players.length} verified`,
+      `Total deck: ${learnedCount(getAllPlayers())}/${getAllPlayers().length} verified`,
     ]
       .filter(Boolean)
       .join("\n");
@@ -704,10 +775,9 @@
   }
 
   function renderDashboard() {
-    const learned = learnedCount(players);
     elements.playerDeckList.innerHTML = playerDecks
       .map((deck) => {
-        const progressText = deck.available ? `${learned} of ${deck.size} learned` : "Coming next";
+        const progressText = deck.available ? `${learnedCount(deck.players)} of ${deck.size} learned` : "Coming next";
         return `
           <button class="player-deck-row" type="button" data-player-deck="${h(deck.id)}" ${deck.available ? "" : "disabled"}>
             <span class="player-deck-mark${deck.id === "nfl-top-100" ? " is-league" : ""}">${h(deck.mark)}</span>
@@ -719,14 +789,16 @@
   }
 
   function getRecommendedLesson() {
+    const groups = getPlayerGroups();
     const deck =
-      cowboysGroups.find((candidate) => learnedCount(getDeckPlayers(candidate)) < getDeckPlayers(candidate).length) ??
-      cowboysGroups[cowboysGroups.length - 1];
+      groups.find((candidate) => learnedCount(getDeckPlayers(candidate)) < getDeckPlayers(candidate).length) ??
+      groups.at(-1);
     const deckPlayers = getDeckPlayers(deck);
-    const totalFacts = deckPlayers.length * SKILLS.length;
+    const skills = getSkills();
+    const totalFacts = deckPlayers.length * skills.length;
     const recognitionFacts = deckPlayers.reduce(
       (total, player) =>
-        total + SKILLS.filter((skill) => getPlayerProgress(player.id).recognitionSkills[skill] === 1).length,
+        total + skills.filter((skill) => getPlayerProgress(player.id).recognitionSkills[skill] === 1).length,
       0,
     );
     const typedFacts = learnedFactCount(deckPlayers);
@@ -752,19 +824,23 @@
   }
 
   function renderSetup() {
+    if (!getSupportedStudyTypes().includes(state.studyType)) restoreStudySettings("players");
     const pack = getActivePack();
     const questionCount = getActiveQuestionCount();
     const allowedStages = state.studyType === "players" ? stages : knowledgeStages;
     const stage = allowedStages.find((candidate) => candidate.id === state.stage) ?? allowedStages[0];
-    const mode = modes.find((candidate) => candidate.id === state.mode) ?? modes.at(-1);
+    const activeModes = getModes();
+    const mode = activeModes.find((candidate) => candidate.id === state.mode) ?? activeModes.at(-1);
     const sessionCount = state.length === "all" ? questionCount : Math.min(Number(state.length), questionCount);
     const unit = state.studyType === "players" ? "card" : "question";
     if (state.stage !== stage.id) state.stage = stage.id;
     elements.studyTypeButtons.forEach((button) => {
+      button.hidden = !getSupportedStudyTypes().includes(button.dataset.studyType);
       const selected = button.dataset.studyType === state.studyType;
       button.setAttribute("aria-pressed", String(selected));
       button.classList.toggle("is-selected", selected);
     });
+    elements.studyTypeSwitch.style.gridTemplateColumns = `repeat(${getSupportedStudyTypes().length}, minmax(0, 1fr))`;
     elements.setupTitle.textContent = pack.title;
     elements.setupPackage.setAttribute("aria-label", `${pack.title}. Change ${state.studyType === "players" ? "package" : "topic"}`);
     elements.setupStageValue.textContent = stage.title.toLowerCase();
@@ -793,7 +869,7 @@
         options: packageOptions,
       },
       stage: { title: "Level", selected: state.stage, options: (state.studyType === "players" ? stages : knowledgeStages).map(({ id, title }) => ({ value: id, label: title })) },
-      mode: { title: "Content", selected: state.mode, options: modes.map(({ id, title }) => ({ value: id, label: title })) },
+      mode: { title: "Content", selected: state.mode, options: getModes().map(({ id, title }) => ({ value: id, label: title })) },
       length: {
         title: "Length",
         selected: String(state.length),
@@ -816,13 +892,13 @@
   }
 
   function openDeck(deckId) {
-    if (cowboysGroups.some((deck) => deck.id === deckId)) state.deckId = deckId;
+    if (getPlayerGroups().some((deck) => deck.id === deckId)) state.deckId = deckId;
     renderSetup();
     showView("setup");
   }
 
   function changeStudyType(studyType) {
-    if (!studyTypes.some((candidate) => candidate.id === studyType) || state.studyType === studyType) return;
+    if (!studyTypes.some((candidate) => candidate.id === studyType) || !getSupportedStudyTypes().includes(studyType) || state.studyType === studyType) return;
     storeActiveStudySettings();
     restoreStudySettings(studyType);
     renderSetup();
@@ -850,7 +926,7 @@
   function playerPracticePriority(player, stage, requestedMode) {
     const playerProgress = getPlayerProgress(player.id);
     const track = practiceTrack(stage);
-    const relevantSkills = requestedMode === "mixed" ? SKILLS : [requestedMode];
+    const relevantSkills = requestedMode === "mixed" ? getSkills() : [requestedMode];
     const needs = relevantSkills.map((skill) => skillPracticeNeed(playerProgress, track, skill));
     const highestNeed = Math.max(...needs);
     const averageNeed = needs.reduce((total, need) => total + need, 0) / needs.length;
@@ -884,7 +960,7 @@
   function choosePracticeSkill(player, stage) {
     const playerProgress = getPlayerProgress(player.id);
     const track = practiceTrack(stage);
-    return SKILLS.map((skill) => ({
+    return getSkills().map((skill) => ({
       skill,
       need: skillPracticeNeed(playerProgress, track, skill) + Math.random() * 8,
     })).sort((left, right) => right.need - left.need)[0].skill;
@@ -893,7 +969,7 @@
   function buildChoiceValues(correct, deckPlayers, getter, numeric = false) {
     let pool = [...new Set(deckPlayers.map(getter))].filter((value) => value !== correct && value !== "");
     if (pool.length < 3) {
-      pool = [...new Set([...pool, ...players.map(getter)])].filter(
+      pool = [...new Set([...pool, ...getAllPlayers().map(getter)])].filter(
         (value) => value !== correct && value !== "",
       );
     }
@@ -923,6 +999,7 @@
   }
 
   function buildQuestion(player, mode, deckPlayers, fullCheck = false) {
+    if (state.playerDeckId === "nfl-top-100") return buildNflQuestion(player, mode, deckPlayers);
 
     if (mode === "faces") {
       return prepareQuestion({
@@ -1005,6 +1082,77 @@
     }, deckPlayers, (candidate) => candidate.college);
   }
 
+  function teamName(team) {
+    return getAllPlayers().find((player) => player.team === team)?.teamName ?? team;
+  }
+
+  function buildNflQuestion(player, mode, deckPlayers) {
+    if (mode === "faces") {
+      return prepareQuestion({
+        player,
+        mode,
+        label: "Face check",
+        prompt: "Who is this player?",
+        visual: "headshot",
+        correct: player.name,
+        correctDisplay: player.name,
+        placeholder: "Full player name",
+        inputMode: "text",
+        formatHelp: "Enter the full name.",
+      }, deckPlayers, (candidate) => candidate.name);
+    }
+
+    if (mode === "teams") {
+      return prepareQuestion({
+        player,
+        mode,
+        label: "Team check",
+        prompt: `Which team does ${player.name} play for?`,
+        visual: "player",
+        correct: player.team,
+        correctDisplay: player.teamName,
+        placeholder: "Team abbreviation",
+        inputMode: "text",
+        formatHelp: "Enter the team abbreviation, such as DAL or KC.",
+      }, deckPlayers, (candidate) => candidate.team, {
+        label: (value) => teamName(value),
+      });
+    }
+
+    if (mode === "positions") {
+      return prepareQuestion({
+        player,
+        mode,
+        label: "Position check",
+        prompt: `What position does ${player.name} play?`,
+        visual: "player",
+        correct: player.position,
+        correctDisplay: `${player.position} — ${positionName(player.position, false)}`,
+        placeholder: "Position abbreviation",
+        inputMode: "text",
+        formatHelp: "Enter the roster abbreviation, such as QB, WR, or CB.",
+      }, deckPlayers, (candidate) => candidate.position, {
+        label: (value) => `${value} — ${positionName(value, false)}`,
+      });
+    }
+
+    const rankValue = player.rank === null ? "Top 3" : String(player.rank);
+    return prepareQuestion({
+      player,
+      mode: "rankings",
+      label: "Ranking check",
+      prompt: `Where does ${player.name} rank in the 2026 Top 100?`,
+      visual: "player",
+      correct: rankValue,
+      correctDisplay: player.rankLabel,
+      placeholder: player.rank === null ? "Top 3" : "Rank",
+      inputMode: player.rank === null ? "text" : "numeric",
+      formatHelp: player.rank === null ? "The exact Top 3 order is still pending." : "Enter the rank without the # symbol.",
+    }, deckPlayers, (candidate) => candidate.rank === null ? "Top 3" : String(candidate.rank), {
+      label: (value) => value === "Top 3" ? value : `#${value}`,
+    });
+  }
+
   function prepareKnowledgeQuestion(question) {
     const prepared = {
       ...question,
@@ -1067,12 +1215,13 @@
       return;
     }
     const deckPlayers = getDeckPlayers();
+    const skills = getSkills();
     const requestedMode = state.stage === "mastery" ? "mixed" : state.mode;
     const sessionPlayers = chooseSessionPlayers(deckPlayers, state.length, requestedMode);
     state.questions =
       state.stage === "mastery"
         ? sessionPlayers.flatMap((player, playerIndex) =>
-            SKILLS.map((skill, factIndex) => ({
+            skills.map((skill, factIndex) => ({
               ...buildQuestion(player, skill, deckPlayers, true),
               fullCheck: true,
               playerIndex,
@@ -1100,11 +1249,36 @@
     if (question.visual === "number") {
       return `<div class="number-stimulus" aria-label="Jersey number ${h(question.player.number)}"><div><strong>${h(question.player.number)}</strong><span>${h(question.player.team ?? "Dallas Cowboys")}</span></div></div>`;
     }
+    const secondary = state.playerDeckId === "cowboys"
+      ? `<span>${h(question.player.experience === "R" ? "Rookie" : `Year ${question.player.experience}`)}</span>`
+      : "";
     return `
       <div class="question-player">
         ${headshot(question.player, "small", true)}
         <strong>${h(question.player.name)}</strong>
-        <span>${h(question.player.experience === "R" ? "Rookie" : `Year ${question.player.experience}`)}</span>
+        ${secondary}
+      </div>`;
+  }
+
+  function renderPlayerFeedback(question) {
+    const player = question.player;
+    const facts = state.playerDeckId === "nfl-top-100"
+      ? [
+          ["Name", player.name],
+          ["Team", player.teamName],
+          ["Position", player.position],
+          ["Rank", player.rankLabel],
+        ]
+      : [
+          ["Name", player.name],
+          ["Number", `#${player.number}`],
+          ["Position", player.position],
+          ["College", player.college],
+        ];
+    return `
+      <div class="feedback-title"><strong>${h(question.correctFeedback)}</strong></div>
+      <div class="feedback-facts">
+        ${facts.map(([label, value]) => `<div><span>${h(label)}</span><strong>${h(value)}</strong></div>`).join("")}
       </div>`;
   }
 
@@ -1133,7 +1307,7 @@
     const total = state.questions.length;
     state.answerLocked = false;
     elements.gameProgressText.textContent = question.fullCheck
-      ? `Player ${question.playerIndex + 1}/${question.playerTotal} · Fact ${question.factIndex + 1}/4`
+      ? `Player ${question.playerIndex + 1}/${question.playerTotal} · Fact ${question.factIndex + 1}/${getSkills().length}`
       : `${current} of ${total}`;
     elements.gameProgress.setAttribute("aria-valuemax", total);
     elements.gameProgress.setAttribute("aria-valuenow", current);
@@ -1179,7 +1353,7 @@
       current === total
         ? "See results"
           : question.fullCheck
-            ? question.factIndex === SKILLS.length - 1
+            ? question.factIndex === getSkills().length - 1
               ? "Next player"
               : "Next fact"
           : question.studyType === "players"
@@ -1261,12 +1435,13 @@
     } else {
       recordProgress(question.player.id, question.mode, correct, state.stage);
     }
-    if (question.kind !== "knowledge" && question.fullCheck && question.factIndex === SKILLS.length - 1) {
+    const skills = getSkills();
+    if (question.kind !== "knowledge" && question.fullCheck && question.factIndex === skills.length - 1) {
       const playerAnswers = state.answers.filter(
         (answer) => answer.question.fullCheck && answer.question.player.id === question.player.id,
       );
       const wasVerified = progress.players[question.player.id].verified;
-      const passed = playerAnswers.length === SKILLS.length && playerAnswers.every((answer) => answer.correct);
+      const passed = playerAnswers.length === skills.length && playerAnswers.every((answer) => answer.correct);
       progress.players[question.player.id].verified = passed;
       if (passed && !wasVerified) addDailyVerifiedPlayer(question.player.id);
       saveProgress();
@@ -1301,14 +1476,10 @@
         : `
         <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
         <p class="knowledge-detail">${h(question.detail)}</p>`
-      : `
-        <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
-        <div class="feedback-facts">
-          <div><span>Name</span><strong>${h(question.player.name)}</strong></div>
-          <div><span>Number</span><strong>#${h(question.player.number)}</strong></div>
-          <div><span>Position</span><strong>${h(question.player.position)}</strong></div>
-          <div><span>College</span><strong>${h(question.player.college)}</strong></div>
-        </div>`;
+      : renderPlayerFeedback({
+          ...question,
+          correctFeedback: correct ? "✓ Correct" : `Incorrect — ${question.correctDisplay}`,
+        });
     elements.answerFeedback.querySelector(".trivia-reveal img")?.addEventListener("error", (event) => {
       event.currentTarget.closest(".trivia-reveal")?.remove();
     }, { once: true });
@@ -1391,7 +1562,7 @@
         ({ player, skills }) => `
           <div class="missed-player">
             ${headshot(player, "small")}
-            <div><strong>${h(player.name)}</strong><span>#${h(player.number)} · ${h(positionName(player.position, false))}</span></div>
+            <div><strong>${h(player.name)}</strong><span>${h(state.playerDeckId === "nfl-top-100" ? `${player.team} · ${player.position} · ${player.rankLabel}` : `#${player.number} · ${positionName(player.position, false)}`)}</span></div>
             <strong>Review: ${h(skills.join(", "))}</strong>
           </div>`,
       )
