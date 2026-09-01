@@ -40,6 +40,14 @@ The app teaches football players from selectable decks. The initial decks are:
 
 Decks own their player set, progress, and optional accent. The app shell remains neutral so adding another team or league-wide deck never requires a redesign.
 
+The Cowboys deck contains three peer study types:
+
+1. `Players` teaches who each current player is through face/name, jersey number, position, and college recall.
+2. `Lineup` teaches how the current roster fits together through roles, units, special teams, and depth-chart order.
+3. `Trivia` teaches stable franchise history, legends, championships, and traditions from a curated, source-backed offline question set.
+
+NFL Top 100 remains scoped to `Players` until its own content model is designed. Do not show empty Lineup or Trivia modes for decks that do not support them.
+
 ## First rule: remove unnecessary text
 
 Every visible word must do at least one job:
@@ -103,6 +111,10 @@ Deck rows are destinations, not selectable settings. Tapping an available deck o
 Use `touch-action: manipulation` on the application surface and controls to prevent accidental double-tap zoom without disabling pinch zoom or setting a restrictive viewport scale.
 
 Session setup is one editable sentence: “Practice [level] with [content] for [length].” Each emphasized value opens a focused bottom sheet; the screen shows no setup grids, group label, deck description, progress summary, or practice explanation. Mastery fixes content to all facts. The only persistent action is “Start [length].”
+
+Inside the Cowboys deck, a compact `Players / Lineup / Trivia` segmented control sits above the package selector. It changes the learning job in place rather than pushing another screen. Each study type remembers its own topic, level, and length during use. Players retains the full editable sentence and three levels. Lineup and Trivia omit the irrelevant content control, use `questions` rather than `cards`, and offer Recognition and Typed recall. Their topic selector reuses the same full-width sheet as the Players package selector.
+
+Lineup questions are generated from the bundled roster and published depth fields so a roster refresh also refreshes answers. Multi-player questions accept every required player in any order unless the prompt explicitly asks for depth-chart order. Trivia facts live in a separate bundled data file with maintained source URLs. Both modes work fully offline after installation.
 
 The four learnable facts are face/name, jersey number, roster position, and college. A normal session selects distinct players from the chosen package and asks one chosen fact per player; hidden accuracy, streak, recency, and completion data prioritize both players and facts. Mastery asks all four facts for each selected player. Height, weight, roster status, and depth-chart position remain reference data unless the product model is explicitly expanded later.
 

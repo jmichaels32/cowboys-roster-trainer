@@ -11,14 +11,17 @@ A dependency-free, mobile-first flashcard trainer for learning football players 
 
 ## Training
 
-- Six Cowboys lesson groups: key players, core contributors, offense, defense, newcomers, and the complete roster
+- Three Cowboys study types: Players, Lineup, and Trivia
+- Eight player groups: most famous, starters, second string, third string, offense, defense, practice squad, and the complete roster
 - One-tap recommended lessons that advance from recognition to recall and mastery as you improve
 - Three training levels: multiple-choice recognition, typed recall, and a typed mastery check
 - Practice for faces and names, jersey numbers, positions, and colleges
+- Lineup questions generated from the bundled roster and depth chart, including offense, defense, special teams, and depth order
+- Curated offline trivia covering Super Bowls, history, legends, and traditions
 - Four-part mastery: a player only counts as learned after all four answers are typed correctly in the same mastery check
 - Adaptive practice that tracks misses, accuracy, streaks, and recency by player and fact
 - Device-local daily reports with answer totals, accuracy, players verified, and a Wordle-style share summary
-- Searchable roster browser with position/status filters, learning labels, and sorting by practice priority, name, number, position, or progress
+- Searchable roster browser with group and position filters plus factual sorting by name, number, position, college, height, weight, or depth chart
 
 The Cowboys data was generated from the [official Cowboys roster](https://www.dallascowboys.com/team/players-roster/). Headshots remain hosted by the official NFL/Cowboys image CDN.
 

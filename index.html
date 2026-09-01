@@ -10,10 +10,11 @@
     />
     <title>Player Decks</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=22" />
-    <script src="data/roster.js?v=22" defer></script>
-    <script src="data/college-marks.js?v=22" defer></script>
-    <script src="app.js?v=22" defer></script>
+    <link rel="stylesheet" href="styles.css?v=23" />
+    <script src="data/roster.js?v=23" defer></script>
+    <script src="data/college-marks.js?v=23" defer></script>
+    <script src="data/cowboys-trivia.js?v=23" defer></script>
+    <script src="app.js?v=23" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -21,7 +22,7 @@
     <header class="site-header">
       <button class="header-back" id="header-back" type="button" data-action="home" aria-label="Back to decks" hidden><span aria-hidden="true">←</span></button>
       <strong class="header-context" id="header-context">Decks</strong>
-      <button class="header-link" id="browse-players" type="button" data-action="browse" hidden>Players</button>
+      <button class="header-link" id="browse-players" type="button" data-action="browse" hidden>Roster</button>
     </header>
 
     <main id="main-content">
@@ -34,6 +35,11 @@
 
       <section class="view setup-view" data-view="setup" aria-labelledby="setup-title" hidden>
         <div class="setup-shell">
+          <div class="study-type-switch" aria-label="Study type">
+            <button type="button" data-study-type="players" aria-pressed="true">Players</button>
+            <button type="button" data-study-type="lineup" aria-pressed="false">Lineup</button>
+            <button type="button" data-study-type="trivia" aria-pressed="false">Trivia</button>
+          </div>
           <button class="package-selector" id="setup-package" type="button" data-setup-control="package" aria-label="Most famous package. Change package">
             <span id="setup-title">Most famous</span><span aria-hidden="true">⌄</span>
           </button>
@@ -41,10 +47,11 @@
             <p>
               Practice
               <button class="session-token" id="setup-stage-value" type="button" data-setup-control="stage">recognition</button>
-              with
-              <button class="session-token" id="setup-mode-value" type="button" data-setup-control="mode">mixed facts</button>
+              <span id="setup-content-choice">with
+                <button class="session-token" id="setup-mode-value" type="button" data-setup-control="mode">mixed facts</button>
+              </span>
               for
-              <button class="session-token" id="setup-length-value" type="button" data-setup-control="length">5 cards</button>.
+              <button class="session-token" id="setup-length-value" type="button" data-setup-control="length">5 cards</button><span id="setup-period">.</span>
             </p>
           </div>
           <button class="button button-primary button-full" id="setup-start" type="button" data-action="start-session">Start 5 cards</button>

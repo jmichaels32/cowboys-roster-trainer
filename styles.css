@@ -933,6 +933,40 @@ a {
   padding: 18px 0 max(48px, calc(env(safe-area-inset-bottom) + 24px));
 }
 
+.study-type-switch {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  margin-bottom: 24px;
+  padding: 3px;
+  background: var(--silver-100);
+  border: 1px solid var(--silver-300);
+  border-radius: var(--radius-sm);
+}
+
+.study-type-switch button {
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 8px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.study-type-switch button:hover {
+  color: var(--navy-900);
+}
+
+.study-type-switch button.is-selected {
+  color: var(--navy-900);
+  background: var(--white);
+  border-color: var(--silver-300);
+}
+
 .package-selector {
   display: inline-flex;
   max-width: 100%;
@@ -1230,6 +1264,52 @@ a {
   text-transform: uppercase;
 }
 
+.knowledge-stimulus {
+  position: relative;
+  display: grid;
+  width: 164px;
+  height: 112px;
+  margin: 0 auto 22px;
+  overflow: hidden;
+  place-items: center;
+  color: var(--white);
+  background: var(--navy-900);
+  border: 6px solid var(--navy-900);
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 0 2px rgb(255 255 255 / 55%);
+}
+
+.knowledge-stimulus::before,
+.knowledge-stimulus::after {
+  position: absolute;
+  content: "";
+  background: rgb(255 255 255 / 32%);
+}
+
+.knowledge-stimulus::before {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+}
+
+.knowledge-stimulus::after {
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 1px;
+}
+
+.knowledge-stimulus strong {
+  position: relative;
+  z-index: 1;
+  padding: 7px 10px;
+  font-size: 1.85rem;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  background: var(--navy-900);
+}
+
 .answer-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1383,6 +1463,15 @@ a {
   font-size: 12px;
 }
 
+.knowledge-detail {
+  max-width: 520px;
+  margin: 0 auto;
+  color: var(--navy-900);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .next-wrap {
   margin-top: 14px;
 }
@@ -1479,6 +1568,26 @@ a {
 
 .missed-player > strong:last-child {
   color: var(--blue-700);
+}
+
+.missed-question {
+  display: grid;
+  gap: 5px;
+  padding: 14px 16px;
+  background: var(--white);
+  border: 1px solid var(--silver-300);
+  border-radius: var(--radius-sm);
+}
+
+.missed-question span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.missed-question strong {
+  color: var(--navy-900);
+  font-size: 14px;
 }
 
 .wide-shell {

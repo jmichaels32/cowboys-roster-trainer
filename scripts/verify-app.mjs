@@ -124,7 +124,7 @@ try {
       active: setupView.classList.contains('is-active'),
       training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
       packageTitle: document.querySelector('#setup-title').textContent,
-      sentence: document.querySelector('.session-sentence-card').textContent.replace(/\\s+/g, ' ').trim(),
+      sentence: document.querySelector('.session-sentence-card').innerText.replace(/\\s+/g, ' ').trim(),
       header: document.querySelector('#header-context').textContent,
       backLabel: document.querySelector('#header-back').getAttribute('aria-label'),
       backText: document.querySelector('#header-back').textContent.trim(),
@@ -159,6 +159,50 @@ try {
     return { ...initial, packageDialogOpened, packageCount, packageHasCounts, changedPackage, dialogOpened, selectedMode, startLabel, swipeReturned };
   })()`);
   if (!setup.active || setup.training || setup.packageTitle !== 'Most famous' || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 8 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned) throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
+
+  const knowledgeModes = await evaluate(client, `(() => {
+    document.querySelector('[data-study-type="lineup"]').click();
+    const lineupInitial = {
+      selected: document.querySelector('[data-study-type="lineup"]').getAttribute('aria-pressed') === 'true',
+      title: document.querySelector('#setup-title').textContent,
+      sentence: document.querySelector('.session-sentence-card').innerText.replace(/\\s+/g, ' ').trim(),
+      contentHidden: document.querySelector('#setup-content-choice').hidden,
+      start: document.querySelector('#setup-start').textContent
+    };
+    document.querySelector('#setup-package').click();
+    const lineupPackCount = document.querySelectorAll('[data-setup-kind="package"]').length;
+    const lineupCounts = [...document.querySelectorAll('[data-setup-kind="package"] small')].every((item) => /questions/.test(item.textContent));
+    document.querySelector('[data-setup-kind="package"][data-setup-value="special-teams"]').click();
+    const specialTeamsStart = document.querySelector('#setup-start').textContent;
+    document.querySelector('#setup-start').click();
+    const lineupTraining = document.querySelector('[data-view="training"]').classList.contains('is-active');
+    const lineupStimulus = Boolean(document.querySelector('.knowledge-stimulus'));
+    document.querySelector('.answer-button').click();
+    const lineupFeedback = Boolean(document.querySelector('.knowledge-detail'));
+    document.querySelector('[data-action="exit-session"]').click();
+
+    document.querySelector('[data-study-type="trivia"]').click();
+    const triviaInitial = {
+      selected: document.querySelector('[data-study-type="trivia"]').getAttribute('aria-pressed') === 'true',
+      title: document.querySelector('#setup-title').textContent,
+      contentHidden: document.querySelector('#setup-content-choice').hidden,
+      start: document.querySelector('#setup-start').textContent
+    };
+    document.querySelector('#setup-package').click();
+    const triviaPackCount = document.querySelectorAll('[data-setup-kind="package"]').length;
+    const triviaCounts = [...document.querySelectorAll('[data-setup-kind="package"] small')].every((item) => /questions/.test(item.textContent));
+    document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();
+    document.querySelector('#setup-start').click();
+    const triviaTraining = document.querySelector('[data-view="training"]').classList.contains('is-active');
+    document.querySelector('.answer-button').click();
+    const triviaFeedback = Boolean(document.querySelector('.knowledge-detail'));
+    const knowledgeSaved = Object.keys(JSON.parse(localStorage.getItem('cowboys-roster-lab-v1')).knowledge).length >= 2;
+    document.querySelector('[data-action="exit-session"]').click();
+    document.querySelector('[data-study-type="players"]').click();
+    const playersRestored = document.querySelector('#setup-title').textContent === 'Most famous' && document.querySelector('#setup-mode-value').textContent === 'mixed facts';
+    return { lineupInitial, lineupPackCount, lineupCounts, specialTeamsStart, lineupTraining, lineupStimulus, lineupFeedback, triviaInitial, triviaPackCount, triviaCounts, triviaTraining, triviaFeedback, knowledgeSaved, playersRestored };
+  })()`);
+  if (!knowledgeModes.lineupInitial.selected || knowledgeModes.lineupInitial.title !== 'Mixed' || !knowledgeModes.lineupInitial.sentence.includes('Practice recognition for 5 questions.') || !knowledgeModes.lineupInitial.contentHidden || knowledgeModes.lineupInitial.start !== 'Start 5 questions' || knowledgeModes.lineupPackCount !== 5 || !knowledgeModes.lineupCounts || knowledgeModes.specialTeamsStart !== 'Start 3 questions' || !knowledgeModes.lineupTraining || !knowledgeModes.lineupStimulus || !knowledgeModes.lineupFeedback || !knowledgeModes.triviaInitial.selected || knowledgeModes.triviaInitial.title !== 'Mixed' || !knowledgeModes.triviaInitial.contentHidden || knowledgeModes.triviaInitial.start !== 'Start 5 questions' || knowledgeModes.triviaPackCount !== 5 || !knowledgeModes.triviaCounts || !knowledgeModes.triviaTraining || !knowledgeModes.triviaFeedback || !knowledgeModes.knowledgeSaved || !knowledgeModes.playersRestored) throw new Error(`Knowledge modes failed: ${JSON.stringify(knowledgeModes)}`);
 
   const lesson = await evaluate(client, `(() => {
     document.querySelector('#setup-start').click();

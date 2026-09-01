@@ -10,8 +10,10 @@
 
   const players = rosterData.players;
   const collegeMarks = window.COLLEGE_MARKS ?? {};
+  const triviaData = window.COWBOYS_TRIVIA ?? { packs: [], questions: [] };
   const STORAGE_KEY = "cowboys-roster-lab-v1";
   const PLAYER_DECK_KEY = "player-decks-selected-v1";
+  const STUDY_SETTINGS_KEY = "cowboys-study-settings-v1";
   const OFFENSE = new Set(["QB", "RB", "FB", "WR", "TE", "C", "G", "T", "OL"]);
   const DEFENSE = new Set(["DT", "OLB", "LB", "CB", "S", "DB"]);
   const SKILLS = ["faces", "numbers", "positions", "colleges"];
@@ -105,14 +107,37 @@
     { id: "mastery", title: "Mastery check" },
   ];
 
-  const defaultProgress = { players: {}, totalAnswers: 0, totalCorrect: 0, sessions: 0, daily: {} };
+  const knowledgeStages = stages.slice(0, 2);
+  const studyTypes = [
+    { id: "players", title: "Players", unit: "cards" },
+    { id: "lineup", title: "Lineup", unit: "questions" },
+    { id: "trivia", title: "Trivia", unit: "questions" },
+  ];
+  const lineupPacks = [
+    { id: "mixed", title: "Mixed" },
+    { id: "offense", title: "Offense" },
+    { id: "defense", title: "Defense" },
+    { id: "special-teams", title: "Special teams" },
+    { id: "depth-chart", title: "Depth chart" },
+  ];
+
+  const defaultStudySettings = {
+    players: { packageId: "famous", stage: "recognition", mode: "mixed", length: 5 },
+    lineup: { packageId: "mixed", stage: "recognition", mode: "mixed", length: 5 },
+    trivia: { packageId: "mixed", stage: "recognition", mode: "mixed", length: 5 },
+  };
+
+  const defaultProgress = { players: {}, knowledge: {}, totalAnswers: 0, totalCorrect: 0, sessions: 0, daily: {} };
   let progress = loadProgress();
+  const savedStudySettings = loadStudySettings();
   const state = {
     playerDeckId: loadPlayerDeckSelection(),
-    deckId: "famous",
-    mode: "mixed",
-    stage: "recognition",
-    length: 5,
+    studyType: "players",
+    studySettings: savedStudySettings,
+    deckId: savedStudySettings.players.packageId,
+    mode: savedStudySettings.players.mode,
+    stage: savedStudySettings.players.stage,
+    length: savedStudySettings.players.length,
     questions: [],
     questionIndex: 0,
     score: 0,
@@ -130,10 +155,12 @@
     browsePlayers: document.querySelector("#browse-players"),
     dataDate: document.querySelector("#data-date"),
     setupView: document.querySelector('[data-view="setup"]'),
+    studyTypeButtons: [...document.querySelectorAll("[data-study-type]")],
     setupPackage: document.querySelector("#setup-package"),
     setupTitle: document.querySelector("#setup-title"),
     setupStageValue: document.querySelector("#setup-stage-value"),
     setupModeValue: document.querySelector("#setup-mode-value"),
+    setupContentChoice: document.querySelector("#setup-content-choice"),
     setupLengthValue: document.querySelector("#setup-length-value"),
     setupStart: document.querySelector("#setup-start"),
     sessionOptionDialog: document.querySelector("#session-option-dialog"),
@@ -186,6 +213,56 @@
     } catch {
       return "cowboys";
     }
+  }
+
+  function loadStudySettings() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STUDY_SETTINGS_KEY));
+      return Object.fromEntries(
+        Object.entries(defaultStudySettings).map(([studyType, defaults]) => [
+          studyType,
+          { ...defaults, ...(saved?.[studyType] ?? {}) },
+        ]),
+      );
+    } catch {
+      return structuredClone(defaultStudySettings);
+    }
+  }
+
+  function saveStudySettings() {
+    try {
+      localStorage.setItem(STUDY_SETTINGS_KEY, JSON.stringify(state.studySettings));
+    } catch {
+      // Study choices remain available for the current session.
+    }
+  }
+
+  function storeActiveStudySettings() {
+    state.studySettings[state.studyType] = {
+      packageId: state.studyType === "players" ? state.deckId : state.studySettings[state.studyType].packageId,
+      stage: state.stage,
+      mode: state.mode,
+      length: state.length,
+    };
+    saveStudySettings();
+  }
+
+  function restoreStudySettings(studyType) {
+    const settings = state.studySettings[studyType] ?? defaultStudySettings[studyType];
+    state.studyType = studyType;
+    if (studyType === "players") state.deckId = settings.packageId;
+    state.stage = settings.stage;
+    state.mode = settings.mode;
+    state.length = settings.length;
+  }
+
+  function setActivePackageId(packageId) {
+    if (state.studyType === "players") state.deckId = packageId;
+    state.studySettings[state.studyType].packageId = packageId;
+  }
+
+  function getActivePackageId() {
+    return state.studyType === "players" ? state.deckId : state.studySettings[state.studyType].packageId;
   }
 
   function savePlayerDeckSelection() {
@@ -271,6 +348,148 @@
 
   function getDeckPlayers(deck = getDeck()) {
     return players.filter(deck.filter);
+  }
+
+  function activeDepthPlayers(depthPosition) {
+    return players
+      .filter(
+        (player) =>
+          player.depthPosition === depthPosition &&
+          player.status !== "Practice Squad" &&
+          Number.isFinite(player.depthRank),
+      )
+      .sort((left, right) => left.depthRank - right.depthRank || left.name.localeCompare(right.name));
+  }
+
+  function playerAtDepth(depthPosition, rank) {
+    return activeDepthPlayers(depthPosition).find((player) => player.depthRank === rank);
+  }
+
+  function nameDistractors(correctNames, pool = players) {
+    return shuffle(
+      pool
+        .filter((player) => !correctNames.includes(player.name) && player.status !== "Practice Squad")
+        .map((player) => player.name),
+    ).slice(0, 3);
+  }
+
+  function lineupNameQuestion(id, pack, prompt, player, visualLabel, detail, pool) {
+    if (!player) return null;
+    return {
+      id: `lineup-${id}`,
+      kind: "knowledge",
+      studyType: "lineup",
+      pack,
+      label: "Lineup",
+      prompt,
+      visualLabel,
+      correct: player.name,
+      correctDisplay: player.name,
+      accepted: [player.name, player.name.split(" ").at(-1)],
+      distractors: nameDistractors([player.name], pool),
+      detail,
+      placeholder: "Player name",
+    };
+  }
+
+  function lineupGroupQuestion(id, pack, prompt, groupPlayers, visualLabel, detail, ordered = false) {
+    if (groupPlayers.length < 2) return null;
+    const expected = groupPlayers.map((player) => player.name);
+    const replacements = nameDistractors(expected, players);
+    const distractors = replacements.map((replacement, index) => {
+      const alternate = [...expected];
+      alternate[index % alternate.length] = replacement;
+      return alternate.join(ordered ? " → " : ", ");
+    });
+    return {
+      id: `lineup-${id}`,
+      kind: "knowledge",
+      studyType: "lineup",
+      pack,
+      label: "Lineup",
+      prompt,
+      visualLabel,
+      correct: expected.join(ordered ? " → " : ", "),
+      correctDisplay: expected.join(ordered ? " → " : ", "),
+      expected,
+      answerType: ordered ? "ordered" : "set",
+      distractors,
+      detail,
+      placeholder: ordered ? "Names in order" : "Player names",
+    };
+  }
+
+  function getLineupQuestions() {
+    const offensePlayers = players.filter((player) => OFFENSE.has(player.position));
+    const defensePlayers = players.filter((player) => DEFENSE.has(player.position));
+    const startersAt = (positions) => positions.map((position) => playerAtDepth(position, 1)).filter(Boolean);
+    const questions = [
+      lineupNameQuestion("starting-qb", "offense", "Who is the starting quarterback?", playerAtDepth("QB", 1), "QB1", "Starting quarterback", offensePlayers),
+      lineupNameQuestion("backup-qb", "offense", "Who backs up the starting quarterback?", playerAtDepth("QB", 2), "QB2", "Second-string quarterback", offensePlayers),
+      lineupNameQuestion("starting-rb", "offense", "Who is the starting running back?", playerAtDepth("RB", 1), "RB1", "Starting running back", offensePlayers),
+      lineupNameQuestion("starting-te", "offense", "Who is the starting tight end?", playerAtDepth("TE", 1), "TE1", "Starting tight end", offensePlayers),
+      lineupNameQuestion("starting-lt", "offense", "Who starts at left tackle?", playerAtDepth("LT", 1), "LT", "Starting left tackle", offensePlayers),
+      lineupNameQuestion("starting-lg", "offense", "Who starts at left guard?", playerAtDepth("LG", 1), "LG", "Starting left guard", offensePlayers),
+      lineupNameQuestion("starting-center", "offense", "Who starts at center?", playerAtDepth("C", 1), "C", "Starting center", offensePlayers),
+      lineupNameQuestion("starting-rg", "offense", "Who starts at right guard?", playerAtDepth("RG", 1), "RG", "Starting right guard", offensePlayers),
+      lineupNameQuestion("starting-rt", "offense", "Who starts at right tackle?", playerAtDepth("RT", 1), "RT", "Starting right tackle", offensePlayers),
+      lineupGroupQuestion("offensive-line", "offense", "Name the starting offensive line.", startersAt(["LT", "LG", "C", "RG", "RT"]), "OL", "Left tackle through right tackle"),
+      lineupGroupQuestion("starting-receivers", "offense", "Name the starting wide receivers.", players.filter((player) => player.position === "WR" && player.depthRank === 1), "WR", "Starting wide receivers"),
+
+      lineupNameQuestion("starting-lcb", "defense", "Who starts at left cornerback?", playerAtDepth("LCB", 1), "LCB", "Starting left cornerback", defensePlayers),
+      lineupNameQuestion("starting-rcb", "defense", "Who starts at right cornerback?", playerAtDepth("RCB", 1), "RCB", "Starting right cornerback", defensePlayers),
+      lineupNameQuestion("starting-fs", "defense", "Who starts at free safety?", playerAtDepth("FS", 1), "FS", "Starting free safety", defensePlayers),
+      lineupNameQuestion("starting-ss", "defense", "Who starts at strong safety?", playerAtDepth("SS", 1), "SS", "Starting strong safety", defensePlayers),
+      lineupNameQuestion("starting-nickel", "defense", "Who is the starting nickel back?", playerAtDepth("NB", 1), "NB", "Starting nickel back", defensePlayers),
+      lineupNameQuestion("starting-lde", "defense", "Who starts at left defensive end?", playerAtDepth("LDE", 1), "LDE", "Starting left defensive end", defensePlayers),
+      lineupNameQuestion("starting-nt", "defense", "Who starts at nose tackle?", playerAtDepth("NT", 1), "NT", "Starting nose tackle", defensePlayers),
+      lineupNameQuestion("starting-rde", "defense", "Who starts at right defensive end?", playerAtDepth("RDE", 1), "RDE", "Starting right defensive end", defensePlayers),
+      lineupNameQuestion("starting-slb", "defense", "Who starts at strong-side linebacker?", playerAtDepth("SLB", 1), "SLB", "Starting strong-side linebacker", defensePlayers),
+      lineupNameQuestion("starting-wlb", "defense", "Who starts at weak-side linebacker?", playerAtDepth("WLB", 1), "WLB", "Starting weak-side linebacker", defensePlayers),
+      lineupGroupQuestion("starting-corners", "defense", "Name the starting outside cornerbacks.", startersAt(["LCB", "RCB"]), "CB", "Left and right cornerback"),
+      lineupGroupQuestion("starting-safeties", "defense", "Name the starting safeties.", startersAt(["FS", "SS"]), "S", "Free and strong safety"),
+
+      lineupNameQuestion("kicker", "special-teams", "Who is the kicker?", playerAtDepth("PK", 1), "K", "Starting placekicker", players),
+      lineupNameQuestion("punter", "special-teams", "Who is the punter?", playerAtDepth("P", 1), "P", "Starting punter", players),
+      lineupNameQuestion("long-snapper", "special-teams", "Who is the long snapper?", playerAtDepth("LS", 1), "LS", "Starting long snapper", players),
+
+      lineupGroupQuestion("qb-depth", "depth-chart", "Name the quarterbacks in depth-chart order.", activeDepthPlayers("QB"), "QB", "Starter, then backup", true),
+      lineupGroupQuestion("rb-depth", "depth-chart", "Name the running backs in depth-chart order.", activeDepthPlayers("RB"), "RB", "Starter through third string", true),
+      lineupGroupQuestion("te-depth", "depth-chart", "Name the tight ends in depth-chart order.", activeDepthPlayers("TE").slice(0, 3), "TE", "Starter through third string", true),
+      lineupNameQuestion("rb2", "depth-chart", "Who is second on the running back depth chart?", playerAtDepth("RB", 2), "RB2", "Second-string running back", offensePlayers),
+      lineupNameQuestion("te2", "depth-chart", "Who is second on the tight end depth chart?", playerAtDepth("TE", 2), "TE2", "Second-string tight end", offensePlayers),
+      lineupNameQuestion("lcb2", "depth-chart", "Who is second at left cornerback?", playerAtDepth("LCB", 2), "LCB2", "Second-string left cornerback", defensePlayers),
+      lineupNameQuestion("rcb2", "depth-chart", "Who is second at right cornerback?", playerAtDepth("RCB", 2), "RCB2", "Second-string right cornerback", defensePlayers),
+    ].filter(Boolean);
+    return questions;
+  }
+
+  function getKnowledgeQuestions(studyType = state.studyType, packageId = getActivePackageId()) {
+    const allQuestions = studyType === "lineup"
+      ? getLineupQuestions()
+      : triviaData.questions.map((question) => ({
+          ...question,
+          kind: "knowledge",
+          studyType: "trivia",
+          correctDisplay: question.correctDisplay ?? question.correct,
+          visualLabel: question.visualLabel ?? question.label,
+        }));
+    return packageId === "mixed" ? allQuestions : allQuestions.filter((question) => question.pack === packageId);
+  }
+
+  function getStudyPacks(studyType = state.studyType) {
+    if (studyType === "players") return cowboysGroups;
+    if (studyType === "lineup") return lineupPacks;
+    return triviaData.packs;
+  }
+
+  function getActivePack() {
+    const packs = getStudyPacks();
+    return packs.find((pack) => pack.id === getActivePackageId()) ?? packs[0];
+  }
+
+  function getActiveQuestionCount() {
+    return state.studyType === "players" ? getDeckPlayers().length : getKnowledgeQuestions().length;
   }
 
   function getPracticeBucket(savedBucket = {}) {
@@ -394,7 +613,7 @@
     const viewTitles = {
       dashboard: "Decks — Player Decks",
       setup: `${playerDeck.title} — Player Decks`,
-      training: `${getDeck().title} — Player Decks`,
+      training: `${getActivePack().title} — Player Decks`,
       results: "Results — Player Decks",
       roster: `Players — ${playerDeck.title}`,
     };
@@ -521,51 +740,67 @@
 
   function openRecommendedSetup() {
     const recommendation = getRecommendedLesson();
+    restoreStudySettings("players");
     state.deckId = recommendation.deck.id;
     state.stage = recommendation.stage.id;
     state.mode = "mixed";
     state.length = recommendation.questionCount;
+    storeActiveStudySettings();
     renderSetup();
     showView("setup");
   }
 
   function renderSetup() {
-    const deck = getDeck();
-    const deckPlayers = getDeckPlayers(deck);
-    const stage = stages.find((candidate) => candidate.id === state.stage) ?? stages[0];
+    const pack = getActivePack();
+    const questionCount = getActiveQuestionCount();
+    const allowedStages = state.studyType === "players" ? stages : knowledgeStages;
+    const stage = allowedStages.find((candidate) => candidate.id === state.stage) ?? allowedStages[0];
     const mode = modes.find((candidate) => candidate.id === state.mode) ?? modes.at(-1);
-    const cardCount = state.length === "all" ? deckPlayers.length : Math.min(Number(state.length), deckPlayers.length);
-    elements.setupTitle.textContent = deck.title;
-    elements.setupPackage.setAttribute("aria-label", `${deck.title} package. Change package`);
+    const sessionCount = state.length === "all" ? questionCount : Math.min(Number(state.length), questionCount);
+    const unit = state.studyType === "players" ? "card" : "question";
+    if (state.stage !== stage.id) state.stage = stage.id;
+    elements.studyTypeButtons.forEach((button) => {
+      const selected = button.dataset.studyType === state.studyType;
+      button.setAttribute("aria-pressed", String(selected));
+      button.classList.toggle("is-selected", selected);
+    });
+    elements.setupTitle.textContent = pack.title;
+    elements.setupPackage.setAttribute("aria-label", `${pack.title}. Change ${state.studyType === "players" ? "package" : "topic"}`);
     elements.setupStageValue.textContent = stage.title.toLowerCase();
     elements.setupModeValue.textContent = state.stage === "mastery" ? "all facts" : mode.title.toLowerCase();
     elements.setupModeValue.disabled = state.stage === "mastery";
-    elements.setupLengthValue.textContent = `${cardCount} ${cardCount === 1 ? "card" : "cards"}`;
-    elements.setupStart.textContent = `Start ${cardCount} ${cardCount === 1 ? "card" : "cards"}`;
+    elements.setupContentChoice.hidden = state.studyType !== "players";
+    elements.setupLengthValue.textContent = `${sessionCount} ${unit}${sessionCount === 1 ? "" : "s"}`;
+    elements.setupStart.textContent = `Start ${sessionCount} ${unit}${sessionCount === 1 ? "" : "s"}`;
   }
 
   function openSessionOptions(control) {
-    const deckSize = getDeckPlayers().length;
+    const sessionSize = getActiveQuestionCount();
+    const activePackageId = getActivePackageId();
+    const packageOptions = getStudyPacks().map((pack) => ({
+      value: pack.id,
+      label: pack.title,
+      detail:
+        state.studyType === "players"
+          ? `${getDeckPlayers(pack).length} players`
+          : `${getKnowledgeQuestions(state.studyType, pack.id).length} questions`,
+    }));
     const optionSets = {
       package: {
-        title: "Package",
-        selected: state.deckId,
-        options: cowboysGroups.map((deck) => ({
-          value: deck.id,
-          label: deck.title,
-          detail: `${getDeckPlayers(deck).length} players`,
-        })),
+        title: state.studyType === "players" ? "Package" : "Topic",
+        selected: activePackageId,
+        options: packageOptions,
       },
-      stage: { title: "Level", selected: state.stage, options: stages.map(({ id, title }) => ({ value: id, label: title })) },
+      stage: { title: "Level", selected: state.stage, options: (state.studyType === "players" ? stages : knowledgeStages).map(({ id, title }) => ({ value: id, label: title })) },
       mode: { title: "Content", selected: state.mode, options: modes.map(({ id, title }) => ({ value: id, label: title })) },
       length: {
         title: "Length",
         selected: String(state.length),
         options: [
-          { value: "5", label: "5 cards" },
-          { value: "10", label: "10 cards" },
-          { value: "all", label: `All ${deckSize}` },
-        ].filter((option) => option.value === "all" || Number(option.value) <= deckSize),
+          { value: "5", label: state.studyType === "players" ? "5 cards" : "5 questions" },
+          { value: "10", label: state.studyType === "players" ? "10 cards" : "10 questions" },
+          { value: "all", label: `All ${sessionSize}` },
+        ].filter((option) => option.value === "all" || Number(option.value) <= sessionSize),
       },
     };
     const optionSet = optionSets[control];
@@ -580,9 +815,16 @@
   }
 
   function openDeck(deckId) {
-    state.deckId = deckId;
+    if (cowboysGroups.some((deck) => deck.id === deckId)) state.deckId = deckId;
     renderSetup();
     showView("setup");
+  }
+
+  function changeStudyType(studyType) {
+    if (!studyTypes.some((candidate) => candidate.id === studyType) || state.studyType === studyType) return;
+    storeActiveStudySettings();
+    restoreStudySettings(studyType);
+    renderSetup();
   }
 
   function practiceTrack(stage) {
@@ -762,7 +1004,67 @@
     }, deckPlayers, (candidate) => candidate.college);
   }
 
+  function prepareKnowledgeQuestion(question) {
+    const prepared = {
+      ...question,
+      correctDisplay: question.correctDisplay ?? question.correct,
+      inputMode: /^\d/.test(question.correct) ? "numeric" : "text",
+      placeholder: question.placeholder ?? "Your answer",
+      formatHelp:
+        question.answerType === "set"
+          ? "Enter every answer. Order does not matter."
+          : question.answerType === "ordered"
+            ? "Enter every answer in order."
+            : "Enter the answer.",
+    };
+    if (state.stage !== "recognition") return { ...prepared, responseType: "typed" };
+    return {
+      ...prepared,
+      responseType: "choice",
+      choices: shuffle([prepared.correct, ...(prepared.distractors ?? [])].slice(0, 4)).map((value) => ({
+        value,
+        label: value,
+      })),
+    };
+  }
+
+  function knowledgeAnswerMatches(question, answer) {
+    const normalized = normalizeAnswer(answer).replace(/[’]/g, "'");
+    if (question.answerType === "set" || question.answerType === "ordered") {
+      const positions = question.expected.map((expected) => {
+        const normalizedExpected = normalizeAnswer(expected).replace(/[’]/g, "'");
+        const lastName = normalizedExpected.split(" ").at(-1);
+        const fullIndex = normalized.indexOf(normalizedExpected);
+        return fullIndex >= 0 ? fullIndex : normalized.indexOf(lastName);
+      });
+      if (positions.some((position) => position < 0)) return false;
+      return question.answerType !== "ordered" || positions.every((position, index) => index === 0 || position > positions[index - 1]);
+    }
+    return (question.accepted ?? [question.correct]).some(
+      (accepted) => normalizeAnswer(accepted).replace(/[’]/g, "'") === normalized,
+    );
+  }
+
+  function buildKnowledgeSession() {
+    const available = getKnowledgeQuestions();
+    const count = state.length === "all" ? available.length : Math.min(Number(state.length), available.length);
+    return shuffle(available).slice(0, count).map(prepareKnowledgeQuestion);
+  }
+
   function startSession() {
+    storeActiveStudySettings();
+    if (state.studyType !== "players") {
+      state.questions = buildKnowledgeSession();
+      state.questionIndex = 0;
+      state.score = 0;
+      state.answers = [];
+      state.answerLocked = false;
+      const stage = knowledgeStages.find((candidate) => candidate.id === state.stage) ?? knowledgeStages[0];
+      elements.gameDeckName.textContent = `${getActivePack().title} · ${stage.title.toLowerCase()}`;
+      renderQuestion();
+      showView("training");
+      return;
+    }
     const deckPlayers = getDeckPlayers();
     const requestedMode = state.stage === "mastery" ? "mixed" : state.mode;
     const sessionPlayers = chooseSessionPlayers(deckPlayers, state.length, requestedMode);
@@ -792,6 +1094,9 @@
   }
 
   function renderQuestionVisual(question) {
+    if (question.kind === "knowledge") {
+      return `<div class="knowledge-stimulus" aria-hidden="true"><strong>${h(question.visualLabel ?? question.label)}</strong></div>`;
+    }
     if (question.visual === "headshot") return headshot(question.player, "full", true);
     if (question.visual === "number") {
       return `<div class="number-stimulus" aria-label="Jersey number ${h(question.player.number)}"><div><strong>${h(question.player.number)}</strong><span>${h(question.player.team ?? "Dallas Cowboys")}</span></div></div>`;
@@ -828,7 +1133,7 @@
             )
             .join("")
         : `
-          <form class="recall-form" id="recall-form">
+          <form class="recall-form" id="recall-form" novalidate>
             <label class="recall-label" for="recall-input">Type your answer</label>
             <input
               class="recall-input"
@@ -902,16 +1207,37 @@
     saveProgress();
   }
 
+  function recordKnowledgeProgress(question, correct) {
+    const current = progress.knowledge?.[question.id] ?? { attempts: 0, correct: 0, streak: 0 };
+    progress.knowledge = progress.knowledge ?? {};
+    progress.knowledge[question.id] = {
+      attempts: current.attempts + 1,
+      correct: current.correct + (correct ? 1 : 0),
+      streak: correct ? current.streak + 1 : 0,
+      lastSeen: progress.totalAnswers + 1,
+    };
+    progress.totalAnswers += 1;
+    progress.totalCorrect += correct ? 1 : 0;
+    updateDailyAnswer(correct, state.stage);
+    saveProgress();
+  }
+
   function answerQuestion(answer) {
     if (state.answerLocked) return;
     state.answerLocked = true;
     const question = state.questions[state.questionIndex];
     const selected = answer.trim();
-    const correct = normalizeAnswer(selected) === normalizeAnswer(question.correct);
+    const correct = question.kind === "knowledge"
+      ? knowledgeAnswerMatches(question, selected)
+      : normalizeAnswer(selected) === normalizeAnswer(question.correct);
     if (correct) state.score += 1;
     state.answers.push({ question, selected, correct });
-    recordProgress(question.player.id, question.mode, correct, state.stage);
-    if (question.fullCheck && question.factIndex === SKILLS.length - 1) {
+    if (question.kind === "knowledge") {
+      recordKnowledgeProgress(question, correct);
+    } else {
+      recordProgress(question.player.id, question.mode, correct, state.stage);
+    }
+    if (question.kind !== "knowledge" && question.fullCheck && question.factIndex === SKILLS.length - 1) {
       const playerAnswers = state.answers.filter(
         (answer) => answer.question.fullCheck && answer.question.player.id === question.player.id,
       );
@@ -927,7 +1253,10 @@
       elements.answerGrid.querySelectorAll(".answer-button").forEach((button, index) => {
         const value = question.choices[index].value;
         button.disabled = true;
-        button.classList.toggle("is-correct", normalizeAnswer(value) === normalizeAnswer(question.correct));
+        const valueIsCorrect = question.kind === "knowledge"
+          ? knowledgeAnswerMatches(question, value)
+          : normalizeAnswer(value) === normalizeAnswer(question.correct);
+        button.classList.toggle("is-correct", valueIsCorrect);
         button.classList.toggle("is-wrong", normalizeAnswer(value) === normalizeAnswer(selected) && !correct);
       });
     } else {
@@ -940,14 +1269,18 @@
 
     elements.answerFeedback.hidden = false;
     elements.answerFeedback.classList.add(correct ? "is-correct" : "is-wrong");
-    elements.answerFeedback.innerHTML = `
-      <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
-      <div class="feedback-facts">
-        <div><span>Name</span><strong>${h(question.player.name)}</strong></div>
-        <div><span>Number</span><strong>#${h(question.player.number)}</strong></div>
-        <div><span>Position</span><strong>${h(question.player.position)}</strong></div>
-        <div><span>College</span><strong>${h(question.player.college)}</strong></div>
-      </div>`;
+    elements.answerFeedback.innerHTML = question.kind === "knowledge"
+      ? `
+        <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
+        <p class="knowledge-detail">${h(question.detail)}</p>`
+      : `
+        <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
+        <div class="feedback-facts">
+          <div><span>Name</span><strong>${h(question.player.name)}</strong></div>
+          <div><span>Number</span><strong>#${h(question.player.number)}</strong></div>
+          <div><span>Position</span><strong>${h(question.player.position)}</strong></div>
+          <div><span>College</span><strong>${h(question.player.college)}</strong></div>
+        </div>`;
     elements.nextWrap.hidden = false;
     elements.nextButton.focus({ preventScroll: true });
   }
@@ -980,19 +1313,42 @@
             ? "Session complete."
             : "Keep practicing.";
     elements.resultScore.textContent = `${state.score} of ${total} correct · ${percent}%`;
-    elements.resultNote.textContent = missed.length
-      ? `${missed.length} ${missed.length === 1 ? "fact needs" : "facts need"} another look. Those players will be prioritized next session.`
-      : state.stage === "mastery"
-        ? "Every fact was correct. Each player in this check is now verified as learned."
+    if (state.studyType === "players") {
+      elements.resultNote.textContent = missed.length
+        ? `${missed.length} ${missed.length === 1 ? "fact needs" : "facts need"} another look. Those players will be prioritized next session.`
+        : state.stage === "mastery"
+          ? "Every fact was correct. Each player in this check is now verified as learned."
+          : state.stage === "recognition"
+            ? "Recognition practice complete. Move to typed recall when these feel familiar."
+            : "Typed recall complete. Pass the Mastery Check to verify players as learned.";
+    } else {
+      elements.resultNote.textContent = missed.length
+        ? `${missed.length} ${missed.length === 1 ? "answer needs" : "answers need"} another look.`
         : state.stage === "recognition"
-          ? "Recognition practice complete. Move to typed recall when these feel familiar."
-          : "Typed recall complete. Pass the Mastery Check to verify players as learned.";
+          ? "Recognition complete. Try typed recall next."
+          : "Typed recall complete.";
+    }
     elements.resultMark.textContent = percent >= 70 ? "✓" : "↻";
-    const currentStageIndex = stages.findIndex((stage) => stage.id === state.stage);
-    const nextStage = stages[currentStageIndex + 1];
+    const activeStages = state.studyType === "players" ? stages : knowledgeStages;
+    const currentStageIndex = activeStages.findIndex((stage) => stage.id === state.stage);
+    const nextStage = activeStages[currentStageIndex + 1];
     elements.nextStageButton.hidden = percent < 80 || !nextStage;
     if (nextStage) elements.nextStageButton.textContent = `Move to ${nextStage.title}`;
     elements.missedSection.hidden = missed.length === 0;
+    elements.missedSection.querySelector("h2").textContent = state.studyType === "players" ? "Review these players" : "Review these questions";
+    if (state.studyType !== "players") {
+      elements.missedList.innerHTML = missed
+        .map(
+          ({ question }) => `
+            <div class="missed-question">
+              <span>${h(question.prompt)}</span>
+              <strong>${h(question.correctDisplay)}</strong>
+            </div>`,
+        )
+        .join("");
+      showView("results");
+      return;
+    }
     const missedByPlayer = new Map();
     missed.forEach(({ question }) => {
       const existing = missedByPlayer.get(question.player.id) ?? { player: question.player, skills: [] };
@@ -1142,8 +1498,10 @@
       } else if (action === "start-session" || action === "repeat-session") {
         startSession();
       } else if (action === "next-stage") {
-        const currentStageIndex = stages.findIndex((stage) => stage.id === state.stage);
-        state.stage = stages[Math.min(currentStageIndex + 1, stages.length - 1)].id;
+        const activeStages = state.studyType === "players" ? stages : knowledgeStages;
+        const currentStageIndex = activeStages.findIndex((stage) => stage.id === state.stage);
+        state.stage = activeStages[Math.min(currentStageIndex + 1, activeStages.length - 1)].id;
+        storeActiveStudySettings();
         renderSetup();
         showView("setup");
       } else if (action === "exit-session") {
@@ -1180,6 +1538,12 @@
       return;
     }
 
+    const studyTypeTarget = event.target.closest("[data-study-type]");
+    if (studyTypeTarget) {
+      changeStudyType(studyTypeTarget.dataset.studyType);
+      return;
+    }
+
     const setupControl = event.target.closest("[data-setup-control]");
     if (setupControl && !setupControl.disabled) {
       openSessionOptions(setupControl.dataset.setupControl);
@@ -1190,10 +1554,11 @@
     if (setupValue) {
       const kind = setupValue.dataset.setupKind;
       const value = setupValue.dataset.setupValue;
-      if (kind === "package") state.deckId = value;
+      if (kind === "package") setActivePackageId(value);
       if (kind === "stage") state.stage = value;
       if (kind === "mode") state.mode = value;
       if (kind === "length") state.length = value === "all" ? "all" : Number(value);
+      storeActiveStudySettings();
       elements.sessionOptionDialog.close();
       renderSetup();
       return;
