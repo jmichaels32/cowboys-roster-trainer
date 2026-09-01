@@ -1,13 +1,41 @@
 window.COWBOYS_TRIVIA = {
   meta: {
     updated: "2026-09-01",
-    sources: [
-      "https://www.dallascowboys.com/team/hall-of-fame",
-      "https://www.dallascowboys.com/news/cowboys-commemorate-team-s-60th-anniversary",
-      "https://www.dallascowboys.com/news/5-thanksgiving-day-games-we-ll-never-forget",
-      "https://www.profootballhof.com/teams/dallas-cowboys",
-      "https://www.profootballhof.com/teams/dallas-cowboys/team-history",
-    ],
+    verificationStandard: "Every question must identify one authoritative source and paraphrase the supporting evidence.",
+    sources: {
+      cowboysHall: {
+        title: "Dallas Cowboys Hall of Fame",
+        url: "https://www.dallascowboys.com/team/hall-of-fame",
+      },
+      cowboysAnniversary: {
+        title: "Cowboys Commemorate Team’s 60th Anniversary",
+        url: "https://www.dallascowboys.com/news/cowboys-commemorate-team-s-60th-anniversary",
+      },
+      cowboysThanksgiving: {
+        title: "5 Thanksgiving Day Games We’ll Never Forget",
+        url: "https://www.dallascowboys.com/news/5-thanksgiving-day-games-we-ll-never-forget",
+      },
+      hofTeam: {
+        title: "Dallas Cowboys — Pro Football Hall of Fame",
+        url: "https://www.profootballhof.com/teams/dallas-cowboys",
+      },
+      hofHistory: {
+        title: "Dallas Cowboys Team History — Pro Football Hall of Fame",
+        url: "https://www.profootballhof.com/teams/dallas-cowboys/team-history",
+      },
+      hofFacts: {
+        title: "Dallas Cowboys Team Facts — Pro Football Hall of Fame",
+        url: "https://www.profootballhof.com/teams/dallas-cowboys/team-facts",
+      },
+      hofEmmitt: {
+        title: "Emmitt Smith — Pro Football Hall of Fame",
+        url: "https://www.profootballhof.com/players/emmitt-smith",
+      },
+      hofIrvin: {
+        title: "Michael Irvin — Pro Football Hall of Fame",
+        url: "https://www.profootballhof.com/players/michael-irvin",
+      },
+    },
   },
   packs: [
     { id: "mixed", title: "Mixed" },
@@ -26,6 +54,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["5", "five"],
       distractors: ["3", "4", "6"],
       detail: "Dallas won Super Bowls VI, XII, XXVII, XXVIII, and XXX.",
+      sourceId: "hofFacts",
+      evidence: "The team facts page lists five Cowboys Super Bowl championships: VI, XII, XXVII, XXVIII, and XXX.",
     },
     {
       id: "first-super-bowl",
@@ -36,6 +66,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["super bowl vi", "vi", "6", "super bowl 6"],
       distractors: ["Super Bowl V", "Super Bowl X", "Super Bowl XII"],
       detail: "Dallas beat Miami 24–3 in Super Bowl VI.",
+      sourceId: "hofFacts",
+      evidence: "The team facts page identifies Super Bowl VI as the franchise’s first Super Bowl win.",
     },
     {
       id: "latest-super-bowl",
@@ -46,6 +78,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["super bowl xxx", "xxx", "30", "super bowl 30"],
       distractors: ["Super Bowl XXVII", "Super Bowl XXVIII", "Super Bowl XXXI"],
       detail: "Dallas beat Pittsburgh 27–17 in Super Bowl XXX.",
+      sourceId: "hofTeam",
+      evidence: "The championship list ends with the 1995 season and Super Bowl XXX.",
     },
     {
       id: "first-title-opponent",
@@ -56,6 +90,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["miami dolphins", "dolphins", "miami"],
       distractors: ["Denver Broncos", "Buffalo Bills", "Pittsburgh Steelers"],
       detail: "The Cowboys beat the Dolphins in Super Bowl VI.",
+      sourceId: "hofHistory",
+      evidence: "The history page records Dallas’s 24–3 Super Bowl VI victory over Miami.",
     },
     {
       id: "back-to-back-opponent",
@@ -66,6 +102,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["buffalo bills", "bills", "buffalo"],
       distractors: ["Miami Dolphins", "Denver Broncos", "Pittsburgh Steelers"],
       detail: "Dallas beat Buffalo in Super Bowls XXVII and XXVIII.",
+      sourceId: "hofIrvin",
+      evidence: "Michael Irvin’s Hall of Fame biography identifies Buffalo as the opponent in Dallas’s back-to-back Super Bowl XXVII and XXVIII wins.",
     },
     {
       id: "championship-seasons",
@@ -81,6 +119,8 @@ window.COWBOYS_TRIVIA = {
         "1972, 1978, 1992, 1994, 1995",
       ],
       detail: "The titles were Super Bowls VI, XII, XXVII, XXVIII, and XXX.",
+      sourceId: "hofTeam",
+      evidence: "The Hall of Fame team page maps the five titles to the 1971, 1977, 1992, 1993, and 1995 seasons.",
     },
     {
       id: "founded",
@@ -91,6 +131,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["1960", "nineteen sixty"],
       distractors: ["1958", "1962", "1966"],
       detail: "Dallas began play as an NFL expansion team in 1960.",
+      sourceId: "cowboysAnniversary",
+      evidence: "The official anniversary history says the franchise was awarded in January 1960 and played its inaugural season that year.",
     },
     {
       id: "first-coach",
@@ -101,6 +143,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["tom landry", "landry"],
       distractors: ["Jimmy Johnson", "Tex Schramm", "Barry Switzer"],
       detail: "Landry coached Dallas from 1960 through 1988.",
+      sourceId: "cowboysHall",
+      evidence: "The official Hall of Fame page says Tom Landry helped start the franchise and was its only coach for 29 years.",
     },
     {
       id: "first-home",
@@ -111,6 +155,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["cotton bowl", "the cotton bowl"],
       distractors: ["Texas Stadium", "AT&T Stadium", "Fair Park Stadium"],
       detail: "The inaugural 1960 team played at the Cotton Bowl.",
+      sourceId: "hofHistory",
+      evidence: "The Hall of Fame history places the 1960 Cowboys at the Cotton Bowl.",
     },
     {
       id: "current-stadium-era",
@@ -121,6 +167,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["2009", "two thousand nine"],
       distractors: ["1999", "2005", "2011"],
       detail: "The franchise moved into its current Arlington home in 2009.",
+      sourceId: "hofHistory",
+      evidence: "The Hall of Fame history says the franchise moved into AT&T Stadium in 2009.",
     },
     {
       id: "winning-streak",
@@ -131,6 +179,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["20", "twenty"],
       distractors: ["14", "18", "22"],
       detail: "The Cowboys recorded 20 straight winning seasons from 1966 through 1985.",
+      sourceId: "hofHistory",
+      evidence: "The Hall of Fame history records an NFL-best run of 20 consecutive winning seasons beginning in 1966.",
     },
     {
       id: "mr-cowboy",
@@ -141,6 +191,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["bob lilly", "lilly"],
       distractors: ["Roger Staubach", "Randy White", "Emmitt Smith"],
       detail: "Lilly was the franchise’s first draft pick and first Hall of Fame inductee.",
+      sourceId: "cowboysHall",
+      evidence: "The official Cowboys biography identifies Bob Lilly as “Mr. Cowboy.”",
     },
     {
       id: "captain-comeback",
@@ -151,6 +203,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["roger staubach", "staubach"],
       distractors: ["Troy Aikman", "Don Meredith", "Tony Romo"],
       detail: "Staubach led Dallas to two Super Bowl victories.",
+      sourceId: "cowboysHall",
+      evidence: "The official Cowboys biography identifies Roger Staubach as “Captain Comeback.”",
     },
     {
       id: "all-time-rusher",
@@ -161,6 +215,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["emmitt smith", "smith"],
       distractors: ["Tony Dorsett", "Herschel Walker", "Calvin Hill"],
       detail: "Smith starred on all three Cowboys championship teams of the 1990s.",
+      sourceId: "hofEmmitt",
+      evidence: "The Hall of Fame biography says Emmitt Smith passed Walter Payton to become the NFL’s all-time rushing leader.",
     },
     {
       id: "nineties-quarterback",
@@ -171,6 +227,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["troy aikman", "aikman"],
       distractors: ["Roger Staubach", "Danny White", "Tony Romo"],
       detail: "Aikman led Dallas to wins in Super Bowls XXVII, XXVIII, and XXX.",
+      sourceId: "cowboysHall",
+      evidence: "The official Cowboys biography says Troy Aikman led the team to three world titles: XXVII, XXVIII, and XXX.",
     },
     {
       id: "nineties-receiver",
@@ -181,6 +239,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["michael irvin", "irvin"],
       distractors: ["Drew Pearson", "Dez Bryant", "Bob Hayes"],
       detail: "Irvin was a central part of the Cowboys’ 1990s championship offense.",
+      sourceId: "cowboysHall",
+      evidence: "The official Cowboys biography credits Michael Irvin with three Super Bowl rings.",
     },
     {
       id: "thanksgiving-start",
@@ -191,6 +251,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["1966", "nineteen sixty six", "nineteen sixty-six"],
       distractors: ["1960", "1963", "1970"],
       detail: "Dallas beat Cleveland 26–14 on Thanksgiving in 1966.",
+      sourceId: "cowboysThanksgiving",
+      evidence: "The official Thanksgiving retrospective identifies the 1966 Cleveland game as Dallas’s first Thanksgiving appearance.",
     },
     {
       id: "team-nickname",
@@ -201,6 +263,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["america's team", "americas team", "america’s team"],
       distractors: ["The Silver and Blue", "Team Texas", "The Lone Star Team"],
       detail: "The nickname became closely associated with Dallas in the late 1970s.",
+      sourceId: "hofHistory",
+      evidence: "The Hall of Fame history says the Cowboys of the 1970s and early 1980s were known as “America’s Team.”",
     },
     {
       id: "team-honors",
@@ -211,6 +275,8 @@ window.COWBOYS_TRIVIA = {
       accepted: ["ring of honor", "the ring of honor"],
       distractors: ["Circle of Stars", "Cowboys Hall", "Legends Ring"],
       detail: "The Ring of Honor recognizes major figures in Cowboys history.",
+      sourceId: "cowboysHall",
+      evidence: "The official Cowboys history repeatedly names the franchise’s Ring of Honor and its inductees.",
     },
     {
       id: "tradition-architect",
@@ -221,6 +287,18 @@ window.COWBOYS_TRIVIA = {
       accepted: ["tex schramm", "schramm"],
       distractors: ["Tom Landry", "Clint Murchison Jr.", "Gil Brandt"],
       detail: "Schramm served as the Cowboys’ president and general manager for 29 seasons.",
+      sourceId: "cowboysHall",
+      evidence: "The official Cowboys biography credits Tex Schramm with the cheerleaders, Ring of Honor, and annual Thanksgiving game.",
     },
   ],
 };
+
+window.COWBOYS_TRIVIA.questions = window.COWBOYS_TRIVIA.questions.map((question) => {
+  const source = window.COWBOYS_TRIVIA.meta.sources[question.sourceId];
+  return {
+    ...question,
+    sourceTitle: source?.title ?? "",
+    sourceUrl: source?.url ?? "",
+    verifiedOn: window.COWBOYS_TRIVIA.meta.updated,
+  };
+});
