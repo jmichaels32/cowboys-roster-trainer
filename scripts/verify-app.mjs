@@ -187,12 +187,8 @@ try {
       title: document.querySelector('#setup-title').textContent,
       contentHidden: document.querySelector('#setup-content-choice').hidden,
       start: document.querySelector('#setup-start').textContent,
-      stylePickerVisible: !document.querySelector('#trivia-style-picker').hidden,
-      styleCount: document.querySelectorAll('[data-trivia-style]').length
+      comparisonControlsAbsent: !document.querySelector('#trivia-style-picker, [data-trivia-style]')
     };
-    document.querySelector('[data-trivia-style="c"]').click();
-    const selectedTriviaStyle = document.querySelector('[data-trivia-style="c"]').getAttribute('aria-pressed') === 'true'
-      && localStorage.getItem('cowboys-trivia-reveal-style-v1') === 'c';
     document.querySelector('#setup-package').click();
     const triviaPackCount = document.querySelectorAll('[data-setup-kind="package"]').length;
     const triviaCounts = [...document.querySelectorAll('[data-setup-kind="package"] small')].every((item) => /questions/.test(item.textContent));
@@ -207,36 +203,33 @@ try {
       answer: Boolean(document.querySelector('.trivia-answer-copy h2')?.textContent.trim()),
       fact: Boolean(document.querySelector('.trivia-fact')?.textContent.trim()),
       reveal: Boolean(triviaReveal),
-      style: document.querySelector('#answer-feedback')?.dataset.triviaStyle,
       localImage: triviaReveal?.querySelector('img')?.getAttribute('src')?.startsWith('assets/trivia/') ?? false,
       alt: Boolean(triviaReveal?.querySelector('img')?.getAttribute('alt')),
-      conciseLabel: (triviaReveal?.querySelector('figcaption')?.textContent.trim().split(/\s+/).length ?? 99) <= 4
+      visibleCaptionAbsent: !triviaReveal?.querySelector('figcaption'),
+      imageLeads: triviaReveal?.getBoundingClientRect().top < document.querySelector('.trivia-answer-copy')?.getBoundingClientRect().top
     };
     const knowledgeSaved = Object.keys(JSON.parse(localStorage.getItem('cowboys-roster-lab-v1')).knowledge).length >= 2;
     document.querySelector('[data-action="exit-session"]').click();
     document.querySelector('[data-study-type="players"]').click();
     const playersRestored = document.querySelector('#setup-title').textContent === 'Most famous' && document.querySelector('#setup-mode-value').textContent === 'mixed facts';
-    return { lineupInitial, lineupPackCount, lineupCounts, specialTeamsStart, lineupTraining, lineupStimulus, lineupFeedback, triviaInitial, selectedTriviaStyle, triviaPackCount, triviaCounts, triviaTraining, triviaStimulusAbsent, triviaRevealAbsent, triviaFeedback, knowledgeSaved, playersRestored };
+    return { lineupInitial, lineupPackCount, lineupCounts, specialTeamsStart, lineupTraining, lineupStimulus, lineupFeedback, triviaInitial, triviaPackCount, triviaCounts, triviaTraining, triviaStimulusAbsent, triviaRevealAbsent, triviaFeedback, knowledgeSaved, playersRestored };
   })()`);
-  if (!knowledgeModes.lineupInitial.selected || knowledgeModes.lineupInitial.title !== 'Mixed' || !knowledgeModes.lineupInitial.sentence.includes('Practice recognition for 5 questions.') || !knowledgeModes.lineupInitial.contentHidden || knowledgeModes.lineupInitial.start !== 'Start 5 questions' || knowledgeModes.lineupPackCount !== 5 || !knowledgeModes.lineupCounts || knowledgeModes.specialTeamsStart !== 'Start 3 questions' || !knowledgeModes.lineupTraining || !knowledgeModes.lineupStimulus || !knowledgeModes.lineupFeedback || !knowledgeModes.triviaInitial.selected || knowledgeModes.triviaInitial.title !== 'Mixed' || !knowledgeModes.triviaInitial.contentHidden || knowledgeModes.triviaInitial.start !== 'Start 5 questions' || !knowledgeModes.triviaInitial.stylePickerVisible || knowledgeModes.triviaInitial.styleCount !== 4 || !knowledgeModes.selectedTriviaStyle || knowledgeModes.triviaPackCount !== 5 || !knowledgeModes.triviaCounts || !knowledgeModes.triviaTraining || !knowledgeModes.triviaStimulusAbsent || !knowledgeModes.triviaRevealAbsent || !knowledgeModes.triviaFeedback.answer || !knowledgeModes.triviaFeedback.fact || !knowledgeModes.triviaFeedback.reveal || knowledgeModes.triviaFeedback.style !== 'c' || !knowledgeModes.triviaFeedback.localImage || !knowledgeModes.triviaFeedback.alt || !knowledgeModes.triviaFeedback.conciseLabel || !knowledgeModes.knowledgeSaved || !knowledgeModes.playersRestored) throw new Error(`Knowledge modes failed: ${JSON.stringify(knowledgeModes)}`);
+  if (!knowledgeModes.lineupInitial.selected || knowledgeModes.lineupInitial.title !== 'Mixed' || !knowledgeModes.lineupInitial.sentence.includes('Practice recognition for 5 questions.') || !knowledgeModes.lineupInitial.contentHidden || knowledgeModes.lineupInitial.start !== 'Start 5 questions' || knowledgeModes.lineupPackCount !== 5 || !knowledgeModes.lineupCounts || knowledgeModes.specialTeamsStart !== 'Start 3 questions' || !knowledgeModes.lineupTraining || !knowledgeModes.lineupStimulus || !knowledgeModes.lineupFeedback || !knowledgeModes.triviaInitial.selected || knowledgeModes.triviaInitial.title !== 'Mixed' || !knowledgeModes.triviaInitial.contentHidden || knowledgeModes.triviaInitial.start !== 'Start 5 questions' || !knowledgeModes.triviaInitial.comparisonControlsAbsent || knowledgeModes.triviaPackCount !== 5 || !knowledgeModes.triviaCounts || !knowledgeModes.triviaTraining || !knowledgeModes.triviaStimulusAbsent || !knowledgeModes.triviaRevealAbsent || !knowledgeModes.triviaFeedback.answer || !knowledgeModes.triviaFeedback.fact || !knowledgeModes.triviaFeedback.reveal || !knowledgeModes.triviaFeedback.localImage || !knowledgeModes.triviaFeedback.alt || !knowledgeModes.triviaFeedback.visibleCaptionAbsent || !knowledgeModes.triviaFeedback.imageLeads || !knowledgeModes.knowledgeSaved || !knowledgeModes.playersRestored) throw new Error(`Knowledge modes failed: ${JSON.stringify(knowledgeModes)}`);
 
   if (process.env.CAPTURE_DIR) {
     await mkdir(process.env.CAPTURE_DIR, { recursive: true });
-    for (const style of ['a', 'b', 'c', 'd']) {
-      await evaluate(client, `(() => {
-        document.querySelector('[data-study-type="trivia"]').click();
-        document.querySelector('[data-trivia-style="${style}"]').click();
-        document.querySelector('#setup-start').click();
-        document.querySelector('.answer-button').click();
-      })()`);
-      await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 320))');
-      const screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
-      await writeFile(join(process.env.CAPTURE_DIR, `trivia-style-${style}.png`), Buffer.from(screenshot.data, 'base64'));
-      await evaluate(client, `(() => {
-        document.querySelector('[data-action="exit-session"]').click();
-        document.querySelector('[data-study-type="players"]').click();
-      })()`);
-    }
+    await evaluate(client, `(() => {
+      document.querySelector('[data-study-type="trivia"]').click();
+      document.querySelector('#setup-start').click();
+      document.querySelector('.answer-button').click();
+    })()`);
+    await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 320))');
+    const screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await writeFile(join(process.env.CAPTURE_DIR, 'trivia-immersive.png'), Buffer.from(screenshot.data, 'base64'));
+    await evaluate(client, `(() => {
+      document.querySelector('[data-action="exit-session"]').click();
+      document.querySelector('[data-study-type="players"]').click();
+    })()`);
   }
 
   const lesson = await evaluate(client, `(() => {

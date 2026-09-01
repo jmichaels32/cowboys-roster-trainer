@@ -14,7 +14,6 @@
   const STORAGE_KEY = "cowboys-roster-lab-v1";
   const PLAYER_DECK_KEY = "player-decks-selected-v1";
   const STUDY_SETTINGS_KEY = "cowboys-study-settings-v1";
-  const TRIVIA_STYLE_KEY = "cowboys-trivia-reveal-style-v1";
   const OFFENSE = new Set(["QB", "RB", "FB", "WR", "TE", "C", "G", "T", "OL"]);
   const DEFENSE = new Set(["DT", "OLB", "LB", "CB", "S", "DB"]);
   const SKILLS = ["faces", "numbers", "positions", "colleges"];
@@ -144,7 +143,6 @@
     score: 0,
     answers: [],
     answerLocked: false,
-    triviaRevealStyle: loadTriviaRevealStyle(),
     rosterFilters: { group: "all", position: "all", sort: "name" },
   };
 
@@ -165,8 +163,6 @@
     setupContentChoice: document.querySelector("#setup-content-choice"),
     setupLengthValue: document.querySelector("#setup-length-value"),
     setupStart: document.querySelector("#setup-start"),
-    triviaStylePicker: document.querySelector("#trivia-style-picker"),
-    triviaStyleButtons: [...document.querySelectorAll("[data-trivia-style]")],
     sessionOptionDialog: document.querySelector("#session-option-dialog"),
     sessionOptionTitle: document.querySelector("#session-option-title"),
     sessionOptionList: document.querySelector("#session-option-list"),
@@ -231,23 +227,6 @@
       );
     } catch {
       return structuredClone(defaultStudySettings);
-    }
-  }
-
-  function loadTriviaRevealStyle() {
-    try {
-      const saved = localStorage.getItem(TRIVIA_STYLE_KEY);
-      return ["a", "b", "c", "d"].includes(saved) ? saved : "a";
-    } catch {
-      return "a";
-    }
-  }
-
-  function saveTriviaRevealStyle() {
-    try {
-      localStorage.setItem(TRIVIA_STYLE_KEY, state.triviaRevealStyle);
-    } catch {
-      // The selected comparison style remains available for the current session.
     }
   }
 
@@ -794,11 +773,6 @@
     elements.setupContentChoice.hidden = state.studyType !== "players";
     elements.setupLengthValue.textContent = `${sessionCount} ${unit}${sessionCount === 1 ? "" : "s"}`;
     elements.setupStart.textContent = `Start ${sessionCount} ${unit}${sessionCount === 1 ? "" : "s"}`;
-    elements.triviaStylePicker.hidden = state.studyType !== "trivia";
-    elements.triviaStyleButtons.forEach((button) => {
-      const selected = button.dataset.triviaStyle === state.triviaRevealStyle;
-      button.setAttribute("aria-pressed", String(selected));
-    });
   }
 
   function openSessionOptions(control) {
@@ -1142,7 +1116,6 @@
     return `
       <figure class="trivia-reveal">
         <img src="${h(question.image.path)}" alt="${h(question.image.alt)}" decoding="async" />
-        <figcaption>${h(question.image.label)}</figcaption>
       </figure>`;
   }
 
@@ -1326,8 +1299,6 @@
     const isTrivia = question.studyType === "trivia";
     elements.questionCard.classList.toggle("has-trivia-reveal", isTrivia);
     elements.answerFeedback.classList.toggle("is-trivia", isTrivia);
-    if (isTrivia) elements.answerFeedback.dataset.triviaStyle = state.triviaRevealStyle;
-    else delete elements.answerFeedback.dataset.triviaStyle;
     elements.answerFeedback.innerHTML = question.kind === "knowledge"
       ? question.studyType === "trivia"
         ? renderTriviaFeedback(question, correct)
@@ -1605,14 +1576,6 @@
     const studyTypeTarget = event.target.closest("[data-study-type]");
     if (studyTypeTarget) {
       changeStudyType(studyTypeTarget.dataset.studyType);
-      return;
-    }
-
-    const triviaStyleTarget = event.target.closest("[data-trivia-style]");
-    if (triviaStyleTarget) {
-      state.triviaRevealStyle = triviaStyleTarget.dataset.triviaStyle;
-      saveTriviaRevealStyle();
-      renderSetup();
       return;
     }
 
