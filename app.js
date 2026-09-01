@@ -1110,6 +1110,15 @@
       </div>`;
   }
 
+  function renderTriviaReveal(question) {
+    if (question.studyType !== "trivia" || !question.image) return "";
+    return `
+      <figure class="trivia-reveal">
+        <img src="${h(question.image.path)}" alt="${h(question.image.alt)}" decoding="async" />
+        <figcaption>${h(question.image.caption)}</figcaption>
+      </figure>`;
+  }
+
   function renderQuestion() {
     const question = state.questions[state.questionIndex];
     const current = state.questionIndex + 1;
@@ -1275,7 +1284,8 @@
     elements.answerFeedback.innerHTML = question.kind === "knowledge"
       ? `
         <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
-        <p class="knowledge-detail">${h(question.detail)}</p>`
+        <p class="knowledge-detail">${h(question.detail)}</p>
+        ${renderTriviaReveal(question)}`
       : `
         <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
         <div class="feedback-facts">
@@ -1284,6 +1294,9 @@
           <div><span>Position</span><strong>${h(question.player.position)}</strong></div>
           <div><span>College</span><strong>${h(question.player.college)}</strong></div>
         </div>`;
+    elements.answerFeedback.querySelector(".trivia-reveal img")?.addEventListener("error", (event) => {
+      event.currentTarget.closest(".trivia-reveal")?.remove();
+    }, { once: true });
     elements.nextWrap.hidden = false;
     elements.nextButton.focus({ preventScroll: true });
   }

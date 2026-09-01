@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const projectDirectory = resolve(scriptDirectory, "..");
 const outputDirectory = resolve(projectDirectory, "www");
-const files = ["index.html", "app.js", "styles.css", "favicon.svg", "data/roster.js", "data/college-marks.js", "data/cowboys-trivia.js", "assets/college-marks"];
+const files = ["index.html", "app.js", "styles.css", "favicon.svg", "data/roster.js", "data/college-marks.js", "data/cowboys-trivia.js", "assets/college-marks", "assets/trivia"];
 
 await rm(outputDirectory, { recursive: true, force: true });
 

@@ -19,6 +19,7 @@ A dependency-free, mobile-first flashcard trainer for learning football players 
 - Lineup questions generated from the bundled roster and depth chart, including offense, defense, special teams, and depth order
 - Curated offline trivia covering Super Bowls, history, legends, and traditions
 - Question-level trivia sourcing with verification dates, evidence notes, and an automated integrity check
+- Verified historical images bundled offline and revealed only after each trivia answer
 - Four-part mastery: a player only counts as learned after all four answers are typed correctly in the same mastery check
 - Adaptive practice that tracks misses, accuracy, streaks, and recency by player and fact
 - Device-local daily reports with answer totals, accuracy, players verified, and a Wordle-style share summary
