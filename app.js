@@ -1095,10 +1095,7 @@
   }
 
   function renderQuestionVisual(question) {
-    if (question.kind === "knowledge") {
-      if (question.studyType === "trivia") return "";
-      return `<div class="knowledge-stimulus" aria-hidden="true"><strong>${h(question.visualLabel ?? question.label)}</strong></div>`;
-    }
+    if (question.kind === "knowledge") return "";
     if (question.visual === "headshot") return headshot(question.player, "full", true);
     if (question.visual === "number") {
       return `<div class="number-stimulus" aria-label="Jersey number ${h(question.player.number)}"><div><strong>${h(question.player.number)}</strong><span>${h(question.player.team ?? "Dallas Cowboys")}</span></div></div>`;
@@ -1113,8 +1110,9 @@
 
   function renderTriviaReveal(question) {
     if (question.studyType !== "trivia" || !question.image) return "";
+    const presentationClass = question.image.presentation === "trim-source-matte" ? " is-source-matte-trimmed" : "";
     return `
-      <figure class="trivia-reveal">
+      <figure class="trivia-reveal${presentationClass}">
         <img src="${h(question.image.path)}" alt="${h(question.image.alt)}" decoding="async" />
       </figure>`;
   }
@@ -1142,7 +1140,7 @@
     elements.gameProgressBar.style.width = `${(current / total) * 100}%`;
     elements.gameScore.textContent = state.score;
     elements.questionType.textContent = question.label;
-    elements.questionType.hidden = question.studyType === "trivia";
+    elements.questionType.hidden = question.kind === "knowledge";
     elements.questionTitle.textContent = question.prompt;
     elements.questionCard.classList.toggle("is-trivia-question", question.studyType === "trivia");
     const questionVisual = renderQuestionVisual(question);
@@ -1176,7 +1174,6 @@
           </form>`;
     elements.answerFeedback.hidden = true;
     elements.answerFeedback.className = "answer-feedback";
-    elements.questionCard.classList.remove("has-trivia-reveal");
     elements.nextWrap.hidden = true;
     const nextLabel =
       current === total
@@ -1297,7 +1294,6 @@
     elements.answerFeedback.hidden = false;
     elements.answerFeedback.classList.add(correct ? "is-correct" : "is-wrong");
     const isTrivia = question.studyType === "trivia";
-    elements.questionCard.classList.toggle("has-trivia-reveal", isTrivia);
     elements.answerFeedback.classList.toggle("is-trivia", isTrivia);
     elements.answerFeedback.innerHTML = question.kind === "knowledge"
       ? question.studyType === "trivia"

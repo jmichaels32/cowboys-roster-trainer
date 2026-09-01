@@ -109,6 +109,7 @@ window.COWBOYS_TRIVIA = {
       },
       attStadium: {
         path: "assets/trivia/att-stadium.webp",
+        presentation: "trim-source-matte",
         label: "AT&T Stadium",
         subject: "AT&T Stadium",
         alt: "The field and video board inside AT&T Stadium",
