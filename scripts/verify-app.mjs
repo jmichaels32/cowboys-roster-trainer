@@ -193,6 +193,7 @@ try {
     document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const practiceSquadCount = document.querySelectorAll('.player-card').length;
     const expectedPracticeSquadCount = window.COWBOYS_ROSTER.players.filter((player) => player.status === 'Practice Squad').length;
+    const practiceStatusAligned = document.querySelector('.player-status')?.textContent.includes('Practice squad') && !document.querySelector('.player-position')?.textContent.includes('Practice Squad');
     document.querySelector('#roster-controls-button').click();
     document.querySelector('[data-action="clear-roster-controls"]').click();
     document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
@@ -221,15 +222,15 @@ try {
     document.querySelector('#roster-controls-button').click();
     document.querySelector('[name="sort"][value="depth"]').checked = true;
     document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    const depthSorted = document.querySelector('.depth-status')?.textContent.startsWith('Starter · ');
+    const depthSorted = document.querySelector('.player-status')?.textContent.startsWith('Starter · ');
     document.querySelector('#roster-controls-button').click();
     document.querySelector('[data-action="clear-roster-controls"]').click();
     document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const reset = document.querySelector('#roster-filter-count').hidden;
     const back = document.querySelector('#header-back');
-    return { dialogOpened, combined, learningControlsAbsent, groupOptionCount, famousPlayerCount, expectedFamousPlayerCount, learningBadgesAbsent, practiceSquadCount, expectedPracticeSquadCount, badge, sortOptionCount, heightSorted, weightSorted, depthSorted, reset, backLabel: back.getAttribute('aria-label'), backAction: back.dataset.action, backText: back.textContent.trim() };
+    return { dialogOpened, combined, learningControlsAbsent, groupOptionCount, famousPlayerCount, expectedFamousPlayerCount, learningBadgesAbsent, practiceSquadCount, expectedPracticeSquadCount, practiceStatusAligned, badge, sortOptionCount, heightSorted, weightSorted, depthSorted, reset, backLabel: back.getAttribute('aria-label'), backAction: back.dataset.action, backText: back.textContent.trim() };
   })()`);
-  if (!rosterControls.dialogOpened || !rosterControls.combined || !rosterControls.learningControlsAbsent || rosterControls.groupOptionCount !== 8 || rosterControls.famousPlayerCount !== 8 || rosterControls.famousPlayerCount !== rosterControls.expectedFamousPlayerCount || !rosterControls.learningBadgesAbsent || rosterControls.practiceSquadCount !== rosterControls.expectedPracticeSquadCount || rosterControls.badge !== ' · 1' || rosterControls.sortOptionCount !== 7 || !rosterControls.heightSorted || !rosterControls.weightSorted || !rosterControls.depthSorted || !rosterControls.reset || rosterControls.backLabel !== 'Back to Cowboys roster' || rosterControls.backAction !== 'deck' || rosterControls.backText !== '←') throw new Error(`Roster controls failed: ${JSON.stringify(rosterControls)}`);
+  if (!rosterControls.dialogOpened || !rosterControls.combined || !rosterControls.learningControlsAbsent || rosterControls.groupOptionCount !== 8 || rosterControls.famousPlayerCount !== 8 || rosterControls.famousPlayerCount !== rosterControls.expectedFamousPlayerCount || !rosterControls.learningBadgesAbsent || rosterControls.practiceSquadCount !== rosterControls.expectedPracticeSquadCount || !rosterControls.practiceStatusAligned || rosterControls.badge !== ' · 1' || rosterControls.sortOptionCount !== 7 || !rosterControls.heightSorted || !rosterControls.weightSorted || !rosterControls.depthSorted || !rosterControls.reset || rosterControls.backLabel !== 'Back to Cowboys roster' || rosterControls.backAction !== 'deck' || rosterControls.backText !== '←') throw new Error(`Roster controls failed: ${JSON.stringify(rosterControls)}`);
 
   await evaluate(client, `(() => {
     const search = document.querySelector('#roster-search');
@@ -251,7 +252,7 @@ try {
     if (!result.active || result.cards !== 1) throw new Error("Roster not filtered yet");
     return result;
   });
-  if (!roster.clearVisible || roster.refineLabel !== 'Refine' || roster.cardHeight > 130 || roster.headshotWidth > 90 || !/′.*″.*lb/.test(roster.physicals) || !roster.collegeMark?.startsWith('assets/college-marks/') || roster.overflow) throw new Error(`Roster search failed: ${JSON.stringify(roster)}`);
+  if (!roster.clearVisible || roster.refineLabel !== 'Refine' || roster.cardHeight > 110 || roster.headshotWidth > 78 || !/′.*″.*lb/.test(roster.physicals) || !roster.collegeMark?.startsWith('assets/college-marks/') || roster.overflow) throw new Error(`Roster search failed: ${JSON.stringify(roster)}`);
   const cleared = await evaluate(client, `(() => {
     document.querySelector('#roster-search-clear').click();
     return {
@@ -261,10 +262,11 @@ try {
       cards: document.querySelectorAll('.player-card').length,
       marks: document.querySelectorAll('.college-mark').length,
       marksWithImages: document.querySelectorAll('.college-mark img').length,
+      maxCardHeight: Math.max(...[...document.querySelectorAll('.player-card')].map((card) => card.getBoundingClientRect().height)),
       total: window.COWBOYS_ROSTER.players.length
     };
   })()`);
-  if (cleared.value || !cleared.focused || !cleared.clearHidden || cleared.cards !== cleared.total || cleared.marks !== cleared.total || cleared.marksWithImages < cleared.total - 2) throw new Error(`Roster clear failed: ${JSON.stringify(cleared)}`);
+  if (cleared.value || !cleared.focused || !cleared.clearHidden || cleared.cards !== cleared.total || cleared.marks !== cleared.total || cleared.marksWithImages < cleared.total - 2 || cleared.maxCardHeight > 116) throw new Error(`Roster clear failed: ${JSON.stringify(cleared)}`);
 
   await client.call("Emulation.setDeviceMetricsOverride", { width: 320, height: 700, deviceScaleFactor: 3, mobile: true });
   const narrow = await evaluate(client, `(() => {

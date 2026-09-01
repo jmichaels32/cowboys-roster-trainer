@@ -1899,7 +1899,7 @@ a {
   margin-top: 9px;
 }
 
-.depth-status {
+.player-status {
   display: inline-block;
   padding: 4px 7px;
   color: var(--navy-800);
@@ -2193,22 +2193,23 @@ a {
 
   .player-grid {
     grid-template-columns: 1fr;
+    gap: 8px;
   }
 
   .player-card {
     display: grid;
-    grid-template-columns: 86px minmax(0, 1fr);
-    min-height: 118px;
+    grid-template-columns: 76px minmax(0, 1fr);
+    min-height: 102px;
     border-radius: 13px;
   }
 
   .player-card .headshot {
     height: 100%;
-    min-height: 118px;
+    min-height: 102px;
   }
 
   .player-card-body {
-    padding: 10px 11px;
+    padding: 8px 10px;
   }
 
   .player-card h2 {
@@ -2224,13 +2225,24 @@ a {
     font-size: 11px;
   }
 
-  .player-card-statuses {
-    margin-top: 7px;
+  .player-position {
+    margin: 3px 0 4px;
   }
 
-  .depth-status {
-    padding: 3px 6px;
+  .player-card .college-mark {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+
+  .player-card-statuses {
+    margin-top: 4px;
+  }
+
+  .player-status {
+    padding: 2px 5px;
     font-size: 8px;
+    line-height: 1.2;
   }
 
   .missed-player {

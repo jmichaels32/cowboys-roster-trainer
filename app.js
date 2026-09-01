@@ -363,6 +363,24 @@
     );
   }
 
+  function rosterStatusLabel(status) {
+    const labels = {
+      "Practice Squad": "Practice squad",
+      "Reserve/Injured": "IR",
+      "Reserve/Designated to Return": "Designated return",
+    };
+    return labels[status] ?? status;
+  }
+
+  function playerRosterLabel(player) {
+    return [
+      player.depth ? `${player.depth} · ${player.depthPosition}` : "",
+      player.status !== "Active" ? rosterStatusLabel(player.status) : "",
+    ]
+      .filter(Boolean)
+      .join(" · ");
+  }
+
   function showView(viewName) {
     elements.views.forEach((view) => {
       const active = view.dataset.view === viewName;
@@ -1072,7 +1090,7 @@
     const filtered = players.filter((player) => {
       const matchesGroup = getDeck(selectedGroup).filter(player);
       const matchesPosition = selectedPosition === "all" || player.position === selectedPosition;
-      const haystack = `${player.name} ${player.number} ${player.position} ${player.college} ${player.height} ${player.weight} ${player.depth ?? ""}`.toLowerCase();
+      const haystack = `${player.name} ${player.number} ${player.position} ${player.college} ${player.height} ${player.weight} ${player.depth ?? ""} ${player.depthPosition ?? ""} ${player.status}`.toLowerCase();
       return matchesGroup && matchesPosition && haystack.includes(query);
     }).sort((left, right) => compareRosterPlayers(left, right, selectedSort));
 
@@ -1085,7 +1103,9 @@
     elements.playerGrid.innerHTML = filtered.length
       ? filtered
           .map(
-            (player) => `
+            (player) => {
+              const rosterLabel = playerRosterLabel(player);
+              return `
               <article class="player-card">
                 ${headshot(player)}
                 <div class="player-card-body">
@@ -1093,11 +1113,12 @@
                     <h2>${h(player.name)}</h2>
                     <span class="jersey-number">#${h(player.number)}</span>
                   </div>
-                  <p class="player-position">${h(player.position)} · ${h(formatHeight(player.height))} · ${h(player.weight)} lb${player.status !== "Active" ? ` · ${h(player.status)}` : ""}</p>
+                  <p class="player-position">${h(player.position)} · ${h(formatHeight(player.height))} · ${h(player.weight)} lb</p>
                   <p class="player-college">${collegeMark(player.college)}<span>${h(player.college)}</span></p>
-                  ${player.depth ? `<div class="player-card-statuses"><span class="depth-status">${h(player.depth)} · ${h(player.depthPosition)}</span></div>` : ""}
+                  ${rosterLabel ? `<div class="player-card-statuses"><span class="player-status">${h(rosterLabel)}</span></div>` : ""}
                 </div>
-              </article>`,
+              </article>`;
+            },
           )
           .join("")
       : '<div class="empty-roster"><p>No players found</p><button class="button button-quiet" type="button" data-action="clear-roster-results">Clear search and filters</button></div>';
