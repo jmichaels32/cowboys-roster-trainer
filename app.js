@@ -1061,6 +1061,16 @@
     if (sort === "weight") {
       return Number(right.weight) - Number(left.weight) || heightInInches(right) - heightInInches(left) || left.name.localeCompare(right.name);
     }
+    if (sort === "depth") {
+      return (
+        (left.depthRank ?? Number.MAX_SAFE_INTEGER) -
+          (right.depthRank ?? Number.MAX_SAFE_INTEGER) ||
+        (left.depthPosition ?? left.position).localeCompare(
+          right.depthPosition ?? right.position,
+        ) ||
+        left.name.localeCompare(right.name)
+      );
+    }
     if (sort === "progress") {
       const statusOrder = { "in-progress": 0, unseen: 1, verified: 2 };
       return (
@@ -1113,7 +1123,7 @@
                   <p class="player-college">${collegeMark(player.college)}<span>${h(player.college)}</span></p>
                   <div class="player-card-statuses">
                     <span class="learning-status is-${h(learningStatus.id)}">${h(learningStatus.label)}</span>
-                    ${player.depth ? `<span class="depth-status">${h(player.depth)}</span>` : ""}
+                    ${player.depth ? `<span class="depth-status">${h(player.depth)} · ${h(player.depthPosition)}</span>` : ""}
                   </div>
                 </div>
               </article>`;

@@ -2,25 +2,18 @@
 window.COWBOYS_ROSTER = {
   "meta": {
     "source": "https://www.dallascowboys.com/team/players-roster/",
-    "updated": "2026-07-31",
-    "season": 2026
+    "depthSource": "https://www.espn.com/nfl/team/depth/_/name/dal/dallas-cowboys",
+    "updated": "2026-09-01",
+    "depthUpdated": "2026-09-01",
+    "season": 2026,
+    "statusCounts": {
+      "Active": 54,
+      "Reserve/Designated to Return": 2,
+      "Reserve/Injured": 3,
+      "Practice Squad": 13
+    }
   },
   "players": [
-    {
-      "id": "israel-abanikanda",
-      "name": "Israel Abanikanda",
-      "number": "30",
-      "position": "RB",
-      "height": "5-10",
-      "weight": 217,
-      "age": 23,
-      "experience": "3",
-      "college": "Pittsburgh",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kf0ckemgjioeh9cihlpd.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/israel-abanikanda/",
-      "status": "Active",
-      "tier": "roster"
-    },
     {
       "id": "bryan-anger",
       "name": "Bryan Anger",
@@ -34,7 +27,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kabf5lmejex6n5uzj6lc.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/bryan-anger/",
       "status": "Active",
-      "tier": "core"
+      "tier": "core",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "P"
     },
     {
       "id": "brandon-aubrey",
@@ -49,7 +45,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vxybqfe2vsjbxbbfrnng.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/brandon-aubrey/",
       "status": "Active",
-      "tier": "star"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "PK"
     },
     {
       "id": "jaishawn-barham",
@@ -64,22 +63,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kp1946sakkdikgfwak7o.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/jaishawn-barham/",
       "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "justin-barron",
-      "name": "Justin Barron",
-      "number": "45",
-      "position": "LB",
-      "height": "6-4",
-      "weight": 235,
-      "age": 24,
-      "experience": "1",
-      "college": "Syracuse",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/y6of9mjruimpaziahlsw.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/justin-barron/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "RILB"
     },
     {
       "id": "t-j-bass",
@@ -94,7 +81,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vpnaz4fxqaweufnyffhx.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/t-j-bass/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "C"
     },
     {
       "id": "cooper-beebe",
@@ -109,7 +99,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/iitipynplwwyqic0atjp.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/cooper-beebe/",
       "status": "Active",
-      "tier": "core"
+      "tier": "core",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "C"
     },
     {
       "id": "markquese-bell",
@@ -124,7 +117,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/z01amkaviyd1xuelqjjg.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/markquese-bell/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "FS"
     },
     {
       "id": "daron-bland",
@@ -139,22 +135,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/zbitbzazn7mgpkimyzbb.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/daron-bland/",
       "status": "Active",
-      "tier": "star"
-    },
-    {
-      "id": "jaydon-blue",
-      "name": "Jaydon Blue",
-      "number": "23",
-      "position": "RB",
-      "height": "5-9",
-      "weight": 198,
-      "age": 22,
-      "experience": "2",
-      "college": "Texas",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/wvqnckqu3nzgvyx92ghb.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/jaydon-blue/",
-      "status": "Active",
-      "tier": "core"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "RCB"
     },
     {
       "id": "tyler-booker",
@@ -169,22 +153,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/q6nsdgec0jnh4etuxcax.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/tyler-booker/",
       "status": "Active",
-      "tier": "core"
-    },
-    {
-      "id": "trikweze-bridges",
-      "name": "Trikweze Bridges",
-      "number": "25",
-      "position": "CB",
-      "height": "6-2",
-      "weight": 200,
-      "age": 25,
-      "experience": "2",
-      "college": "Florida",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/h56ch5tjvnsixcgvzcez.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/trikweze-bridges/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "core",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "RG"
     },
     {
       "id": "camden-brown",
@@ -199,7 +171,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/gnrigiplr8bk1kzekx6b.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/camden-brown/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "WR"
     },
     {
       "id": "jonathan-bullard",
@@ -214,22 +189,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/haulfo69cmpwsvyflsod.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/jonathan-bullard/",
       "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "josh-butler",
-      "name": "Josh Butler",
-      "number": "31",
-      "position": "CB",
-      "height": "6-0",
-      "weight": 192,
-      "age": 29,
-      "experience": "3",
-      "college": "Michigan State",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/z1nnut9u6nxlmft3yzet.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/josh-butler/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "NT"
     },
     {
       "id": "caelen-carson",
@@ -244,22 +207,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ch6fiosb5gxtyle3jiv1.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/caelen-carson/",
       "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "zion-childress",
-      "name": "Zion Childress",
-      "number": "48",
-      "position": "CB",
-      "height": "5-11",
-      "weight": 203,
-      "age": 24,
-      "experience": "1",
-      "college": "Kentucky",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/nrws62f0hetc3tyijpyx.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/zion-childress/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "RCB"
     },
     {
       "id": "alijah-clark",
@@ -274,7 +225,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/v2ngo9vpuoosrmwpjcvr.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/alijah-clark/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "SS"
     },
     {
       "id": "kenny-clark-x7989",
@@ -289,7 +243,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/psirdcqabkeuy4tlmfqt.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/kenny-clark-x7989/",
       "status": "Active",
-      "tier": "core"
+      "tier": "core",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "RDE"
     },
     {
       "id": "ajani-cornelius",
@@ -304,7 +261,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/poyfmhn6r4f3makdbkmb.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/ajani-cornelius/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "RT"
     },
     {
       "id": "malik-davis",
@@ -319,7 +279,28 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/private/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/fhsvpmxk2ortb87idnrc.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/malik-davis/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "RB"
+    },
+    {
+      "id": "emari-demercado",
+      "name": "Emari Demercado",
+      "number": "--",
+      "position": "RB",
+      "height": "5-9",
+      "weight": 215,
+      "age": 27,
+      "experience": "4",
+      "college": "TCU",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ih2zorskghspsfwctn9j.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/emari-demercado/",
+      "status": "Active",
+      "tier": "roster",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "RB"
     },
     {
       "id": "caleb-downs",
@@ -334,22 +315,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/s5r3kwwpcwsaccsryk4g.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/caleb-downs/",
       "status": "Active",
-      "tier": "star"
-    },
-    {
-      "id": "tommy-dunn",
-      "name": "Tommy Dunn",
-      "number": "95",
-      "position": "DT",
-      "height": "6-3",
-      "weight": 291,
-      "age": 23,
-      "experience": "R",
-      "college": "Kansas",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/sjnrsv5ya2scjdot1zgb.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/tommy-dunn/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "NB"
     },
     {
       "id": "cobie-durant",
@@ -364,7 +333,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/uiehiittg1x7ehueca46.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/cobie-durant/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "LCB"
     },
     {
       "id": "donovan-ezeiruaku",
@@ -379,22 +351,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/gv50wsrdscghdfuvcews.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/donovan-ezeiruaku/",
       "status": "Active",
-      "tier": "core"
-    },
-    {
-      "id": "princeton-fant",
-      "name": "Princeton Fant",
-      "number": "85",
-      "position": "TE",
-      "height": "6-2",
-      "weight": 245,
-      "age": 27,
-      "experience": "2",
-      "college": "Tennessee",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vpqnrovnwyv3iugpjhld.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/princeton-fant/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "core",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "SLB"
     },
     {
       "id": "jake-ferguson",
@@ -409,7 +369,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ykgpam570uwsh9m1pd6o.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/jake-ferguson/",
       "status": "Active",
-      "tier": "star"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "TE"
     },
     {
       "id": "ryan-flournoy",
@@ -424,7 +387,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ruwgepkbl2d5wogo60cd.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/ryan-flournoy/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "WR"
     },
     {
       "id": "rashan-gary",
@@ -439,37 +405,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/edhsoibjhzeaw3ooluux.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/rashan-gary/",
       "status": "Active",
-      "tier": "star"
-    },
-    {
-      "id": "kelvin-gilliam",
-      "name": "Kelvin Gilliam",
-      "number": "94",
-      "position": "DT",
-      "height": "6-2",
-      "weight": 296,
-      "age": 23,
-      "experience": "R",
-      "college": "Virginia Tech",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/odwrmonl1yiclltj35go.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/kelvin-gilliam/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "chris-glaser",
-      "name": "Chris Glaser",
-      "number": "68",
-      "position": "G",
-      "height": "6-4",
-      "weight": 306,
-      "age": 26,
-      "experience": "2",
-      "college": "Virginia",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/nkdxoahonjb6wx5ideqo.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/chris-glaser/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "WLB"
     },
     {
       "id": "tyler-guyton",
@@ -484,22 +423,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/cdgpiqonx2ezywdyvhg1.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/tyler-guyton/",
       "status": "Active",
-      "tier": "core"
-    },
-    {
-      "id": "traeshon-holden",
-      "name": "Traeshon Holden",
-      "number": "80",
-      "position": "WR",
-      "height": "6-2",
-      "weight": 208,
-      "age": 24,
-      "experience": "1",
-      "college": "Oregon",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/rgvxv1vyg4qjzkchsesq.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/traeshon-holden/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "core",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "LT"
     },
     {
       "id": "malik-hooker",
@@ -514,7 +441,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/private/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ykxqocxoypagi330ykij.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/malik-hooker/",
       "status": "Active",
-      "tier": "core"
+      "tier": "core",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "FS"
     },
     {
       "id": "james-houston",
@@ -529,7 +459,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/v1772471016/cowboys/bvsgxtmbpkvjho3tvk8g.webp",
       "profile": "https://www.dallascowboys.com/team/players-roster/james-houston/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "WLB"
     },
     {
       "id": "sam-howell",
@@ -544,22 +477,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/yj8ajkmatlm1y9xli0am.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/sam-howell/",
       "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "jordan-hudson",
-      "name": "Jordan Hudson",
-      "number": "18",
-      "position": "WR",
-      "height": "6-1",
-      "weight": 199,
-      "age": 22,
-      "experience": "R",
-      "college": "SMU",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/pn1acypgdzrqnylwg7kj.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/jordan-hudson/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "QB"
     },
     {
       "id": "shemar-james",
@@ -574,67 +495,28 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ppgiokqzknluef6l4a3u.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/shemar-james/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "LILB"
     },
     {
-      "id": "marcellus-johnson",
-      "name": "Marcellus Johnson",
-      "number": "79",
-      "position": "T",
-      "height": "6-4",
-      "weight": 307,
-      "age": 26,
-      "experience": "1",
-      "college": "Missouri",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/r4n8n4gaoq7d4gfh73hy.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/marcellus-johnson/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "tyler-johnson",
-      "name": "Tyler Johnson",
-      "number": "15",
-      "position": "WR",
-      "height": "6-1",
-      "weight": 208,
-      "age": 27,
-      "experience": "6",
-      "college": "Minnesota",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/jna4wvrzeinef9ywhfjw.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/tyler-johnson/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "trevor-keegan",
-      "name": "Trevor Keegan",
+      "id": "broderick-jones",
+      "name": "Broderick Jones",
       "number": "77",
-      "position": "G",
-      "height": "6-6",
-      "weight": 320,
+      "position": "T",
+      "height": "6-5",
+      "weight": 311,
       "age": 25,
-      "experience": "3",
-      "college": "Michigan",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/v1772471149/cowboys/waouuvdhmdqj6e1vvt2l.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/trevor-keegan/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "derion-kendrick",
-      "name": "Derion Kendrick",
-      "number": "15",
-      "position": "CB",
-      "height": "6-0",
-      "weight": 205,
-      "age": 25,
-      "experience": "5",
+      "experience": "4",
       "college": "Georgia",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ofwhxve0zcr690stcysp.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/derion-kendrick/",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/lbpeq17kbnv5oyhrvcoz.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/broderick-jones/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "LT"
     },
     {
       "id": "ceedee-lamb",
@@ -649,22 +531,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/private/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/shwjmlutdkqkwk3a6edc.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/ceedee-lamb/",
       "status": "Active",
-      "tier": "star"
-    },
-    {
-      "id": "isaiah-land",
-      "name": "Isaiah Land",
-      "number": "58",
-      "position": "OLB",
-      "height": "6-3",
-      "weight": 245,
-      "age": 26,
-      "experience": "3",
-      "college": "Florida A&M",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/utmeoibfusmhdsl64t0r.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/isaiah-land/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "WR"
     },
     {
       "id": "malachi-lawrence",
@@ -679,37 +549,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/sszijbtx0rub2uqonhqm.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/malachi-lawrence/",
       "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "nick-leverett",
-      "name": "Nick Leverett",
-      "number": "51",
-      "position": "OL",
-      "height": "6-3",
-      "weight": 310,
-      "age": 28,
-      "experience": "5",
-      "college": "Rice",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/mz52s9hgnmi6hgsggrsx.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/nick-leverett/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "marist-liufau",
-      "name": "Marist Liufau",
-      "number": "35",
-      "position": "OLB",
-      "height": "6-2",
-      "weight": 238,
-      "age": 25,
-      "experience": "3",
-      "college": "Notre Dame",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kas3haahevdhykoxkzgi.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/marist-liufau/",
-      "status": "Active",
-      "tier": "core"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "SLB"
     },
     {
       "id": "p-j-locke",
@@ -724,7 +567,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vzhitslvvsffcnqgxind.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/p-j-locke/",
       "status": "Active",
-      "tier": "core"
+      "tier": "core",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "FS"
     },
     {
       "id": "hunter-luepke",
@@ -739,52 +585,28 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/h4oor6b9lcuatwk9smzl.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/hunter-luepke/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "FB"
     },
     {
-      "id": "phil-mafah",
-      "name": "Phil Mafah",
-      "number": "37",
-      "position": "RB",
-      "height": "6-1",
-      "weight": 232,
-      "age": 23,
-      "experience": "2",
-      "college": "Clemson",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/cjfhjivu9fvyuoyrumm5.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/phil-mafah/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "joe-milton-iii",
-      "name": "Joe Milton III",
-      "number": "10",
-      "position": "QB",
-      "height": "6-5",
-      "weight": 236,
-      "age": 26,
-      "experience": "3",
-      "college": "Tennessee",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/bosawsprdh9kpnwjiroo.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/joe-milton-iii/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "denzel-mims",
-      "name": "Denzel Mims",
-      "number": "84",
-      "position": "WR",
+      "id": "von-miller",
+      "name": "Von Miller",
+      "number": "40",
+      "position": "OLB",
       "height": "6-3",
-      "weight": 207,
-      "age": 28,
-      "experience": "4",
-      "college": "Baylor",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/gmk5zst6fhvgkgziesqj.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/denzel-mims/",
+      "weight": 245,
+      "age": 37,
+      "experience": "16",
+      "college": "Texas A&M",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/guko9g5dbs2yjhkjhogf.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/von-miller/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "WLB"
     },
     {
       "id": "jonathan-mingo",
@@ -799,37 +621,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/lniyqbsvbgprdczqpr7g.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/jonathan-mingo/",
       "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "devin-moore",
-      "name": "Devin Moore",
-      "number": "29",
-      "position": "CB",
-      "height": "6-3",
-      "weight": 198,
-      "age": 22,
-      "experience": "R",
-      "college": "Florida",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/mlgbzmshxyzywoj71s0t.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/devin-moore/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "adedayo-odeleye",
-      "name": "Adedayo Odeleye",
-      "number": "96",
-      "position": "DT",
-      "height": "6-5",
-      "weight": 283,
-      "age": 28,
-      "experience": "1",
-      "college": "Loughborough (UK)",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/g1peym7ykbgywx6hlz0z.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/adedayo-odeleye/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "WR"
     },
     {
       "id": "otito-ogbonnia",
@@ -838,13 +633,16 @@ window.COWBOYS_ROSTER = {
       "position": "DT",
       "height": "6-4",
       "weight": 320,
-      "age": 25,
+      "age": 26,
       "experience": "5",
       "college": "UCLA",
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/wevyr2pcbntellrojnqr.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/otito-ogbonnia/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "NT"
     },
     {
       "id": "demarvion-overshown",
@@ -853,13 +651,16 @@ window.COWBOYS_ROSTER = {
       "position": "LB",
       "height": "6-3",
       "weight": 235,
-      "age": 25,
+      "age": 26,
       "experience": "4",
       "college": "Texas",
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/qik7ohqsixfzxybbsed6.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/demarvion-overshown/",
       "status": "Active",
-      "tier": "star"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "LILB"
     },
     {
       "id": "lt-overton",
@@ -874,37 +675,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/iubb7bnrki7x9m7gpasc.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/lt-overton/",
       "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "langston-patterson",
-      "name": "Langston Patterson",
-      "number": "47",
-      "position": "LB",
-      "height": "6-0",
-      "weight": 229,
-      "age": 23,
-      "experience": "R",
-      "college": "Vanderbilt",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/f2was0cp1nmvkpdawzox.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/langston-patterson/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "shiyazh-pete",
-      "name": "Shiyazh Pete",
-      "number": "75",
-      "position": "OL",
-      "height": "6-9",
-      "weight": 309,
-      "age": 23,
-      "experience": "R",
-      "college": "Kentucky",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/phgbzcfzjgko8iqblwvk.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/shiyazh-pete/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "LDE"
     },
     {
       "id": "george-pickens",
@@ -919,7 +693,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/d7ns4zpb3qyvlez01xvz.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/george-pickens/",
       "status": "Active",
-      "tier": "star"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "WR"
     },
     {
       "id": "dak-prescott",
@@ -934,7 +711,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/private/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/rtwaqxgsuw6nhxc9sgfa.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/dak-prescott/",
       "status": "Active",
-      "tier": "star"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "QB"
     },
     {
       "id": "shavon-revel-jr",
@@ -949,52 +729,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vadgjo5o3ad0e4zgqfuw.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/shavon-revel-jr/",
       "status": "Active",
-      "tier": "core"
-    },
-    {
-      "id": "dominic-richardson",
-      "name": "Dominic Richardson",
-      "number": "43",
-      "position": "RB",
-      "height": "6-0",
-      "weight": 204,
-      "age": 25,
-      "experience": "R",
-      "college": "Tulsa",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/nrdw1j93l1nlc4fwyp4p.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/dominic-richardson/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "curtis-robinson",
-      "name": "Curtis Robinson",
-      "number": "42",
-      "position": "LB",
-      "height": "6-3",
-      "weight": 235,
-      "age": 28,
-      "experience": "4",
-      "college": "Stanford",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kueyvhity1acblqjts4k.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/curtis-robinson/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "dj-rogers",
-      "name": "DJ Rogers",
-      "number": "49",
-      "position": "TE",
-      "height": "6-4",
-      "weight": 245,
-      "age": 24,
-      "experience": "R",
-      "college": "TCU",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/pjfvubh5cnky3lejuzu8.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/dj-rogers/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "core",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "LCB"
     },
     {
       "id": "luke-schoonmaker",
@@ -1009,7 +747,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kwcdhxxophwhkp5rhmcq.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/luke-schoonmaker/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "TE"
     },
     {
       "id": "drew-shelton",
@@ -1024,7 +765,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/tdudpxaazmupekxzktq0.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/drew-shelton/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "RT"
     },
     {
       "id": "trent-sieg",
@@ -1039,37 +783,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vfaqndfp65yf9ek6tbsg.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/trent-sieg/",
       "status": "Active",
-      "tier": "core"
-    },
-    {
-      "id": "anthony-smith-2",
-      "name": "Anthony Smith",
-      "number": "83",
-      "position": "WR",
-      "height": "6-2",
-      "weight": 197,
-      "age": 24,
-      "experience": "R",
-      "college": "East Carolina",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/fwzw30yuxl9rhe86s0mm.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/anthony-smith-2/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "jaden-smith",
-      "name": "Jaden Smith",
-      "number": "17",
-      "position": "WR",
-      "height": "6-6",
-      "weight": 210,
-      "age": 24,
-      "experience": "2",
-      "college": "Nevada",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/cg2g5awxap9umxaw1vds.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/jaden-smith/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "core",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "LS"
     },
     {
       "id": "tyler-smith",
@@ -1084,22 +801,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ty0yprbv6fowp7r2lbnb.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/tyler-smith/",
       "status": "Active",
-      "tier": "star"
-    },
-    {
-      "id": "charles-snowden",
-      "name": "Charles Snowden",
-      "number": "49",
-      "position": "OLB",
-      "height": "6-6",
-      "weight": 250,
-      "age": 28,
-      "experience": "3",
-      "college": "Virginia",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/zofaooicuworhujbeep4.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/charles-snowden/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "LG"
     },
     {
       "id": "brevyn-spann-ford",
@@ -1114,7 +819,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/mzbpa3irpverqxfhtref.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/brevyn-spann-ford/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "TE"
     },
     {
       "id": "ameer-speed",
@@ -1129,7 +837,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ocfmgvea692b4aohldyb.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/ameer-speed/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "LCB"
     },
     {
       "id": "terence-steele",
@@ -1144,22 +855,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/rpkzzf0vyj1nmmhps6md.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/terence-steele/",
       "status": "Active",
-      "tier": "core"
-    },
-    {
-      "id": "reddy-steward",
-      "name": "Reddy Steward",
-      "number": "27",
-      "position": "CB",
-      "height": "5-11",
-      "weight": 178,
-      "age": 25,
-      "experience": "2",
-      "college": "Troy",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ckdjveqzwjcihdyurtyo.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/reddy-steward/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "core",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "RT"
     },
     {
       "id": "nathan-thomas",
@@ -1168,7 +867,7 @@ window.COWBOYS_ROSTER = {
       "position": "T",
       "height": "6-5",
       "weight": 330,
-      "age": 24,
+      "age": 25,
       "experience": "3",
       "college": "Louisiana-Lafayette",
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/fmqmwviatwzgj0zzuyep.jpg",
@@ -1189,37 +888,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/bo9wycuflgceutdok6df.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/jalen-thompson/",
       "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "jay-toia",
-      "name": "Jay Toia",
-      "number": "93",
-      "position": "DT",
-      "height": "6-2",
-      "weight": 340,
-      "age": 23,
-      "experience": "2",
-      "college": "UCLA",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/oypwy2mediuglzejyqdj.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/jay-toia/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "michael-trigg",
-      "name": "Michael Trigg",
-      "number": "46",
-      "position": "TE",
-      "height": "6-4",
-      "weight": 240,
-      "age": 24,
-      "experience": "R",
-      "college": "Baylor",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/lgwbz4vkaxjuo51cmima.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/michael-trigg/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "SS"
     },
     {
       "id": "kavontae-turpin",
@@ -1228,28 +900,16 @@ window.COWBOYS_ROSTER = {
       "position": "WR",
       "height": "5-7",
       "weight": 158,
-      "age": 29,
+      "age": 30,
       "experience": "5",
       "college": "TCU",
       "image": "https://static.clubs.nfl.com/image/private/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/hpg8t0i5ugjpnppshdvz.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/kavontae-turpin/",
       "status": "Active",
-      "tier": "core"
-    },
-    {
-      "id": "marquez-valdes-scantling",
-      "name": "Marquez Valdes-Scantling",
-      "number": "11",
-      "position": "WR",
-      "height": "6-4",
-      "weight": 212,
-      "age": 31,
-      "experience": "9",
-      "college": "University of South Florida",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/aydex3kqabndhdxdhgin.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/marquez-valdes-scantling/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "core",
+      "depth": "2nd string",
+      "depthRank": 2,
+      "depthPosition": "WR"
     },
     {
       "id": "tyrus-wheat",
@@ -1264,7 +924,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/wjg9khmxkmsesaohjho6.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/tyrus-wheat/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "4th string",
+      "depthRank": 4,
+      "depthPosition": "WLB"
     },
     {
       "id": "javonte-williams",
@@ -1279,7 +942,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kvmlnrdsyki0h7wkldy6.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/javonte-williams/",
       "status": "Active",
-      "tier": "star"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "RB"
     },
     {
       "id": "quinnen-williams",
@@ -1294,37 +960,10 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/cnbbjgxynsnxop7eqjvz.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/quinnen-williams/",
       "status": "Active",
-      "tier": "star"
-    },
-    {
-      "id": "sam-williams",
-      "name": "Sam Williams",
-      "number": "54",
-      "position": "OLB",
-      "height": "6-4",
-      "weight": 260,
-      "age": 27,
-      "experience": "5",
-      "college": "Mississippi",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/pudxg1y0pnthridjzg9x.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/sam-williams/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "dj-wingfield",
-      "name": "DJ Wingfield",
-      "number": "64",
-      "position": "OL",
-      "height": "6-4",
-      "weight": 316,
-      "age": 25,
-      "experience": "R",
-      "college": "USC",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ybvsvjvcfygar6mzavz5.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/dj-wingfield/",
-      "status": "Active",
-      "tier": "roster"
+      "tier": "star",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "LDE"
     },
     {
       "id": "dee-winters",
@@ -1339,37 +978,82 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/zkklz6fc61rnxh6upbch.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/dee-winters/",
       "status": "Active",
-      "tier": "roster"
+      "tier": "roster",
+      "depth": "Starter",
+      "depthRank": 1,
+      "depthPosition": "RILB"
     },
     {
-      "id": "dj-withers",
-      "name": "DJ Withers",
-      "number": "59",
+      "id": "marist-liufau",
+      "name": "Marist Liufau",
+      "number": "35",
+      "position": "OLB",
+      "height": "6-2",
+      "weight": 238,
+      "age": 25,
+      "experience": "3",
+      "college": "Notre Dame",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kas3haahevdhykoxkzgi.jpg",
+      "profile": "https://www.dallascowboys.com/team/players-roster/marist-liufau/",
+      "status": "Reserve/Designated to Return",
+      "tier": "core",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "SLB"
+    },
+    {
+      "id": "devin-moore",
+      "name": "Devin Moore",
+      "number": "29",
+      "position": "CB",
+      "height": "6-3",
+      "weight": 198,
+      "age": 22,
+      "experience": "R",
+      "college": "Florida",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/mlgbzmshxyzywoj71s0t.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/devin-moore/",
+      "status": "Reserve/Designated to Return",
+      "tier": "roster",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "RCB"
+    },
+    {
+      "id": "princeton-fant",
+      "name": "Princeton Fant",
+      "number": "85",
+      "position": "TE",
+      "height": "6-2",
+      "weight": 245,
+      "age": 27,
+      "experience": "2",
+      "college": "Tennessee",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vpqnrovnwyv3iugpjhld.jpg",
+      "profile": "https://www.dallascowboys.com/team/players-roster/princeton-fant/",
+      "status": "Reserve/Injured",
+      "tier": "roster",
+      "depth": "4th string",
+      "depthRank": 4,
+      "depthPosition": "TE"
+    },
+    {
+      "id": "kelvin-gilliam",
+      "name": "Kelvin Gilliam",
+      "number": "94",
       "position": "DT",
-      "height": "6-4",
-      "weight": 294,
+      "height": "6-2",
+      "weight": 296,
       "age": 23,
       "experience": "R",
-      "college": "Kansas",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/sgzbgndgwr7uigppyfey.png",
-      "profile": "https://www.dallascowboys.com/team/players-roster/dj-withers/",
-      "status": "Active",
-      "tier": "roster"
-    },
-    {
-      "id": "julius-wood",
-      "name": "Julius Wood",
-      "number": "32",
-      "position": "S",
-      "height": "6-1",
-      "weight": 193,
-      "age": 25,
-      "experience": "2",
-      "college": "East Carolina",
-      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/mxmwc1ip1pgz7w3siyf1.jpg",
-      "profile": "https://www.dallascowboys.com/team/players-roster/julius-wood/",
-      "status": "Active",
-      "tier": "roster"
+      "college": "Virginia Tech",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/odwrmonl1yiclltj35go.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/kelvin-gilliam/",
+      "status": "Reserve/Injured",
+      "tier": "roster",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "LDE"
     },
     {
       "id": "matt-hennessy",
@@ -1384,6 +1068,204 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ii1ypbppnkqfax4eimq3.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/matt-hennessy/",
       "status": "Reserve/Injured",
+      "tier": "roster",
+      "depth": "3rd string",
+      "depthRank": 3,
+      "depthPosition": "C"
+    },
+    {
+      "id": "israel-abanikanda",
+      "name": "Israel Abanikanda",
+      "number": "30",
+      "position": "RB",
+      "height": "5-10",
+      "weight": 217,
+      "age": 23,
+      "experience": "3",
+      "college": "Pittsburgh",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kf0ckemgjioeh9cihlpd.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/israel-abanikanda/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "justin-barron",
+      "name": "Justin Barron",
+      "number": "45",
+      "position": "LB",
+      "height": "6-4",
+      "weight": 235,
+      "age": 24,
+      "experience": "1",
+      "college": "Syracuse",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/y6of9mjruimpaziahlsw.jpg",
+      "profile": "https://www.dallascowboys.com/team/players-roster/justin-barron/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "tommy-dunn",
+      "name": "Tommy Dunn",
+      "number": "95",
+      "position": "DT",
+      "height": "6-3",
+      "weight": 291,
+      "age": 23,
+      "experience": "R",
+      "college": "Kansas",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/sjnrsv5ya2scjdot1zgb.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/tommy-dunn/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "jordan-hudson",
+      "name": "Jordan Hudson",
+      "number": "18",
+      "position": "WR",
+      "height": "6-1",
+      "weight": 199,
+      "age": 22,
+      "experience": "R",
+      "college": "SMU",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/pn1acypgdzrqnylwg7kj.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/jordan-hudson/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "marcellus-johnson",
+      "name": "Marcellus Johnson",
+      "number": "79",
+      "position": "T",
+      "height": "6-4",
+      "weight": 307,
+      "age": 26,
+      "experience": "1",
+      "college": "Missouri",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/r4n8n4gaoq7d4gfh73hy.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/marcellus-johnson/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "derion-kendrick",
+      "name": "Derion Kendrick",
+      "number": "15",
+      "position": "CB",
+      "height": "6-0",
+      "weight": 205,
+      "age": 26,
+      "experience": "5",
+      "college": "Georgia",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ofwhxve0zcr690stcysp.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/derion-kendrick/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "isaiah-land",
+      "name": "Isaiah Land",
+      "number": "58",
+      "position": "OLB",
+      "height": "6-3",
+      "weight": 245,
+      "age": 26,
+      "experience": "3",
+      "college": "Florida A&M",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/utmeoibfusmhdsl64t0r.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/isaiah-land/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "nick-leverett",
+      "name": "Nick Leverett",
+      "number": "51",
+      "position": "OL",
+      "height": "6-3",
+      "weight": 310,
+      "age": 28,
+      "experience": "5",
+      "college": "Rice",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/mz52s9hgnmi6hgsggrsx.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/nick-leverett/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "adedayo-odeleye",
+      "name": "Adedayo Odeleye",
+      "number": "96",
+      "position": "DT",
+      "height": "6-5",
+      "weight": 283,
+      "age": 28,
+      "experience": "1",
+      "college": "Loughborough (UK)",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/g1peym7ykbgywx6hlz0z.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/adedayo-odeleye/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "curtis-robinson",
+      "name": "Curtis Robinson",
+      "number": "42",
+      "position": "LB",
+      "height": "6-3",
+      "weight": 235,
+      "age": 28,
+      "experience": "4",
+      "college": "Stanford",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kueyvhity1acblqjts4k.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/curtis-robinson/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "anthony-smith-2",
+      "name": "Anthony Smith",
+      "number": "83",
+      "position": "WR",
+      "height": "6-2",
+      "weight": 197,
+      "age": 24,
+      "experience": "R",
+      "college": "East Carolina",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/fwzw30yuxl9rhe86s0mm.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/anthony-smith-2/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "reddy-steward",
+      "name": "Reddy Steward",
+      "number": "27",
+      "position": "CB",
+      "height": "5-11",
+      "weight": 178,
+      "age": 25,
+      "experience": "2",
+      "college": "Troy",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ckdjveqzwjcihdyurtyo.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/reddy-steward/",
+      "status": "Practice Squad",
+      "tier": "roster"
+    },
+    {
+      "id": "michael-trigg",
+      "name": "Michael Trigg",
+      "number": "46",
+      "position": "TE",
+      "height": "6-4",
+      "weight": 240,
+      "age": 24,
+      "experience": "R",
+      "college": "Baylor",
+      "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/lgwbz4vkaxjuo51cmima.png",
+      "profile": "https://www.dallascowboys.com/team/players-roster/michael-trigg/",
+      "status": "Practice Squad",
       "tier": "roster"
     }
   ]

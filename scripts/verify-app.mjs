@@ -210,13 +210,17 @@ try {
     const heaviest = Math.max(...window.COWBOYS_ROSTER.players.map((player) => Number(player.weight)));
     const weightSorted = document.querySelector('.player-position').textContent.includes(heaviest + ' lb');
     document.querySelector('#roster-controls-button').click();
+    document.querySelector('[name="sort"][value="depth"]').checked = true;
+    document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const depthSorted = document.querySelector('.depth-status')?.textContent.startsWith('Starter · ');
+    document.querySelector('#roster-controls-button').click();
     document.querySelector('[data-action="clear-roster-controls"]').click();
     document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const reset = document.querySelector('#roster-filter-count').hidden;
     const back = document.querySelector('#header-back');
-    return { dialogOpened, combined, groupOptionCount, keyPlayerCount, expectedKeyPlayerCount, badge, sortOptionCount, heightSorted, weightSorted, reset, backLabel: back.getAttribute('aria-label'), backAction: back.dataset.action, backText: back.textContent.trim() };
+    return { dialogOpened, combined, groupOptionCount, keyPlayerCount, expectedKeyPlayerCount, badge, sortOptionCount, heightSorted, weightSorted, depthSorted, reset, backLabel: back.getAttribute('aria-label'), backAction: back.dataset.action, backText: back.textContent.trim() };
   })()`);
-  if (!rosterControls.dialogOpened || !rosterControls.combined || rosterControls.groupOptionCount !== 6 || rosterControls.keyPlayerCount !== rosterControls.expectedKeyPlayerCount || rosterControls.badge !== ' · 1' || rosterControls.sortOptionCount !== 8 || !rosterControls.heightSorted || !rosterControls.weightSorted || !rosterControls.reset || rosterControls.backLabel !== 'Back to Cowboys roster' || rosterControls.backAction !== 'deck' || rosterControls.backText !== '←') throw new Error(`Roster controls failed: ${JSON.stringify(rosterControls)}`);
+  if (!rosterControls.dialogOpened || !rosterControls.combined || rosterControls.groupOptionCount !== 6 || rosterControls.keyPlayerCount !== rosterControls.expectedKeyPlayerCount || rosterControls.badge !== ' · 1' || rosterControls.sortOptionCount !== 9 || !rosterControls.heightSorted || !rosterControls.weightSorted || !rosterControls.depthSorted || !rosterControls.reset || rosterControls.backLabel !== 'Back to Cowboys roster' || rosterControls.backAction !== 'deck' || rosterControls.backText !== '←') throw new Error(`Roster controls failed: ${JSON.stringify(rosterControls)}`);
 
   await evaluate(client, `(() => {
     const search = document.querySelector('#roster-search');

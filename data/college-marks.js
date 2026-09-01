@@ -16,10 +16,6 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/california.png",
     "label": "CA"
   },
-  "Clemson": {
-    "src": "assets/college-marks/clemson.png",
-    "label": "CL"
-  },
   "Colorado State": {
     "src": "assets/college-marks/colorado-state.png",
     "label": "CS"
@@ -60,10 +56,6 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/kansas-state.png",
     "label": "KS"
   },
-  "Kentucky": {
-    "src": "assets/college-marks/kentucky.png",
-    "label": "KE"
-  },
   "Loughborough (UK)": {
     "src": "assets/college-marks/loughborough-uk.png",
     "label": "LO"
@@ -95,10 +87,6 @@ window.COLLEGE_MARKS = {
   "Missouri": {
     "src": "assets/college-marks/missouri.png",
     "label": "MI"
-  },
-  "Nevada": {
-    "src": "assets/college-marks/nevada.png",
-    "label": "NE"
   },
   "North Carolina": {
     "src": "assets/college-marks/north-carolina.png",
@@ -172,6 +160,10 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/texas.png",
     "label": "TE"
   },
+  "Texas A&M": {
+    "src": "assets/college-marks/texas-a-m.png",
+    "label": "TAM"
+  },
   "Texas Tech": {
     "src": "assets/college-marks/texas-tech.png",
     "label": "TT"
@@ -191,22 +183,6 @@ window.COLLEGE_MARKS = {
   "UCLA": {
     "src": "assets/college-marks/ucla.png",
     "label": "UC"
-  },
-  "USC": {
-    "src": "assets/college-marks/usc.png",
-    "label": "US"
-  },
-  "University of South Florida": {
-    "src": "assets/college-marks/university-of-south-florida.png",
-    "label": "UOS"
-  },
-  "Vanderbilt": {
-    "src": "assets/college-marks/vanderbilt.png",
-    "label": "VA"
-  },
-  "Virginia": {
-    "src": "assets/college-marks/virginia.png",
-    "label": "VI"
   },
   "Virginia Tech": {
     "src": "assets/college-marks/virginia-tech.png",
