@@ -10,10 +10,10 @@
     />
     <title>Player Decks</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=20" />
-    <script src="data/roster.js?v=20" defer></script>
-    <script src="data/college-marks.js?v=20" defer></script>
-    <script src="app.js?v=20" defer></script>
+    <link rel="stylesheet" href="styles.css?v=21" />
+    <script src="data/roster.js?v=21" defer></script>
+    <script src="data/college-marks.js?v=21" defer></script>
+    <script src="app.js?v=21" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -34,8 +34,8 @@
 
       <section class="view setup-view" data-view="setup" aria-labelledby="setup-title" hidden>
         <div class="setup-shell">
-          <button class="package-selector" id="setup-package" type="button" data-setup-control="package" aria-label="Key players package. Change package">
-            <span id="setup-title">Key players</span><span aria-hidden="true">⌄</span>
+          <button class="package-selector" id="setup-package" type="button" data-setup-control="package" aria-label="Most famous package. Change package">
+            <span id="setup-title">Most famous</span><span aria-hidden="true">⌄</span>
           </button>
           <div class="session-sentence-card">
             <p>
@@ -57,7 +57,7 @@
             <button class="icon-button" type="button" data-action="exit-session" aria-label="Exit session">×</button>
             <div class="game-status">
               <div>
-                <span id="game-deck-name">Key players</span>
+                <span id="game-deck-name">Most famous</span>
                 <strong id="game-progress-text">1 of 10</strong>
               </div>
               <div
@@ -150,11 +150,13 @@
           <legend>Group</legend>
           <div class="roster-choice-grid">
             <label class="roster-choice"><input type="radio" name="group" value="all" checked /><span>Full roster</span></label>
-            <label class="roster-choice"><input type="radio" name="group" value="stars" /><span>Key players</span></label>
-            <label class="roster-choice"><input type="radio" name="group" value="core" /><span>Core contributors</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="famous" /><span>Most famous</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="starters" /><span>Starters</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="second-string" /><span>2nd string</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="third-string" /><span>3rd string</span></label>
             <label class="roster-choice"><input type="radio" name="group" value="offense" /><span>Offense</span></label>
             <label class="roster-choice"><input type="radio" name="group" value="defense" /><span>Defense</span></label>
-            <label class="roster-choice"><input type="radio" name="group" value="new-faces" /><span>Depth &amp; newcomers</span></label>
+            <label class="roster-choice"><input type="radio" name="group" value="practice-squad" /><span>Practice squad</span></label>
           </div>
         </fieldset>
         <fieldset class="roster-control-group">
@@ -164,27 +166,15 @@
           </div>
         </fieldset>
         <fieldset class="roster-control-group">
-          <legend>Learning</legend>
-          <div class="roster-choice-grid">
-            <label class="roster-choice"><input type="radio" name="progress" value="all" checked /><span>All</span></label>
-            <label class="roster-choice"><input type="radio" name="progress" value="needs-practice" /><span>Needs practice</span></label>
-            <label class="roster-choice"><input type="radio" name="progress" value="unseen" /><span>Not started</span></label>
-            <label class="roster-choice"><input type="radio" name="progress" value="in-progress" /><span>In progress</span></label>
-            <label class="roster-choice"><input type="radio" name="progress" value="verified" /><span>Verified</span></label>
-          </div>
-        </fieldset>
-        <fieldset class="roster-control-group">
           <legend>Sort</legend>
           <div class="roster-choice-grid">
-            <label class="roster-choice"><input type="radio" name="sort" value="practice" checked /><span>Practice priority</span></label>
-            <label class="roster-choice"><input type="radio" name="sort" value="name" /><span>Name A–Z</span></label>
+            <label class="roster-choice"><input type="radio" name="sort" value="name" checked /><span>Name A–Z</span></label>
             <label class="roster-choice"><input type="radio" name="sort" value="number" /><span>Jersey number</span></label>
             <label class="roster-choice"><input type="radio" name="sort" value="position" /><span>Position</span></label>
             <label class="roster-choice"><input type="radio" name="sort" value="college" /><span>College A–Z</span></label>
             <label class="roster-choice"><input type="radio" name="sort" value="height" /><span>Tallest first</span></label>
             <label class="roster-choice"><input type="radio" name="sort" value="weight" /><span>Heaviest first</span></label>
             <label class="roster-choice"><input type="radio" name="sort" value="depth" /><span>Depth chart</span></label>
-            <label class="roster-choice"><input type="radio" name="sort" value="progress" /><span>Learning progress</span></label>
           </div>
         </fieldset>
         <div class="dialog-actions">

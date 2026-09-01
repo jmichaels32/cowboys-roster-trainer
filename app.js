@@ -50,14 +50,24 @@
 
   const cowboysGroups = [
     {
-      id: "stars",
-      title: "Key players",
-      filter: (player) => player.tier === "star",
+      id: "famous",
+      title: "Most famous",
+      filter: (player) => player.tier === "famous",
     },
     {
-      id: "core",
-      title: "Core contributors",
-      filter: (player) => player.tier === "star" || player.tier === "core",
+      id: "starters",
+      title: "Starters",
+      filter: (player) => player.depthRank === 1,
+    },
+    {
+      id: "second-string",
+      title: "2nd string",
+      filter: (player) => player.depthRank === 2,
+    },
+    {
+      id: "third-string",
+      title: "3rd string",
+      filter: (player) => player.depthRank === 3,
     },
     {
       id: "offense",
@@ -70,9 +80,9 @@
       filter: (player) => DEFENSE.has(player.position),
     },
     {
-      id: "new-faces",
-      title: "Depth & newcomers",
-      filter: (player) => player.tier === "roster",
+      id: "practice-squad",
+      title: "Practice squad",
+      filter: (player) => player.status === "Practice Squad",
     },
     {
       id: "all",
@@ -99,7 +109,7 @@
   let progress = loadProgress();
   const state = {
     playerDeckId: loadPlayerDeckSelection(),
-    deckId: "stars",
+    deckId: "famous",
     mode: "mixed",
     stage: "recognition",
     length: 5,
@@ -108,7 +118,7 @@
     score: 0,
     answers: [],
     answerLocked: false,
-    rosterFilters: { group: "all", position: "all", progress: "all", sort: "practice" },
+    rosterFilters: { group: "all", position: "all", sort: "name" },
   };
 
   const elements = {
@@ -1005,7 +1015,7 @@
   }
 
   function clearRosterControlDraft() {
-    const defaults = { group: "all", position: "all", progress: "all", sort: "practice" };
+    const defaults = { group: "all", position: "all", sort: "name" };
     Object.entries(defaults).forEach(([name, value]) => {
       const input = elements.rosterControlsForm.querySelector(`[name="${name}"][value="${value}"]`);
       if (input) input.checked = true;
@@ -1014,29 +1024,9 @@
 
   function clearRosterSearchAndFilters() {
     elements.rosterSearch.value = "";
-    state.rosterFilters = { group: "all", position: "all", progress: "all", sort: "practice" };
+    state.rosterFilters = { group: "all", position: "all", sort: "name" };
     renderRoster();
     elements.rosterSearch.focus();
-  }
-
-  function playerLearningStatus(player) {
-    const playerProgress = getPlayerProgress(player.id);
-    const typedFacts = SKILLS.filter((skill) => playerProgress.skills[skill] === 1).length;
-    const recognitionFacts = SKILLS.filter((skill) => playerProgress.recognitionSkills[skill] === 1).length;
-    if (playerProgress.verified) return { id: "verified", label: "Verified", detail: "4/4 mastery passed" };
-    if (playerProgress.seen === 0) return { id: "unseen", label: "Not started", detail: "No answers yet" };
-    if (typedFacts) return { id: "in-progress", label: "In progress", detail: `${typedFacts}/4 typed facts` };
-    if (recognitionFacts) {
-      return { id: "in-progress", label: "Recognition", detail: `${recognitionFacts}/4 facts recognized` };
-    }
-    return { id: "in-progress", label: "Needs review", detail: "No facts currently confirmed" };
-  }
-
-  function rosterPracticePriority(player) {
-    return (
-      playerPracticePriority(player, "mastery", "mixed") +
-      playerPracticePriority(player, "recognition", "mixed") * 0.25
-    );
   }
 
   function heightInInches(player) {
@@ -1071,36 +1061,22 @@
         left.name.localeCompare(right.name)
       );
     }
-    if (sort === "progress") {
-      const statusOrder = { "in-progress": 0, unseen: 1, verified: 2 };
-      return (
-        statusOrder[playerLearningStatus(left).id] - statusOrder[playerLearningStatus(right).id] ||
-        knownSkillCount(right.id) - knownSkillCount(left.id) ||
-        left.name.localeCompare(right.name)
-      );
-    }
-    return rosterPracticePriority(right) - rosterPracticePriority(left) || left.name.localeCompare(right.name);
+    return left.name.localeCompare(right.name);
   }
 
   function renderRoster() {
     const query = elements.rosterSearch.value.trim().toLowerCase();
     const selectedGroup = state.rosterFilters.group;
     const selectedPosition = state.rosterFilters.position;
-    const selectedProgress = state.rosterFilters.progress;
     const selectedSort = state.rosterFilters.sort;
     const filtered = players.filter((player) => {
-      const learningStatus = playerLearningStatus(player);
       const matchesGroup = getDeck(selectedGroup).filter(player);
       const matchesPosition = selectedPosition === "all" || player.position === selectedPosition;
-      const matchesProgress =
-        selectedProgress === "all" ||
-        (selectedProgress === "needs-practice" && learningStatus.id !== "verified") ||
-        selectedProgress === learningStatus.id;
       const haystack = `${player.name} ${player.number} ${player.position} ${player.college} ${player.height} ${player.weight} ${player.depth ?? ""}`.toLowerCase();
-      return matchesGroup && matchesPosition && matchesProgress && haystack.includes(query);
+      return matchesGroup && matchesPosition && haystack.includes(query);
     }).sort((left, right) => compareRosterPlayers(left, right, selectedSort));
 
-    const activeControlCount = [selectedGroup !== "all", selectedPosition !== "all", selectedProgress !== "all", selectedSort !== "practice"].filter(Boolean).length;
+    const activeControlCount = [selectedGroup !== "all", selectedPosition !== "all", selectedSort !== "name"].filter(Boolean).length;
     elements.rosterFilterCount.hidden = activeControlCount === 0;
     elements.rosterFilterCount.textContent = activeControlCount ? ` · ${activeControlCount}` : "";
     elements.rosterControlsButton.classList.toggle("has-filters", activeControlCount > 0);
@@ -1109,9 +1085,7 @@
     elements.playerGrid.innerHTML = filtered.length
       ? filtered
           .map(
-            (player) => {
-              const learningStatus = playerLearningStatus(player);
-              return `
+            (player) => `
               <article class="player-card">
                 ${headshot(player)}
                 <div class="player-card-body">
@@ -1121,13 +1095,9 @@
                   </div>
                   <p class="player-position">${h(player.position)} · ${h(formatHeight(player.height))} · ${h(player.weight)} lb${player.status !== "Active" ? ` · ${h(player.status)}` : ""}</p>
                   <p class="player-college">${collegeMark(player.college)}<span>${h(player.college)}</span></p>
-                  <div class="player-card-statuses">
-                    <span class="learning-status is-${h(learningStatus.id)}">${h(learningStatus.label)}</span>
-                    ${player.depth ? `<span class="depth-status">${h(player.depth)} · ${h(player.depthPosition)}</span>` : ""}
-                  </div>
+                  ${player.depth ? `<div class="player-card-statuses"><span class="depth-status">${h(player.depth)} · ${h(player.depthPosition)}</span></div>` : ""}
                 </div>
-              </article>`;
-            },
+              </article>`,
           )
           .join("")
       : '<div class="empty-roster"><p>No players found</p><button class="button button-quiet" type="button" data-action="clear-roster-results">Clear search and filters</button></div>';
@@ -1222,8 +1192,7 @@
       state.rosterFilters = {
         group: String(formData.get("group") ?? "all"),
         position: String(formData.get("position") ?? "all"),
-        progress: String(formData.get("progress") ?? "all"),
-        sort: String(formData.get("sort") ?? "practice"),
+        sort: String(formData.get("sort") ?? "name"),
       };
       elements.rosterControlsDialog.close();
       renderRoster();

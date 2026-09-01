@@ -1816,28 +1816,6 @@ a {
   padding: 14px;
 }
 
-.learning-status {
-  display: inline-block;
-  padding: 4px 7px;
-  color: var(--blue-700);
-  font-size: 9px;
-  font-weight: 850;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  background: var(--blue-100);
-  border-radius: 6px;
-}
-
-.learning-status.is-verified {
-  color: var(--success);
-  background: var(--success-soft);
-}
-
-.learning-status.is-unseen {
-  color: var(--muted);
-  background: var(--silver-100);
-}
-
 .player-card-topline {
   display: flex;
   gap: 10px;
@@ -2250,7 +2228,6 @@ a {
     margin-top: 7px;
   }
 
-  .learning-status,
   .depth-status {
     padding: 3px 6px;
     font-size: 8px;

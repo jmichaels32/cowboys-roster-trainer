@@ -123,6 +123,7 @@ try {
     const initial = {
       active: setupView.classList.contains('is-active'),
       training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
+      packageTitle: document.querySelector('#setup-title').textContent,
       sentence: document.querySelector('.session-sentence-card').textContent.replace(/\\s+/g, ' ').trim(),
       header: document.querySelector('#header-context').textContent,
       backLabel: document.querySelector('#header-back').getAttribute('aria-label'),
@@ -140,7 +141,7 @@ try {
     document.querySelector('[data-setup-kind="package"][data-setup-value="offense"]').click();
     const changedPackage = document.querySelector('#setup-title').textContent;
     document.querySelector('#setup-package').click();
-    document.querySelector('[data-setup-kind="package"][data-setup-value="stars"]').click();
+    document.querySelector('[data-setup-kind="package"][data-setup-value="famous"]').click();
     document.querySelector('#setup-mode-value').click();
     const dialogOpened = document.querySelector('#session-option-dialog').open;
     document.querySelector('[data-setup-kind="mode"][data-setup-value="faces"]').click();
@@ -157,7 +158,7 @@ try {
     document.querySelector('[data-player-deck="cowboys"]').click();
     return { ...initial, packageDialogOpened, packageCount, packageHasCounts, changedPackage, dialogOpened, selectedMode, startLabel, swipeReturned };
   })()`);
-  if (!setup.active || setup.training || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 6 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned) throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
+  if (!setup.active || setup.training || setup.packageTitle !== 'Most famous' || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 8 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned) throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
 
   const lesson = await evaluate(client, `(() => {
     document.querySelector('#setup-start').click();
@@ -167,23 +168,31 @@ try {
       training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
       feedbackVisible: !document.querySelector('#answer-feedback').hidden,
       nextVisible: !document.querySelector('#next-wrap').hidden,
+      internalProgress: JSON.parse(localStorage.getItem('cowboys-roster-lab-v1')).totalAnswers > 0,
       closeTop: document.querySelector('[data-action="exit-session"]').getBoundingClientRect().top,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
     };
   })()`);
-  if (!lesson.training || !lesson.feedbackVisible || !lesson.nextVisible || lesson.closeTop < 34 || lesson.overflow) throw new Error(`Lesson flow failed: ${JSON.stringify(lesson)}`);
+  if (!lesson.training || !lesson.feedbackVisible || !lesson.nextVisible || !lesson.internalProgress || lesson.closeTop < 34 || lesson.overflow) throw new Error(`Lesson flow failed: ${JSON.stringify(lesson)}`);
 
   const rosterControls = await evaluate(client, `(() => {
     document.querySelector('[data-action="exit-session"]').click();
     document.querySelector('#browse-players').click();
     document.querySelector('#roster-controls-button').click();
     const dialogOpened = document.querySelector('#roster-controls-dialog').open;
-    const combined = Boolean(document.querySelector('[name="group"]') && document.querySelector('[name="position"]') && document.querySelector('[name="progress"]') && document.querySelector('[name="sort"]'));
+    const combined = Boolean(document.querySelector('[name="group"]') && document.querySelector('[name="position"]') && document.querySelector('[name="sort"]'));
+    const learningControlsAbsent = !document.querySelector('[name="progress"], [name="sort"][value="practice"], [name="sort"][value="progress"]');
     const groupOptionCount = document.querySelectorAll('[name="group"]').length;
-    document.querySelector('[name="group"][value="stars"]').checked = true;
+    document.querySelector('[name="group"][value="famous"]').checked = true;
     document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    const keyPlayerCount = document.querySelectorAll('.player-card').length;
-    const expectedKeyPlayerCount = window.COWBOYS_ROSTER.players.filter((player) => player.tier === 'star').length;
+    const famousPlayerCount = document.querySelectorAll('.player-card').length;
+    const expectedFamousPlayerCount = window.COWBOYS_ROSTER.players.filter((player) => player.tier === 'famous').length;
+    const learningBadgesAbsent = !document.querySelector('.learning-status');
+    document.querySelector('#roster-controls-button').click();
+    document.querySelector('[name="group"][value="practice-squad"]').checked = true;
+    document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    const practiceSquadCount = document.querySelectorAll('.player-card').length;
+    const expectedPracticeSquadCount = window.COWBOYS_ROSTER.players.filter((player) => player.status === 'Practice Squad').length;
     document.querySelector('#roster-controls-button').click();
     document.querySelector('[data-action="clear-roster-controls"]').click();
     document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
@@ -218,9 +227,9 @@ try {
     document.querySelector('#roster-controls-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     const reset = document.querySelector('#roster-filter-count').hidden;
     const back = document.querySelector('#header-back');
-    return { dialogOpened, combined, groupOptionCount, keyPlayerCount, expectedKeyPlayerCount, badge, sortOptionCount, heightSorted, weightSorted, depthSorted, reset, backLabel: back.getAttribute('aria-label'), backAction: back.dataset.action, backText: back.textContent.trim() };
+    return { dialogOpened, combined, learningControlsAbsent, groupOptionCount, famousPlayerCount, expectedFamousPlayerCount, learningBadgesAbsent, practiceSquadCount, expectedPracticeSquadCount, badge, sortOptionCount, heightSorted, weightSorted, depthSorted, reset, backLabel: back.getAttribute('aria-label'), backAction: back.dataset.action, backText: back.textContent.trim() };
   })()`);
-  if (!rosterControls.dialogOpened || !rosterControls.combined || rosterControls.groupOptionCount !== 6 || rosterControls.keyPlayerCount !== rosterControls.expectedKeyPlayerCount || rosterControls.badge !== ' · 1' || rosterControls.sortOptionCount !== 9 || !rosterControls.heightSorted || !rosterControls.weightSorted || !rosterControls.depthSorted || !rosterControls.reset || rosterControls.backLabel !== 'Back to Cowboys roster' || rosterControls.backAction !== 'deck' || rosterControls.backText !== '←') throw new Error(`Roster controls failed: ${JSON.stringify(rosterControls)}`);
+  if (!rosterControls.dialogOpened || !rosterControls.combined || !rosterControls.learningControlsAbsent || rosterControls.groupOptionCount !== 8 || rosterControls.famousPlayerCount !== 8 || rosterControls.famousPlayerCount !== rosterControls.expectedFamousPlayerCount || !rosterControls.learningBadgesAbsent || rosterControls.practiceSquadCount !== rosterControls.expectedPracticeSquadCount || rosterControls.badge !== ' · 1' || rosterControls.sortOptionCount !== 7 || !rosterControls.heightSorted || !rosterControls.weightSorted || !rosterControls.depthSorted || !rosterControls.reset || rosterControls.backLabel !== 'Back to Cowboys roster' || rosterControls.backAction !== 'deck' || rosterControls.backText !== '←') throw new Error(`Roster controls failed: ${JSON.stringify(rosterControls)}`);
 
   await evaluate(client, `(() => {
     const search = document.querySelector('#roster-search');

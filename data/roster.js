@@ -27,7 +27,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kabf5lmejex6n5uzj6lc.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/bryan-anger/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "P"
@@ -45,7 +45,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vxybqfe2vsjbxbbfrnng.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/brandon-aubrey/",
       "status": "Active",
-      "tier": "star",
+      "tier": "famous",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "PK"
@@ -99,7 +99,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/iitipynplwwyqic0atjp.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/cooper-beebe/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "C"
@@ -135,7 +135,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/zbitbzazn7mgpkimyzbb.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/daron-bland/",
       "status": "Active",
-      "tier": "star",
+      "tier": "famous",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "RCB"
@@ -153,7 +153,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/q6nsdgec0jnh4etuxcax.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/tyler-booker/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "RG"
@@ -243,7 +243,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/psirdcqabkeuy4tlmfqt.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/kenny-clark-x7989/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "RDE"
@@ -315,7 +315,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/s5r3kwwpcwsaccsryk4g.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/caleb-downs/",
       "status": "Active",
-      "tier": "star",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "NB"
@@ -351,7 +351,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/gv50wsrdscghdfuvcews.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/donovan-ezeiruaku/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "SLB"
@@ -369,7 +369,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ykgpam570uwsh9m1pd6o.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/jake-ferguson/",
       "status": "Active",
-      "tier": "star",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "TE"
@@ -405,7 +405,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/edhsoibjhzeaw3ooluux.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/rashan-gary/",
       "status": "Active",
-      "tier": "star",
+      "tier": "famous",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "WLB"
@@ -423,7 +423,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/cdgpiqonx2ezywdyvhg1.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/tyler-guyton/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "LT"
@@ -441,7 +441,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/private/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ykxqocxoypagi330ykij.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/malik-hooker/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "FS"
@@ -531,7 +531,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/private/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/shwjmlutdkqkwk3a6edc.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/ceedee-lamb/",
       "status": "Active",
-      "tier": "star",
+      "tier": "famous",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "WR"
@@ -567,7 +567,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vzhitslvvsffcnqgxind.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/p-j-locke/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "2nd string",
       "depthRank": 2,
       "depthPosition": "FS"
@@ -603,7 +603,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/guko9g5dbs2yjhkjhogf.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/von-miller/",
       "status": "Active",
-      "tier": "roster",
+      "tier": "famous",
       "depth": "2nd string",
       "depthRank": 2,
       "depthPosition": "WLB"
@@ -657,7 +657,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/qik7ohqsixfzxybbsed6.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/demarvion-overshown/",
       "status": "Active",
-      "tier": "star",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "LILB"
@@ -693,7 +693,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/d7ns4zpb3qyvlez01xvz.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/george-pickens/",
       "status": "Active",
-      "tier": "star",
+      "tier": "famous",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "WR"
@@ -711,7 +711,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/private/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/rtwaqxgsuw6nhxc9sgfa.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/dak-prescott/",
       "status": "Active",
-      "tier": "star",
+      "tier": "famous",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "QB"
@@ -729,7 +729,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vadgjo5o3ad0e4zgqfuw.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/shavon-revel-jr/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "2nd string",
       "depthRank": 2,
       "depthPosition": "LCB"
@@ -783,7 +783,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/vfaqndfp65yf9ek6tbsg.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/trent-sieg/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "LS"
@@ -801,7 +801,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/ty0yprbv6fowp7r2lbnb.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/tyler-smith/",
       "status": "Active",
-      "tier": "star",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "LG"
@@ -855,7 +855,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/rpkzzf0vyj1nmmhps6md.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/terence-steele/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "RT"
@@ -906,7 +906,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/private/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/hpg8t0i5ugjpnppshdvz.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/kavontae-turpin/",
       "status": "Active",
-      "tier": "core",
+      "tier": "roster",
       "depth": "2nd string",
       "depthRank": 2,
       "depthPosition": "WR"
@@ -942,7 +942,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kvmlnrdsyki0h7wkldy6.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/javonte-williams/",
       "status": "Active",
-      "tier": "star",
+      "tier": "roster",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "RB"
@@ -960,7 +960,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/cnbbjgxynsnxop7eqjvz.png",
       "profile": "https://www.dallascowboys.com/team/players-roster/quinnen-williams/",
       "status": "Active",
-      "tier": "star",
+      "tier": "famous",
       "depth": "Starter",
       "depthRank": 1,
       "depthPosition": "LDE"
@@ -996,7 +996,7 @@ window.COWBOYS_ROSTER = {
       "image": "https://static.clubs.nfl.com/image/upload/w_600,h_600,c_fill,g_face,q_auto:good/f_auto/cowboys/kas3haahevdhykoxkzgi.jpg",
       "profile": "https://www.dallascowboys.com/team/players-roster/marist-liufau/",
       "status": "Reserve/Designated to Return",
-      "tier": "core",
+      "tier": "roster",
       "depth": "3rd string",
       "depthRank": 3,
       "depthPosition": "SLB"

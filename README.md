@@ -62,7 +62,7 @@ Requires Node.js 18 or newer:
 node scripts/update-roster.mjs
 ```
 
-The script fetches the Cowboys' official roster sections plus ESPN's published depth chart, validates both sources, and regenerates `data/roster.js`. Active, designated-return, injured-reserve, and practice-squad players are included; waived and cut players are excluded. Roster status and string position remain separate fields, and players absent from the published depth chart do not receive an inferred rank. The small hand-curated star/core study groupings live at the top of the script.
+The script fetches the Cowboys' official roster sections plus ESPN's published depth chart, validates both sources, and regenerates `data/roster.js`. Active, designated-return, injured-reserve, and practice-squad players are included; waived and cut players are excluded. Roster status and string position remain separate fields, and players absent from the published depth chart do not receive an inferred rank. The eight-player `Most famous` group is the only hand-curated player list in the updater.
 
 ## Notes
 

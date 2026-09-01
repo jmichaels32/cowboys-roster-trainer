@@ -16,37 +16,15 @@ const INCLUDED_ROSTER_STATUSES = new Set([
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const outputPath = resolve(scriptDirectory, "../data/roster.js");
 
-const stars = new Set([
+const mostFamous = new Set([
   "Brandon Aubrey",
   "DaRon Bland",
-  "Caleb Downs",
-  "Jake Ferguson",
   "Rashan Gary",
   "CeeDee Lamb",
-  "DeMarvion Overshown",
   "George Pickens",
   "Dak Prescott",
-  "Tyler Smith",
-  "Javonte Williams",
   "Quinnen Williams",
-]);
-
-const core = new Set([
-  ...stars,
-  "Bryan Anger",
-  "Cooper Beebe",
-  "Jaydon Blue",
-  "Tyler Booker",
-  "Kenny Clark",
-  "Donovan Ezeiruaku",
-  "Tyler Guyton",
-  "Malik Hooker",
-  "Marist Liufau",
-  "P.J. Locke",
-  "Shavon Revel Jr.",
-  "Trent Sieg",
-  "Terence Steele",
-  "KaVontae Turpin",
+  "Von Miller",
 ]);
 
 function decodeHtml(value) {
@@ -134,7 +112,7 @@ function parseRoster(html) {
       image,
       profile: new URL(profilePath, SOURCE_URL).href,
       status: section.status,
-      tier: stars.has(name) ? "star" : core.has(name) ? "core" : "roster",
+      tier: mostFamous.has(name) ? "famous" : "roster",
     };
   });
 }
