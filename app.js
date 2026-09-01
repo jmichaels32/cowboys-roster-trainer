@@ -14,6 +14,7 @@
   const STORAGE_KEY = "cowboys-roster-lab-v1";
   const PLAYER_DECK_KEY = "player-decks-selected-v1";
   const STUDY_SETTINGS_KEY = "cowboys-study-settings-v1";
+  const TRIVIA_STYLE_KEY = "cowboys-trivia-reveal-style-v1";
   const OFFENSE = new Set(["QB", "RB", "FB", "WR", "TE", "C", "G", "T", "OL"]);
   const DEFENSE = new Set(["DT", "OLB", "LB", "CB", "S", "DB"]);
   const SKILLS = ["faces", "numbers", "positions", "colleges"];
@@ -143,6 +144,7 @@
     score: 0,
     answers: [],
     answerLocked: false,
+    triviaRevealStyle: loadTriviaRevealStyle(),
     rosterFilters: { group: "all", position: "all", sort: "name" },
   };
 
@@ -163,6 +165,8 @@
     setupContentChoice: document.querySelector("#setup-content-choice"),
     setupLengthValue: document.querySelector("#setup-length-value"),
     setupStart: document.querySelector("#setup-start"),
+    triviaStylePicker: document.querySelector("#trivia-style-picker"),
+    triviaStyleButtons: [...document.querySelectorAll("[data-trivia-style]")],
     sessionOptionDialog: document.querySelector("#session-option-dialog"),
     sessionOptionTitle: document.querySelector("#session-option-title"),
     sessionOptionList: document.querySelector("#session-option-list"),
@@ -171,6 +175,7 @@
     gameProgress: document.querySelector(".game-progress"),
     gameProgressBar: document.querySelector("#game-progress-bar"),
     gameScore: document.querySelector("#game-score"),
+    questionCard: document.querySelector(".question-card"),
     questionType: document.querySelector("#question-type"),
     questionTitle: document.querySelector("#question-title"),
     questionVisual: document.querySelector("#question-visual"),
@@ -226,6 +231,23 @@
       );
     } catch {
       return structuredClone(defaultStudySettings);
+    }
+  }
+
+  function loadTriviaRevealStyle() {
+    try {
+      const saved = localStorage.getItem(TRIVIA_STYLE_KEY);
+      return ["a", "b", "c", "d"].includes(saved) ? saved : "a";
+    } catch {
+      return "a";
+    }
+  }
+
+  function saveTriviaRevealStyle() {
+    try {
+      localStorage.setItem(TRIVIA_STYLE_KEY, state.triviaRevealStyle);
+    } catch {
+      // The selected comparison style remains available for the current session.
     }
   }
 
@@ -772,6 +794,11 @@
     elements.setupContentChoice.hidden = state.studyType !== "players";
     elements.setupLengthValue.textContent = `${sessionCount} ${unit}${sessionCount === 1 ? "" : "s"}`;
     elements.setupStart.textContent = `Start ${sessionCount} ${unit}${sessionCount === 1 ? "" : "s"}`;
+    elements.triviaStylePicker.hidden = state.studyType !== "trivia";
+    elements.triviaStyleButtons.forEach((button) => {
+      const selected = button.dataset.triviaStyle === state.triviaRevealStyle;
+      button.setAttribute("aria-pressed", String(selected));
+    });
   }
 
   function openSessionOptions(control) {
@@ -1115,8 +1142,18 @@
     return `
       <figure class="trivia-reveal">
         <img src="${h(question.image.path)}" alt="${h(question.image.alt)}" decoding="async" />
-        <figcaption>${h(question.image.caption)}</figcaption>
+        <figcaption>${h(question.image.label)}</figcaption>
       </figure>`;
+  }
+
+  function renderTriviaFeedback(question, correct) {
+    return `
+      <div class="trivia-answer-copy">
+        <p class="trivia-result">${correct ? "Correct" : "Incorrect"}</p>
+        <h2>${h(question.correctDisplay)}</h2>
+        <p class="trivia-fact">${h(question.detail)}</p>
+      </div>
+      ${renderTriviaReveal(question)}`;
   }
 
   function renderQuestion() {
@@ -1132,7 +1169,9 @@
     elements.gameProgressBar.style.width = `${(current / total) * 100}%`;
     elements.gameScore.textContent = state.score;
     elements.questionType.textContent = question.label;
+    elements.questionType.hidden = question.studyType === "trivia";
     elements.questionTitle.textContent = question.prompt;
+    elements.questionCard.classList.toggle("is-trivia-question", question.studyType === "trivia");
     const questionVisual = renderQuestionVisual(question);
     elements.questionVisual.innerHTML = questionVisual;
     elements.questionVisual.hidden = !questionVisual;
@@ -1164,15 +1203,18 @@
           </form>`;
     elements.answerFeedback.hidden = true;
     elements.answerFeedback.className = "answer-feedback";
+    elements.questionCard.classList.remove("has-trivia-reveal");
     elements.nextWrap.hidden = true;
     const nextLabel =
       current === total
         ? "See results"
-        : question.fullCheck
-          ? question.factIndex === SKILLS.length - 1
-            ? "Next player"
-            : "Next fact"
-          : "Next card";
+          : question.fullCheck
+            ? question.factIndex === SKILLS.length - 1
+              ? "Next player"
+              : "Next fact"
+          : question.studyType === "players"
+            ? "Next card"
+            : "Next question";
     elements.nextButton.innerHTML = `${nextLabel} <span aria-hidden="true">→</span>`;
     if (question.responseType === "typed") {
       document.querySelector("#recall-input").focus({ preventScroll: true });
@@ -1281,11 +1323,17 @@
 
     elements.answerFeedback.hidden = false;
     elements.answerFeedback.classList.add(correct ? "is-correct" : "is-wrong");
+    const isTrivia = question.studyType === "trivia";
+    elements.questionCard.classList.toggle("has-trivia-reveal", isTrivia);
+    elements.answerFeedback.classList.toggle("is-trivia", isTrivia);
+    if (isTrivia) elements.answerFeedback.dataset.triviaStyle = state.triviaRevealStyle;
+    else delete elements.answerFeedback.dataset.triviaStyle;
     elements.answerFeedback.innerHTML = question.kind === "knowledge"
-      ? `
+      ? question.studyType === "trivia"
+        ? renderTriviaFeedback(question, correct)
+        : `
         <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
-        <p class="knowledge-detail">${h(question.detail)}</p>
-        ${renderTriviaReveal(question)}`
+        <p class="knowledge-detail">${h(question.detail)}</p>`
       : `
         <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
         <div class="feedback-facts">
@@ -1557,6 +1605,14 @@
     const studyTypeTarget = event.target.closest("[data-study-type]");
     if (studyTypeTarget) {
       changeStudyType(studyTypeTarget.dataset.studyType);
+      return;
+    }
+
+    const triviaStyleTarget = event.target.closest("[data-trivia-style]");
+    if (triviaStyleTarget) {
+      state.triviaRevealStyle = triviaStyleTarget.dataset.triviaStyle;
+      saveTriviaRevealStyle();
+      renderSetup();
       return;
     }
 

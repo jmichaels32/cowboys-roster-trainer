@@ -1021,6 +1021,65 @@ a {
   letter-spacing: -0.02em;
 }
 
+.trivia-style-picker {
+  min-width: 0;
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+}
+
+.trivia-style-picker legend {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.trivia-style-picker > div {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  background: var(--white);
+  border: 1px solid var(--silver-300);
+  border-radius: var(--radius-sm);
+}
+
+.trivia-style-picker button {
+  min-width: 0;
+  min-height: 52px;
+  padding: 7px 5px 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1.15;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+}
+
+.trivia-style-picker button + button {
+  border-left: 1px solid var(--silver-300);
+}
+
+.trivia-style-picker button span {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--navy-900);
+  font-size: 13px;
+}
+
+.trivia-style-picker button:hover {
+  color: var(--navy-900);
+  background: var(--silver-100);
+}
+
+.trivia-style-picker button[aria-pressed="true"] {
+  color: var(--blue-700);
+  background: var(--blue-100);
+  border-bottom-color: var(--blue-700);
+}
+
 .session-token {
   display: inline;
   min-height: 38px;
@@ -1141,6 +1200,22 @@ a {
   border: 1px solid var(--silver-300);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
+}
+
+.question-card.is-trivia-question {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.question-card.is-trivia-question .question-copy {
+  text-align: left;
+}
+
+.question-card.is-trivia-question .question-copy h1 {
+  max-width: 22ch;
+  margin-bottom: 22px;
+  font-size: clamp(1.7rem, 6vw, 2.5rem);
+  line-height: 1.08;
 }
 
 .question-copy {
@@ -1349,6 +1424,49 @@ a {
   border-color: var(--danger);
 }
 
+.is-trivia-question .answer-grid {
+  display: block;
+  border-top: 1px solid var(--silver-300);
+}
+
+.is-trivia-question .answer-button {
+  display: block;
+  width: 100%;
+  min-height: 54px;
+  padding: 12px 2px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--silver-300);
+  border-radius: 0;
+}
+
+.is-trivia-question .answer-button:hover:not(:disabled) {
+  padding-inline: 10px;
+  background: var(--silver-100);
+  border-color: var(--silver-300);
+}
+
+.is-trivia-question .answer-button.is-correct,
+.is-trivia-question .answer-button.is-wrong {
+  padding-inline: 10px;
+  border-color: var(--silver-300);
+}
+
+.is-trivia-question .answer-button.is-correct {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.is-trivia-question .answer-button.is-wrong {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.is-trivia-question.has-trivia-reveal .answer-button:disabled:not(.is-correct):not(.is-wrong) {
+  display: none;
+}
+
 .recall-form {
   display: grid;
   grid-column: 1 / -1;
@@ -1472,27 +1590,160 @@ a {
   text-align: center;
 }
 
+.answer-feedback.is-trivia {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+  padding: 18px 0 0;
+  background: transparent;
+  border-top: 1px solid var(--silver-300);
+  border-radius: 0;
+}
+
+.trivia-answer-copy {
+  max-width: 560px;
+  text-align: left;
+}
+
+.trivia-result {
+  margin: 0 0 4px;
+  color: var(--success);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.answer-feedback.is-wrong .trivia-result {
+  color: var(--danger);
+}
+
+.trivia-answer-copy h2 {
+  margin: 0 0 6px;
+  color: var(--navy-900);
+  font-size: clamp(1.55rem, 6vw, 2.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.trivia-fact {
+  max-width: 52ch;
+  margin: 0;
+  color: var(--navy-800);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 .trivia-reveal {
-  max-width: 520px;
-  margin: 14px auto 0;
+  position: relative;
+  max-width: 560px;
+  margin: 0;
 }
 
 .trivia-reveal img {
   display: block;
   width: 100%;
-  max-height: 260px;
-  object-fit: contain;
-  background: var(--navy-900);
-  border: 1px solid rgb(24 28 42 / 12%);
-  border-radius: 10px;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: center;
+  background: var(--navy-950);
+  animation: trivia-image-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .trivia-reveal figcaption {
-  margin-top: 8px;
-  color: var(--navy-900);
-  font-size: 12px;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: left;
+}
+
+/* A — fact-first sports editorial. */
+.answer-feedback[data-trivia-style="a"] .trivia-reveal img {
+  border-radius: 0;
+}
+
+/* B — photography leads; the answer lands immediately after it. */
+.answer-feedback[data-trivia-style="b"] .trivia-reveal {
+  order: -1;
+}
+
+.answer-feedback[data-trivia-style="b"] .trivia-reveal img {
+  aspect-ratio: 3 / 2;
+}
+
+/* C — a compact split designed to keep the original question in view. */
+.answer-feedback[data-trivia-style="c"] {
+  grid-template-columns: minmax(104px, 0.8fr) minmax(0, 1.55fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.answer-feedback[data-trivia-style="c"] .trivia-reveal {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.answer-feedback[data-trivia-style="c"] .trivia-reveal img {
+  aspect-ratio: 4 / 5;
+}
+
+.answer-feedback[data-trivia-style="c"] .trivia-answer-copy {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.answer-feedback[data-trivia-style="c"] .trivia-reveal figcaption {
+  margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.answer-feedback[data-trivia-style="c"] .trivia-answer-copy h2 {
+  font-size: clamp(1.3rem, 5vw, 1.8rem);
+}
+
+.answer-feedback[data-trivia-style="c"] .trivia-fact {
+  font-size: 13px;
   line-height: 1.4;
-  text-align: center;
+}
+
+/* D — the archive image breaks out to the card edges; no visible caption. */
+.answer-feedback[data-trivia-style="d"] {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.answer-feedback[data-trivia-style="d"] .trivia-reveal {
+  order: -1;
+  max-width: none;
+  margin-inline: calc(-1 * clamp(20px, 5vw, 34px));
+}
+
+.answer-feedback[data-trivia-style="d"] .trivia-reveal img {
+  aspect-ratio: 16 / 9;
+}
+
+.answer-feedback[data-trivia-style="d"] .trivia-reveal figcaption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+@keyframes trivia-image-in {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 10% 0);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+  }
 }
 
 .next-wrap {

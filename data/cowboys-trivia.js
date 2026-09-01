@@ -39,6 +39,7 @@ window.COWBOYS_TRIVIA = {
     images: {
       fiveTrophies: {
         path: "assets/trivia/five-trophies.webp",
+        label: "Five Lombardi trophies",
         subject: "The Cowboys’ five Vince Lombardi trophies",
         alt: "Five Vince Lombardi trophies displayed at The Star",
         credit: "Dallas Cowboys",
@@ -48,6 +49,7 @@ window.COWBOYS_TRIVIA = {
       },
       superBowlVI: {
         path: "assets/trivia/super-bowl-vi.webp",
+        label: "Super Bowl VI",
         subject: "Super Bowl VI",
         alt: "Roger Staubach carrying the ball in Super Bowl VI",
         credit: "Dallas Cowboys archive",
@@ -57,6 +59,7 @@ window.COWBOYS_TRIVIA = {
       },
       superBowlXXVIII: {
         path: "assets/trivia/super-bowl-xxviii.webp",
+        label: "Super Bowl XXVIII",
         subject: "Super Bowl XXVIII",
         alt: "Troy Aikman celebrating in Super Bowl XXVIII",
         credit: "Dallas Cowboys archive",
@@ -66,6 +69,7 @@ window.COWBOYS_TRIVIA = {
       },
       superBowlXXX: {
         path: "assets/trivia/super-bowl-xxx.webp",
+        label: "Super Bowl XXX",
         subject: "Super Bowl XXX",
         alt: "The Super Bowl XXX trophy between Cowboys and Steelers helmets",
         credit: "Dallas Cowboys archive",
@@ -75,6 +79,7 @@ window.COWBOYS_TRIVIA = {
       },
       foundingLeadership: {
         path: "assets/trivia/founding-leadership.webp",
+        label: "Dallas, 1960",
         subject: "The Cowboys’ original leadership group in 1960",
         alt: "The Dallas Cowboys original leadership group outside the team offices in 1960",
         credit: "Dallas Cowboys archive",
@@ -84,6 +89,7 @@ window.COWBOYS_TRIVIA = {
       },
       tomLandry: {
         path: "assets/trivia/tom-landry.webp",
+        label: "Tom Landry",
         subject: "Tom Landry",
         alt: "Tom Landry wearing his trademark fedora on the Cowboys sideline",
         credit: "Dallas Cowboys archive",
@@ -93,6 +99,7 @@ window.COWBOYS_TRIVIA = {
       },
       cottonBowl: {
         path: "assets/trivia/cotton-bowl.webp",
+        label: "Cotton Bowl",
         subject: "A Cowboys home game at the Cotton Bowl",
         alt: "Don Perkins carrying the ball during a Cowboys game at the Cotton Bowl",
         credit: "NFL/AP Images",
@@ -102,6 +109,7 @@ window.COWBOYS_TRIVIA = {
       },
       attStadium: {
         path: "assets/trivia/att-stadium.webp",
+        label: "AT&T Stadium",
         subject: "AT&T Stadium",
         alt: "The field and video board inside AT&T Stadium",
         credit: "Dallas Cowboys",
@@ -111,6 +119,7 @@ window.COWBOYS_TRIVIA = {
       },
       bobLilly: {
         path: "assets/trivia/bob-lilly.webp",
+        label: "Bob Lilly",
         subject: "Bob Lilly",
         alt: "Bob Lilly in his number 74 Cowboys jersey",
         credit: "Dallas Cowboys archive",
@@ -120,6 +129,7 @@ window.COWBOYS_TRIVIA = {
       },
       rogerStaubach: {
         path: "assets/trivia/roger-staubach.webp",
+        label: "Roger Staubach",
         subject: "Roger Staubach",
         alt: "Roger Staubach in his Cowboys uniform",
         credit: "Dallas Cowboys archive",
@@ -129,6 +139,7 @@ window.COWBOYS_TRIVIA = {
       },
       emmittSmith: {
         path: "assets/trivia/emmitt-smith.webp",
+        label: "Emmitt Smith",
         subject: "Emmitt Smith",
         alt: "Emmitt Smith celebrating in his number 22 Cowboys jersey",
         credit: "Dallas Cowboys archive",
@@ -138,6 +149,7 @@ window.COWBOYS_TRIVIA = {
       },
       troyAikman: {
         path: "assets/trivia/troy-aikman.webp",
+        label: "Troy Aikman",
         subject: "Troy Aikman",
         alt: "Troy Aikman carrying the ball in his number 8 Cowboys jersey",
         credit: "Dallas Cowboys archive",
@@ -147,6 +159,7 @@ window.COWBOYS_TRIVIA = {
       },
       michaelIrvin: {
         path: "assets/trivia/michael-irvin.webp",
+        label: "Michael Irvin",
         subject: "Michael Irvin",
         alt: "Michael Irvin running in his number 88 Cowboys jersey",
         credit: "Dallas Cowboys archive",
@@ -156,6 +169,7 @@ window.COWBOYS_TRIVIA = {
       },
       americasTeam: {
         path: "assets/trivia/americas-team.webp",
+        label: "America’s Team",
         subject: "The America’s Team nickname",
         alt: "Cover of America’s Team, the official history of the Dallas Cowboys",
         credit: "Skybox Press",
@@ -165,6 +179,7 @@ window.COWBOYS_TRIVIA = {
       },
       ringOfHonor: {
         path: "assets/trivia/ring-of-honor.webp",
+        label: "Ring of Honor",
         subject: "Dallas Cowboys Ring of Honor members",
         alt: "Cowboys Ring of Honor members gathered at The Star",
         credit: "Dallas Cowboys",
@@ -174,6 +189,7 @@ window.COWBOYS_TRIVIA = {
       },
       texSchramm: {
         path: "assets/trivia/tex-schramm.webp",
+        label: "Tex Schramm",
         subject: "Tex Schramm",
         alt: "Longtime Cowboys president and general manager Tex Schramm",
         credit: "Dallas Cowboys archive",

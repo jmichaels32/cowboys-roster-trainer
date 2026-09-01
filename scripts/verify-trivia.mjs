@@ -46,9 +46,11 @@ for (const [sourceId, citation] of sourceEntries) {
 }
 
 for (const [imageId, image] of imageEntries) {
-  for (const field of ["path", "subject", "alt", "credit", "sourceTitle", "sourceUrl", "originalUrl"]) {
+  for (const field of ["path", "label", "subject", "alt", "credit", "sourceTitle", "sourceUrl", "originalUrl"]) {
     if (!String(image[field] ?? "").trim()) errors.push(`${imageId}: missing image ${field}`);
   }
+
+  if (image.label?.trim().split(/\s+/).length > 4) errors.push(`${imageId}: image label must be four words or fewer`);
 
   if (!/^assets\/trivia\/[a-z0-9-]+\.webp$/.test(image.path ?? "")) {
     errors.push(`${imageId}: image path must be a local assets/trivia WebP`);
