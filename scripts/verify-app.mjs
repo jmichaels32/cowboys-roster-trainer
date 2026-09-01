@@ -194,15 +194,16 @@ try {
     document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();
     document.querySelector('#setup-start').click();
     const triviaTraining = document.querySelector('[data-view="training"]').classList.contains('is-active');
+    const triviaStimulusAbsent = document.querySelector('#question-visual').hidden && !document.querySelector('.knowledge-stimulus');
     document.querySelector('.answer-button').click();
     const triviaFeedback = Boolean(document.querySelector('.knowledge-detail'));
     const knowledgeSaved = Object.keys(JSON.parse(localStorage.getItem('cowboys-roster-lab-v1')).knowledge).length >= 2;
     document.querySelector('[data-action="exit-session"]').click();
     document.querySelector('[data-study-type="players"]').click();
     const playersRestored = document.querySelector('#setup-title').textContent === 'Most famous' && document.querySelector('#setup-mode-value').textContent === 'mixed facts';
-    return { lineupInitial, lineupPackCount, lineupCounts, specialTeamsStart, lineupTraining, lineupStimulus, lineupFeedback, triviaInitial, triviaPackCount, triviaCounts, triviaTraining, triviaFeedback, knowledgeSaved, playersRestored };
+    return { lineupInitial, lineupPackCount, lineupCounts, specialTeamsStart, lineupTraining, lineupStimulus, lineupFeedback, triviaInitial, triviaPackCount, triviaCounts, triviaTraining, triviaStimulusAbsent, triviaFeedback, knowledgeSaved, playersRestored };
   })()`);
-  if (!knowledgeModes.lineupInitial.selected || knowledgeModes.lineupInitial.title !== 'Mixed' || !knowledgeModes.lineupInitial.sentence.includes('Practice recognition for 5 questions.') || !knowledgeModes.lineupInitial.contentHidden || knowledgeModes.lineupInitial.start !== 'Start 5 questions' || knowledgeModes.lineupPackCount !== 5 || !knowledgeModes.lineupCounts || knowledgeModes.specialTeamsStart !== 'Start 3 questions' || !knowledgeModes.lineupTraining || !knowledgeModes.lineupStimulus || !knowledgeModes.lineupFeedback || !knowledgeModes.triviaInitial.selected || knowledgeModes.triviaInitial.title !== 'Mixed' || !knowledgeModes.triviaInitial.contentHidden || knowledgeModes.triviaInitial.start !== 'Start 5 questions' || knowledgeModes.triviaPackCount !== 5 || !knowledgeModes.triviaCounts || !knowledgeModes.triviaTraining || !knowledgeModes.triviaFeedback || !knowledgeModes.knowledgeSaved || !knowledgeModes.playersRestored) throw new Error(`Knowledge modes failed: ${JSON.stringify(knowledgeModes)}`);
+  if (!knowledgeModes.lineupInitial.selected || knowledgeModes.lineupInitial.title !== 'Mixed' || !knowledgeModes.lineupInitial.sentence.includes('Practice recognition for 5 questions.') || !knowledgeModes.lineupInitial.contentHidden || knowledgeModes.lineupInitial.start !== 'Start 5 questions' || knowledgeModes.lineupPackCount !== 5 || !knowledgeModes.lineupCounts || knowledgeModes.specialTeamsStart !== 'Start 3 questions' || !knowledgeModes.lineupTraining || !knowledgeModes.lineupStimulus || !knowledgeModes.lineupFeedback || !knowledgeModes.triviaInitial.selected || knowledgeModes.triviaInitial.title !== 'Mixed' || !knowledgeModes.triviaInitial.contentHidden || knowledgeModes.triviaInitial.start !== 'Start 5 questions' || knowledgeModes.triviaPackCount !== 5 || !knowledgeModes.triviaCounts || !knowledgeModes.triviaTraining || !knowledgeModes.triviaStimulusAbsent || !knowledgeModes.triviaFeedback || !knowledgeModes.knowledgeSaved || !knowledgeModes.playersRestored) throw new Error(`Knowledge modes failed: ${JSON.stringify(knowledgeModes)}`);
 
   const lesson = await evaluate(client, `(() => {
     document.querySelector('#setup-start').click();

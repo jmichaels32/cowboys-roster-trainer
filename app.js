@@ -1095,6 +1095,7 @@
 
   function renderQuestionVisual(question) {
     if (question.kind === "knowledge") {
+      if (question.studyType === "trivia") return "";
       return `<div class="knowledge-stimulus" aria-hidden="true"><strong>${h(question.visualLabel ?? question.label)}</strong></div>`;
     }
     if (question.visual === "headshot") return headshot(question.player, "full", true);
@@ -1123,7 +1124,9 @@
     elements.gameScore.textContent = state.score;
     elements.questionType.textContent = question.label;
     elements.questionTitle.textContent = question.prompt;
-    elements.questionVisual.innerHTML = renderQuestionVisual(question);
+    const questionVisual = renderQuestionVisual(question);
+    elements.questionVisual.innerHTML = questionVisual;
+    elements.questionVisual.hidden = !questionVisual;
     elements.answerGrid.innerHTML =
       question.responseType === "choice"
         ? question.choices
