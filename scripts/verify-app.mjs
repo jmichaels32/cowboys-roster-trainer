@@ -749,6 +749,73 @@ try {
   await client.call("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
   const reducedMotion = await evaluate(client, `getComputedStyle(document.querySelector('[data-view="roster"]')).animationDuration`);
   if (reducedMotion !== "1e-05s") throw new Error(`Reduced motion failed: ${reducedMotion}`);
+
+  await evaluate(client, `(() => {
+    const players = Object.fromEntries(window.COWBOYS_ROSTER.players.map((player, index) => [
+      player.id,
+      {
+        practice: { recall: { faces: {
+          attempts: player.name === 'Shavon Revel Jr.' ? 0 : 4,
+          correct: player.name === 'CeeDee Lamb' ? 0 : player.name === 'Shavon Revel Jr.' ? 0 : 4,
+          streak: 0,
+          lastSeen: index + 1,
+        } } },
+      },
+    ]));
+    localStorage.setItem('cowboys-roster-lab-v1', JSON.stringify({ players, knowledge: {}, practiceCombinations: {}, totalAnswers: 400, totalCorrect: 300, sessions: 0, daily: {} }));
+    localStorage.setItem('player-decks-selected-v1', 'cowboys');
+    localStorage.setItem('cowboys-study-settings-v1', JSON.stringify({ players: { packageId: 'all', stage: 'recall', mode: 'faces', length: 5 } }));
+  })()`);
+  await client.call('Page.reload', { ignoreCache: true });
+  await retry(async () => {
+    if (await evaluate(client, "document.readyState !== 'complete' || !document.querySelector('[data-player-deck=\"cowboys\"]')")) throw new Error('App not ready after scheduler seed');
+  });
+  const untouchedFirst = await evaluate(client, `(() => {
+    document.querySelector('[data-player-deck="cowboys"]').click();
+    document.querySelector('#setup-package').click();
+    document.querySelector('[data-setup-kind="package"][data-setup-value="all"]').click();
+    document.querySelector('#setup-stage-value').click();
+    document.querySelector('[data-setup-kind="stage"][data-setup-value="recall"]').click();
+    document.querySelector('#setup-mode-value').click();
+    document.querySelector('[data-setup-kind="mode"][data-setup-value="faces"]').click();
+    document.querySelector('#setup-start').click();
+    const firstPlayer = document.querySelector('#question-visual img')?.alt.replace(/ headshot$/, '');
+    const input = document.querySelector('#recall-input');
+    input.value = 'SHAVON REVEL!!!';
+    document.querySelector('#recall-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    return {
+      firstPlayer,
+      acceptedSuffixlessName: document.querySelector('#game-score').textContent === '1' && document.querySelector('#answer-feedback').textContent.includes('Correct'),
+    };
+  })()`);
+  if (untouchedFirst.firstPlayer !== 'Shavon Revel Jr.' || !untouchedFirst.acceptedSuffixlessName) throw new Error(`Untouched scheduling or answer tolerance failed: ${JSON.stringify(untouchedFirst)}`);
+
+  await evaluate(client, `(() => {
+    const saved = JSON.parse(localStorage.getItem('cowboys-roster-lab-v1'));
+    window.COWBOYS_ROSTER.players.forEach((player, index) => {
+      const attempts = 4;
+      const correct = player.name === 'CeeDee Lamb' ? 0 : player.name === 'Shavon Revel Jr.' ? 2 : 4;
+      saved.players[player.id] = { practice: { recall: { faces: { attempts, correct, streak: 0, lastSeen: index + 1 } } } };
+    });
+    localStorage.setItem('cowboys-roster-lab-v1', JSON.stringify(saved));
+  })()`);
+  await client.call('Page.reload', { ignoreCache: true });
+  await retry(async () => {
+    if (await evaluate(client, "document.readyState !== 'complete' || !document.querySelector('[data-player-deck=\"cowboys\"]')")) throw new Error('App not ready after accuracy seed');
+  });
+  const worstAccuracyFirst = await evaluate(client, `(() => {
+    document.querySelector('[data-player-deck="cowboys"]').click();
+    document.querySelector('#setup-package').click();
+    document.querySelector('[data-setup-kind="package"][data-setup-value="all"]').click();
+    document.querySelector('#setup-stage-value').click();
+    document.querySelector('[data-setup-kind="stage"][data-setup-value="recall"]').click();
+    document.querySelector('#setup-mode-value').click();
+    document.querySelector('[data-setup-kind="mode"][data-setup-value="faces"]').click();
+    document.querySelector('#setup-start').click();
+    return document.querySelector('#question-visual img')?.alt.replace(/ headshot$/, '');
+  })()`);
+  if (worstAccuracyFirst !== 'CeeDee Lamb') throw new Error(`Lowest-accuracy scheduling failed: ${worstAccuracyFirst}`);
+
   client.close();
   console.log("Player Decks production flow passed at 390×844.");
 } finally {

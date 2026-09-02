@@ -32,6 +32,19 @@
     teams: "team",
     rankings: "ranking",
   };
+  const COLLEGE_ANSWER_ALIASES = {
+    "campbell university": ["Campbell"],
+    "friends u": ["Friends", "Friends University"],
+    "jackson state university": ["Jackson State"],
+    "louisiana lafayette": ["Louisiana", "UL Lafayette", "ULL"],
+    lsu: ["Louisiana State"],
+    smu: ["Southern Methodist"],
+    tcu: ["Texas Christian"],
+    "texas christian": ["TCU"],
+    ucf: ["Central Florida"],
+    ucla: ["California Los Angeles"],
+    usc: ["Southern California"],
+  };
   const VERIFICATION_METHOD = "typed-recall-v1";
   const POSITION_NAMES = {
     QB: "Quarterback",
@@ -1017,62 +1030,65 @@
     return stage === "recognition" ? "recognition" : "recall";
   }
 
-  function skillPracticeNeed(playerProgress, track, skill) {
-    const facts = track === "recognition" ? playerProgress.recognitionSkills : playerProgress.skills;
-    const confirmed = facts[skill] === 1;
-    const stats = playerProgress.practice[track][skill];
-    if (!stats.attempts) return confirmed ? 24 : 64;
-
-    const accuracy = stats.correct / stats.attempts;
-    let need = (confirmed ? 18 : 52) + (1 - accuracy) * 38;
-    need += stats.streak === 0 ? 34 : -Math.min(stats.streak, 4) * 6;
-
-    const answersAgo = progress.totalAnswers - stats.lastSeen;
-    if (answersAgo >= 0 && answersAgo < 4) need -= (4 - answersAgo) * 3;
-    return need;
-  }
-
-  function playerPracticePriority(player, stage, requestedMode) {
-    const playerProgress = getPlayerProgress(player.id);
+  function rankPracticeCombinations(deckPlayers, stage, requestedMode) {
     const track = practiceTrack(stage);
     const relevantSkills = requestedMode === "mixed" ? getSkills() : [requestedMode];
-    const needs = relevantSkills.map((skill) => skillPracticeNeed(playerProgress, track, skill));
-    const highestNeed = Math.max(...needs);
-    const averageNeed = needs.reduce((total, need) => total + need, 0) / needs.length;
-    let priority = highestNeed + averageNeed * 0.2;
-
-    if (stage === "mastery" && !playerProgress.verified) priority += 24;
-    if (playerProgress.verified) priority -= 45;
-    return priority;
+    return deckPlayers
+      .flatMap((player) => {
+        const playerProgress = getPlayerProgress(player.id);
+        const playerAttempts = relevantSkills.reduce(
+          (total, skill) => total + playerProgress.practice[track][skill].attempts,
+          0,
+        );
+        const playerLastSeen = Math.max(
+          0,
+          ...relevantSkills.map((skill) => playerProgress.practice[track][skill].lastSeen),
+        );
+        return relevantSkills.map((skill) => {
+          const stats = playerProgress.practice[track][skill];
+          return {
+            player,
+            skill,
+            attempts: stats.attempts,
+            accuracy: stats.attempts ? stats.correct / stats.attempts : null,
+            lastSeen: stats.lastSeen,
+            playerAttempts,
+            playerLastSeen,
+            tieBreaker: Math.random(),
+          };
+        });
+      })
+      .sort((left, right) => {
+        const leftUntouched = left.attempts === 0;
+        const rightUntouched = right.attempts === 0;
+        if (leftUntouched !== rightUntouched) return leftUntouched ? -1 : 1;
+        if (leftUntouched) {
+          return (
+            left.playerAttempts - right.playerAttempts ||
+            left.playerLastSeen - right.playerLastSeen ||
+            left.tieBreaker - right.tieBreaker
+          );
+        }
+        return (
+          left.accuracy - right.accuracy ||
+          left.lastSeen - right.lastSeen ||
+          left.attempts - right.attempts ||
+          left.tieBreaker - right.tieBreaker
+        );
+      });
   }
 
-  function rankPracticePlayers(deckPlayers, stage, requestedMode, randomize = false) {
-    return [...deckPlayers]
-      .map((player) => ({
-        player,
-        priority:
-          playerPracticePriority(player, stage, requestedMode) + (randomize ? Math.random() * 10 : 0),
-      }))
-      .sort(
-        (left, right) =>
-          right.priority - left.priority || left.player.name.localeCompare(right.player.name),
-      );
-  }
-
-  function chooseSessionPlayers(deckPlayers, requestedLength, requestedMode) {
+  function chooseSessionPlan(deckPlayers, requestedLength, requestedMode) {
     const count = requestedLength === "all" ? deckPlayers.length : Math.min(Number(requestedLength), deckPlayers.length);
-    return rankPracticePlayers(deckPlayers, state.stage, requestedMode, true)
-      .slice(0, count)
-      .map(({ player }) => player);
-  }
-
-  function choosePracticeSkill(player, stage) {
-    const playerProgress = getPlayerProgress(player.id);
-    const track = practiceTrack(stage);
-    return getSkills().map((skill) => ({
-      skill,
-      need: skillPracticeNeed(playerProgress, track, skill) + Math.random() * 8,
-    })).sort((left, right) => right.need - left.need)[0].skill;
+    const selectedPlayers = new Set();
+    const plan = [];
+    for (const combination of rankPracticeCombinations(deckPlayers, state.stage, requestedMode)) {
+      if (selectedPlayers.has(combination.player.id)) continue;
+      selectedPlayers.add(combination.player.id);
+      plan.push({ player: combination.player, skill: combination.skill });
+      if (plan.length === count) break;
+    }
+    return plan;
   }
 
   function buildChoiceValues(correct, deckPlayers, getter, numeric = false) {
@@ -1350,12 +1366,13 @@
     }
     const deckPlayers = getDeckPlayers();
     const requestedMode = state.stage === "mastery" ? "mixed" : state.mode;
-    const sessionPlayers = chooseSessionPlayers(deckPlayers, state.length, requestedMode);
+    const sessionPlan = chooseSessionPlan(deckPlayers, state.length, requestedMode);
+    const sessionPlayers = sessionPlan.map(({ player }) => player);
     state.questions =
       state.stage === "mastery"
         ? buildMasterySession(sessionPlayers, deckPlayers)
-        : sessionPlayers.map((player) => {
-            const mode = state.mode === "mixed" ? choosePracticeSkill(player, state.stage) : state.mode;
+        : sessionPlan.map(({ player, skill }) => {
+            const mode = state.mode === "mixed" ? skill : state.mode;
             return buildQuestion(player, mode, deckPlayers);
           });
     state.questionIndex = 0;
@@ -1491,7 +1508,37 @@
   }
 
   function normalizeAnswer(value) {
-    return String(value).normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US");
+    return String(value)
+      .normalize("NFKD")
+      .replace(/\p{M}/gu, "")
+      .replace(/&/g, " and ")
+      .replace(/[’']/g, "")
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLocaleLowerCase("en-US");
+  }
+
+  function withoutNameSuffix(value) {
+    return normalizeAnswer(value).replace(/\s+(?:jr|sr|ii|iii|iv|v)$/, "");
+  }
+
+  function playerAnswerMatches(question, answer) {
+    const normalized = normalizeAnswer(answer);
+    const accepted = [question.correct];
+
+    if (question.correct === question.player.name) {
+      const nameWithoutSuffix = withoutNameSuffix(question.correct);
+      if (nameWithoutSuffix !== normalizeAnswer(question.correct)) accepted.push(nameWithoutSuffix);
+    }
+    if (question.mode === "positions") accepted.push(positionName(question.correct, false));
+    if (question.mode === "teams") accepted.push(question.player.teamName);
+    if (question.mode === "colleges") {
+      accepted.push(...(COLLEGE_ANSWER_ALIASES[normalizeAnswer(question.correct)] ?? []));
+    }
+    if (question.mode === "rankings" && question.correct === "Top 3") accepted.push("Top three");
+
+    return accepted.some((candidate) => normalizeAnswer(candidate) === normalized);
   }
 
   function recordProgress(playerId, skill, correct, stage) {
@@ -1552,7 +1599,7 @@
     const selected = answer.trim();
     const correct = question.kind === "knowledge"
       ? knowledgeAnswerMatches(question, selected)
-      : normalizeAnswer(selected) === normalizeAnswer(question.correct);
+      : playerAnswerMatches(question, selected);
     if (correct) state.score += 1;
     state.answers.push({ question, selected, correct });
     recordPracticeCombination(correct);
@@ -1582,7 +1629,7 @@
         button.disabled = true;
         const valueIsCorrect = question.kind === "knowledge"
           ? knowledgeAnswerMatches(question, value)
-          : normalizeAnswer(value) === normalizeAnswer(question.correct);
+          : playerAnswerMatches(question, value);
         button.classList.toggle("is-correct", valueIsCorrect);
         button.classList.toggle("is-wrong", normalizeAnswer(value) === normalizeAnswer(selected) && !correct);
       });
