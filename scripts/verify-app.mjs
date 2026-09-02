@@ -170,9 +170,10 @@ try {
     touch('touchend', 180, 305);
     const swipeReturned = document.querySelector('[data-view="dashboard"]').classList.contains('is-active');
     document.querySelector('[data-player-deck="cowboys"]').click();
-    return { ...initial, packageDialogOpened, packageCount, packageDetails, packageHasCounts, changedPackage, dialogOpened, selectedMode, startLabel, swipeReturned };
+    const reopenedMode = document.querySelector('#setup-mode-value').textContent;
+    return { ...initial, packageDialogOpened, packageCount, packageDetails, packageHasCounts, changedPackage, dialogOpened, selectedMode, startLabel, swipeReturned, reopenedMode };
   })()`);
-  if (!setup.active || setup.training || setup.packageTitle !== 'Most famous' || setup.history !== 'Not practiced yet' || !setup.historyOutsideRecipe || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 8 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned) throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
+  if (!setup.active || setup.training || setup.packageTitle !== 'Most famous' || setup.history !== 'Not practiced yet' || !setup.historyOutsideRecipe || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 8 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned || setup.reopenedMode !== 'faces & names') throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
 
   const knowledgeModes = await evaluate(client, `(() => {
     document.querySelector('[data-study-type="lineup"]').click();
@@ -240,7 +241,7 @@ try {
     const knowledgeSaved = Object.keys(JSON.parse(localStorage.getItem('cowboys-roster-lab-v1')).knowledge).length >= 2;
     document.querySelector('[data-action="exit-session"]').click();
     document.querySelector('[data-study-type="players"]').click();
-    const playersRestored = document.querySelector('#setup-title').textContent === 'Most famous' && document.querySelector('#setup-mode-value').textContent === 'mixed facts';
+    const playersRestored = document.querySelector('#setup-title').textContent === 'Most famous' && document.querySelector('#setup-mode-value').textContent === 'faces & names';
     return { lineupInitial, lineupPackCount, lineupCounts, specialTeamsStart, lineupTraining, lineupVisualAbsent, lineupLabelHidden, lineupOptionSignature, lineupFeedback, triviaInitial, triviaPackCount, triviaCounts, triviaTraining, triviaStimulusAbsent, triviaLabelHidden, triviaRevealAbsent, triviaOptionSignature, triviaFeedback, knowledgeSaved, playersRestored };
   })()`);
   if (!knowledgeModes.lineupInitial.selected || knowledgeModes.lineupInitial.title !== 'Mixed' || !knowledgeModes.lineupInitial.sentence.includes('Practice recognition for 5 questions.') || !knowledgeModes.lineupInitial.contentHidden || knowledgeModes.lineupInitial.start !== 'Start 5 questions' || knowledgeModes.lineupPackCount !== 5 || !knowledgeModes.lineupCounts || knowledgeModes.specialTeamsStart !== 'Start 3 questions' || !knowledgeModes.lineupTraining || !knowledgeModes.lineupVisualAbsent || !knowledgeModes.lineupLabelHidden || !knowledgeModes.lineupFeedback || !knowledgeModes.triviaInitial.selected || knowledgeModes.triviaInitial.title !== 'Mixed' || !knowledgeModes.triviaInitial.contentHidden || knowledgeModes.triviaInitial.start !== 'Start 5 questions' || !knowledgeModes.triviaInitial.comparisonControlsAbsent || knowledgeModes.triviaPackCount !== 5 || !knowledgeModes.triviaCounts || !knowledgeModes.triviaTraining || !knowledgeModes.triviaStimulusAbsent || !knowledgeModes.triviaLabelHidden || !knowledgeModes.triviaRevealAbsent || knowledgeModes.lineupOptionSignature !== knowledgeModes.triviaOptionSignature || !knowledgeModes.triviaFeedback.answer || !knowledgeModes.triviaFeedback.fact || !knowledgeModes.triviaFeedback.reveal || !knowledgeModes.triviaFeedback.localImage || !knowledgeModes.triviaFeedback.alt || !knowledgeModes.triviaFeedback.visibleCaptionAbsent || !knowledgeModes.triviaFeedback.imageLeads || !knowledgeModes.triviaFeedback.centered || !knowledgeModes.triviaFeedback.naturalFit || !knowledgeModes.triviaFeedback.borderless || !knowledgeModes.triviaFeedback.allOptionsRemain || !knowledgeModes.knowledgeSaved || !knowledgeModes.playersRestored) throw new Error(`Knowledge modes failed: ${JSON.stringify(knowledgeModes)}`);
@@ -644,7 +645,16 @@ try {
       (history) => history.sessions === 1 && history.answers === 32 && history.correct === 32,
     );
     const results = document.querySelector('[data-view="results"]').classList.contains('is-active');
-    document.querySelector('.result-actions [data-action="repeat-session"]').click();
+    const changePracticeButton = document.querySelector('.result-actions [data-action="deck"]');
+    const changePracticeLabel = changePracticeButton?.textContent.trim();
+    changePracticeButton?.click();
+    const completedSettingsPreserved =
+      document.querySelector('[data-view="setup"]').classList.contains('is-active') &&
+      document.querySelector('#setup-title').textContent === 'Most famous' &&
+      document.querySelector('#setup-stage-value').textContent === 'mastery check' &&
+      document.querySelector('#setup-mode-value').textContent === 'all facts' &&
+      document.querySelector('#setup-length-value').textContent === '8 cards';
+    document.querySelector('#setup-start').click();
     document.querySelector('[data-action="exit-session"]').click();
     const masteryHistory = document.querySelector('#setup-history').textContent;
     document.querySelector('#setup-length-value').click();
@@ -691,6 +701,8 @@ try {
       feedbackStayedFocused,
       masteredPlayers: masteredPlayerIds.length,
       masteryHistoryPersisted,
+      changePracticeLabel,
+      completedSettingsPreserved,
       masteryHistory,
       masteryHistoryAfterLengthChange,
       playerProgress,
@@ -700,7 +712,7 @@ try {
       returnedToRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active')
     };
   })()`);
-  if (!masteryFlow.results || masteryFlow.questionCount !== 32 || !masteryFlow.noAdjacentPlayer || !masteryFlow.everyPlayerAskedFourFacts || !masteryFlow.plainProgress || !masteryFlow.feedbackStayedFocused || masteryFlow.nextLabels.slice(0, -1).some((label) => label !== 'Next fact →') || masteryFlow.nextLabels.at(-1) !== 'See results →' || masteryFlow.masteredPlayers !== 8 || !masteryFlow.masteryHistoryPersisted || masteryFlow.masteryHistory !== '1 session · 100% correct' || masteryFlow.masteryHistoryAfterLengthChange !== masteryFlow.masteryHistory || masteryFlow.playerProgress['Most famous'] !== '✓ Mastered' || masteryFlow.playerProgress['Full roster'] !== '8 of 72 mastered' || masteryFlow.lineupProgress.some((detail) => !/^0 of \d+ mastered$/.test(detail)) || masteryFlow.triviaMixedProgress !== '1 of 40 mastered' || !masteryFlow.triviaPackProgress.startsWith('1 of ') || !masteryFlow.returnedToRoster) throw new Error(`Mastery flow failed: ${JSON.stringify(masteryFlow)}`);
+  if (!masteryFlow.results || masteryFlow.questionCount !== 32 || !masteryFlow.noAdjacentPlayer || !masteryFlow.everyPlayerAskedFourFacts || !masteryFlow.plainProgress || !masteryFlow.feedbackStayedFocused || masteryFlow.nextLabels.slice(0, -1).some((label) => label !== 'Next fact →') || masteryFlow.nextLabels.at(-1) !== 'See results →' || masteryFlow.masteredPlayers !== 8 || !masteryFlow.masteryHistoryPersisted || masteryFlow.changePracticeLabel !== 'Change practice' || !masteryFlow.completedSettingsPreserved || masteryFlow.masteryHistory !== '1 session · 100% correct' || masteryFlow.masteryHistoryAfterLengthChange !== masteryFlow.masteryHistory || masteryFlow.playerProgress['Most famous'] !== '✓ Mastered' || masteryFlow.playerProgress['Full roster'] !== '8 of 72 mastered' || masteryFlow.lineupProgress.some((detail) => !/^0 of \d+ mastered$/.test(detail)) || masteryFlow.triviaMixedProgress !== '1 of 40 mastered' || !masteryFlow.triviaPackProgress.startsWith('1 of ') || !masteryFlow.returnedToRoster) throw new Error(`Mastery flow failed: ${JSON.stringify(masteryFlow)}`);
 
   if (process.env.CAPTURE_DIR) {
     await evaluate(client, `(() => {

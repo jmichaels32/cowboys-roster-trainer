@@ -227,15 +227,19 @@
     daily: {},
   };
   let progress = loadProgress();
-  const savedStudySettings = loadStudySettings();
+  const initialPlayerDeckId = loadPlayerDeckSelection();
+  const savedStudySettings = loadStudySettings(initialPlayerDeckId);
+  const initialDeckSettings = savedStudySettings[initialPlayerDeckId];
+  const initialStudyType = initialDeckSettings.activeStudyType;
+  const initialActiveSettings = initialDeckSettings.studyTypes[initialStudyType];
   const state = {
-    playerDeckId: loadPlayerDeckSelection(),
-    studyType: "players",
+    playerDeckId: initialPlayerDeckId,
+    studyType: initialStudyType,
     studySettings: savedStudySettings,
-    deckId: savedStudySettings.players.packageId,
-    mode: savedStudySettings.players.mode,
-    stage: savedStudySettings.players.stage,
-    length: savedStudySettings.players.length,
+    deckId: initialDeckSettings.studyTypes.players.packageId,
+    mode: initialActiveSettings.mode,
+    stage: initialActiveSettings.stage,
+    length: initialActiveSettings.length,
     questions: [],
     questionIndex: 0,
     score: 0,
@@ -319,31 +323,58 @@
     }
   }
 
-  function loadStudySettings() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STUDY_SETTINGS_KEY));
-      return Object.fromEntries(
+  function createDeckStudySettings(deckId, saved = {}) {
+    const studyTypes = saved.studyTypes ?? saved;
+    const supportedStudyTypes = playerDecks.find((deck) => deck.id === deckId)?.studyTypes ?? ["players"];
+    const activeStudyType = supportedStudyTypes.includes(saved.activeStudyType) ? saved.activeStudyType : "players";
+    return {
+      activeStudyType,
+      studyTypes: Object.fromEntries(
         Object.entries(defaultStudySettings).map(([studyType, defaults]) => [
           studyType,
-          { ...defaults, ...(saved?.[studyType] ?? {}) },
+          { ...defaults, ...(studyTypes?.[studyType] ?? {}) },
+        ]),
+      ),
+    };
+  }
+
+  function loadStudySettings(legacyDeckId) {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STUDY_SETTINGS_KEY));
+      const savedDecks = saved?.version === 2 ? saved.decks : {};
+      return Object.fromEntries(
+        playerDecks.map((deck) => [
+          deck.id,
+          createDeckStudySettings(
+            deck.id,
+            savedDecks?.[deck.id] ?? (deck.id === legacyDeckId && saved?.version !== 2 ? saved : {}),
+          ),
         ]),
       );
     } catch {
-      return structuredClone(defaultStudySettings);
+      return Object.fromEntries(playerDecks.map((deck) => [deck.id, createDeckStudySettings(deck.id)]));
     }
   }
 
   function saveStudySettings() {
     try {
-      localStorage.setItem(STUDY_SETTINGS_KEY, JSON.stringify(state.studySettings));
+      localStorage.setItem(STUDY_SETTINGS_KEY, JSON.stringify({ version: 2, decks: state.studySettings }));
     } catch {
       // Study choices remain available for the current session.
     }
   }
 
+  function getDeckStudySettings() {
+    state.studySettings[state.playerDeckId] ??= createDeckStudySettings(state.playerDeckId);
+    return state.studySettings[state.playerDeckId];
+  }
+
   function storeActiveStudySettings() {
-    state.studySettings[state.studyType] = {
-      packageId: state.studyType === "players" ? state.deckId : state.studySettings[state.studyType].packageId,
+    const deckSettings = getDeckStudySettings();
+    const currentSettings = deckSettings.studyTypes[state.studyType] ?? defaultStudySettings[state.studyType];
+    deckSettings.activeStudyType = state.studyType;
+    deckSettings.studyTypes[state.studyType] = {
+      packageId: state.studyType === "players" ? state.deckId : currentSettings.packageId,
       stage: state.stage,
       mode: state.mode,
       length: state.length,
@@ -352,7 +383,7 @@
   }
 
   function restoreStudySettings(studyType) {
-    const settings = state.studySettings[studyType] ?? defaultStudySettings[studyType];
+    const settings = getDeckStudySettings().studyTypes[studyType] ?? defaultStudySettings[studyType];
     state.studyType = studyType;
     if (studyType === "players") state.deckId = settings.packageId;
     state.stage = settings.stage;
@@ -362,11 +393,11 @@
 
   function setActivePackageId(packageId) {
     if (state.studyType === "players") state.deckId = packageId;
-    state.studySettings[state.studyType].packageId = packageId;
+    getDeckStudySettings().studyTypes[state.studyType].packageId = packageId;
   }
 
   function getActivePackageId() {
-    return state.studyType === "players" ? state.deckId : state.studySettings[state.studyType].packageId;
+    return state.studyType === "players" ? state.deckId : getDeckStudySettings().studyTypes[state.studyType].packageId;
   }
 
   function getPracticeCombinationKey() {
@@ -707,16 +738,8 @@
     };
   }
 
-  function knownSkillCount(playerId) {
-    return getSkills().filter((skill) => getPlayerProgress(playerId).skills[skill] === 1).length;
-  }
-
   function learnedCount(deckPlayers) {
     return deckPlayers.filter((player) => getPlayerProgress(player.id).verified).length;
-  }
-
-  function learnedFactCount(deckPlayers) {
-    return deckPlayers.reduce((total, player) => total + knownSkillCount(player.id), 0);
   }
 
   function getPackageMastery(pack) {
@@ -902,37 +925,12 @@
       .join("");
   }
 
-  function getRecommendedLesson() {
-    const groups = getPlayerGroups();
-    const deck =
-      groups.find((candidate) => learnedCount(getDeckPlayers(candidate)) < getDeckPlayers(candidate).length) ??
-      groups.at(-1);
-    const deckPlayers = getDeckPlayers(deck);
-    const skills = getSkills();
-    const totalFacts = deckPlayers.length * skills.length;
-    const recognitionFacts = deckPlayers.reduce(
-      (total, player) =>
-        total + skills.filter((skill) => getPlayerProgress(player.id).recognitionSkills[skill] === 1).length,
-      0,
+  function openRememberedSetup() {
+    const deckSettings = getDeckStudySettings();
+    const supportedStudyTypes = getSupportedStudyTypes();
+    restoreStudySettings(
+      supportedStudyTypes.includes(deckSettings.activeStudyType) ? deckSettings.activeStudyType : "players",
     );
-    const typedFacts = learnedFactCount(deckPlayers);
-    const stage =
-      recognitionFacts / totalFacts < 0.75
-        ? stages[0]
-        : typedFacts / totalFacts < 0.75
-          ? stages[1]
-          : stages[2];
-    return { deck, stage, questionCount: Math.min(5, deckPlayers.length) };
-  }
-
-  function openRecommendedSetup() {
-    const recommendation = getRecommendedLesson();
-    restoreStudySettings("players");
-    state.deckId = recommendation.deck.id;
-    state.stage = recommendation.stage.id;
-    state.mode = "mixed";
-    state.length = recommendation.questionCount;
-    storeActiveStudySettings();
     renderSetup();
     showView("setup");
   }
@@ -1023,6 +1021,7 @@
     if (!studyTypes.some((candidate) => candidate.id === studyType) || !getSupportedStudyTypes().includes(studyType) || state.studyType === studyType) return;
     storeActiveStudySettings();
     restoreStudySettings(studyType);
+    storeActiveStudySettings();
     renderSetup();
   }
 
@@ -1912,11 +1911,12 @@
 
     const playerDeckTarget = event.target.closest("[data-player-deck]");
     if (playerDeckTarget) {
+      storeActiveStudySettings();
       state.playerDeckId = playerDeckTarget.dataset.playerDeck;
       state.rosterFilters = { group: "all", position: "all", sort: "name" };
       elements.rosterSearch.value = "";
       savePlayerDeckSelection();
-      openRecommendedSetup();
+      openRememberedSetup();
       return;
     }
 
