@@ -135,6 +135,7 @@ try {
       active: setupView.classList.contains('is-active'),
       training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
       packageTitle: document.querySelector('#setup-title').textContent,
+      history: document.querySelector('#setup-history').textContent,
       sentence: document.querySelector('.session-sentence-card').innerText.replace(/\\s+/g, ' ').trim(),
       header: document.querySelector('#header-context').textContent,
       backLabel: document.querySelector('#header-back').getAttribute('aria-label'),
@@ -170,7 +171,7 @@ try {
     document.querySelector('[data-player-deck="cowboys"]').click();
     return { ...initial, packageDialogOpened, packageCount, packageDetails, packageHasCounts, changedPackage, dialogOpened, selectedMode, startLabel, swipeReturned };
   })()`);
-  if (!setup.active || setup.training || setup.packageTitle !== 'Most famous' || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 8 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned) throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
+  if (!setup.active || setup.training || setup.packageTitle !== 'Most famous' || setup.history !== 'Not practiced yet' || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 8 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned) throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
 
   const knowledgeModes = await evaluate(client, `(() => {
     document.querySelector('[data-study-type="lineup"]').click();
@@ -638,9 +639,16 @@ try {
 
     const stored = JSON.parse(localStorage.getItem('cowboys-roster-lab-v1'));
     const masteredPlayerIds = Object.entries(stored.players).filter(([, value]) => value.verified).map(([id]) => id);
+    const masteryHistoryPersisted = Object.values(stored.practiceCombinations ?? {}).some(
+      (history) => history.sessions === 1 && history.answers === 32 && history.correct === 32,
+    );
     const results = document.querySelector('[data-view="results"]').classList.contains('is-active');
-    document.querySelector('.result-actions [data-action="home"]').click();
-    document.querySelector('[data-player-deck="cowboys"]').click();
+    document.querySelector('.result-actions [data-action="repeat-session"]').click();
+    document.querySelector('[data-action="exit-session"]').click();
+    const masteryHistory = document.querySelector('#setup-history').textContent;
+    document.querySelector('#setup-length-value').click();
+    document.querySelector('[data-setup-kind="length"][data-setup-value="5"]').click();
+    const masteryHistoryAfterLengthChange = document.querySelector('#setup-history').textContent;
     document.querySelector('#setup-package').click();
     const playerProgress = Object.fromEntries([...document.querySelectorAll('[data-setup-kind="package"]')].map((option) => [
       option.querySelector('strong').textContent,
@@ -681,6 +689,9 @@ try {
       nextLabels,
       feedbackStayedFocused,
       masteredPlayers: masteredPlayerIds.length,
+      masteryHistoryPersisted,
+      masteryHistory,
+      masteryHistoryAfterLengthChange,
       playerProgress,
       lineupProgress,
       triviaMixedProgress: triviaProgress.mixed,
@@ -688,15 +699,18 @@ try {
       returnedToRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active')
     };
   })()`);
-  if (!masteryFlow.results || masteryFlow.questionCount !== 32 || !masteryFlow.noAdjacentPlayer || !masteryFlow.everyPlayerAskedFourFacts || !masteryFlow.plainProgress || !masteryFlow.feedbackStayedFocused || masteryFlow.nextLabels.slice(0, -1).some((label) => label !== 'Next fact →') || masteryFlow.nextLabels.at(-1) !== 'See results →' || masteryFlow.masteredPlayers !== 8 || masteryFlow.playerProgress['Most famous'] !== '✓ Mastered' || masteryFlow.playerProgress['Full roster'] !== '8 of 72 mastered' || masteryFlow.lineupProgress.some((detail) => !/^0 of \d+ mastered$/.test(detail)) || masteryFlow.triviaMixedProgress !== '1 of 40 mastered' || !masteryFlow.triviaPackProgress.startsWith('1 of ') || !masteryFlow.returnedToRoster) throw new Error(`Mastery flow failed: ${JSON.stringify(masteryFlow)}`);
+  if (!masteryFlow.results || masteryFlow.questionCount !== 32 || !masteryFlow.noAdjacentPlayer || !masteryFlow.everyPlayerAskedFourFacts || !masteryFlow.plainProgress || !masteryFlow.feedbackStayedFocused || masteryFlow.nextLabels.slice(0, -1).some((label) => label !== 'Next fact →') || masteryFlow.nextLabels.at(-1) !== 'See results →' || masteryFlow.masteredPlayers !== 8 || !masteryFlow.masteryHistoryPersisted || masteryFlow.masteryHistory !== '1 session · 100% correct' || masteryFlow.masteryHistoryAfterLengthChange !== masteryFlow.masteryHistory || masteryFlow.playerProgress['Most famous'] !== '✓ Mastered' || masteryFlow.playerProgress['Full roster'] !== '8 of 72 mastered' || masteryFlow.lineupProgress.some((detail) => !/^0 of \d+ mastered$/.test(detail)) || masteryFlow.triviaMixedProgress !== '1 of 40 mastered' || !masteryFlow.triviaPackProgress.startsWith('1 of ') || !masteryFlow.returnedToRoster) throw new Error(`Mastery flow failed: ${JSON.stringify(masteryFlow)}`);
 
   if (process.env.CAPTURE_DIR) {
     await evaluate(client, `(() => {
       document.querySelector('#header-back').click();
-      document.querySelector('#setup-package').click();
     })()`);
     await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 200))');
     let screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await writeFile(join(process.env.CAPTURE_DIR, 'practice-combination-history.png'), Buffer.from(screenshot.data, 'base64'));
+    await evaluate(client, `document.querySelector('#setup-package').click()`);
+    await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 200))');
+    screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
     await writeFile(join(process.env.CAPTURE_DIR, 'group-mastery-progress.png'), Buffer.from(screenshot.data, 'base64'));
     await evaluate(client, `(() => {
       document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();

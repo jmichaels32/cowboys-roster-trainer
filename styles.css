@@ -1023,13 +1023,22 @@ a {
   border-radius: 16px;
 }
 
-.session-sentence-card p {
+.session-recipe {
   margin: 0;
   color: var(--navy-900);
   font-size: clamp(1.35rem, 6vw, 1.8rem);
   font-weight: 750;
   line-height: 1.65;
   letter-spacing: -0.02em;
+}
+
+.setup-history {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
 }
 
 .session-token {

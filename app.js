@@ -204,7 +204,15 @@
     trivia: { packageId: "mixed", stage: "recognition", mode: "mixed", length: 5 },
   };
 
-  const defaultProgress = { players: {}, knowledge: {}, totalAnswers: 0, totalCorrect: 0, sessions: 0, daily: {} };
+  const defaultProgress = {
+    players: {},
+    knowledge: {},
+    practiceCombinations: {},
+    totalAnswers: 0,
+    totalCorrect: 0,
+    sessions: 0,
+    daily: {},
+  };
   let progress = loadProgress();
   const savedStudySettings = loadStudySettings();
   const state = {
@@ -220,6 +228,8 @@
     score: 0,
     answers: [],
     answerLocked: false,
+    practiceCombinationKey: null,
+    practiceCombinationStarted: false,
     rosterFilters: { group: "all", position: "all", sort: "name" },
   };
 
@@ -241,6 +251,7 @@
     setupModeValue: document.querySelector("#setup-mode-value"),
     setupContentChoice: document.querySelector("#setup-content-choice"),
     setupLengthValue: document.querySelector("#setup-length-value"),
+    setupHistory: document.querySelector("#setup-history"),
     setupStart: document.querySelector("#setup-start"),
     sessionOptionDialog: document.querySelector("#session-option-dialog"),
     sessionOptionTitle: document.querySelector("#session-option-title"),
@@ -343,6 +354,45 @@
 
   function getActivePackageId() {
     return state.studyType === "players" ? state.deckId : state.studySettings[state.studyType].packageId;
+  }
+
+  function getPracticeCombinationKey() {
+    const content =
+      state.studyType === "players"
+        ? state.stage === "mastery"
+          ? "all-facts"
+          : state.mode
+        : null;
+    return JSON.stringify([
+      "v1",
+      state.playerDeckId,
+      state.studyType,
+      getActivePackageId(),
+      state.stage,
+      content,
+    ]);
+  }
+
+  function getPracticeCombinationStats(key = getPracticeCombinationKey()) {
+    const saved = progress.practiceCombinations?.[key] ?? {};
+    return {
+      sessions: saved.sessions ?? 0,
+      answers: saved.answers ?? 0,
+      correct: saved.correct ?? 0,
+    };
+  }
+
+  function recordPracticeCombination(correct) {
+    const key = state.practiceCombinationKey;
+    if (!key) return;
+    const current = getPracticeCombinationStats(key);
+    progress.practiceCombinations = progress.practiceCombinations ?? {};
+    progress.practiceCombinations[key] = {
+      sessions: current.sessions + (state.practiceCombinationStarted ? 0 : 1),
+      answers: current.answers + 1,
+      correct: current.correct + (correct ? 1 : 0),
+    };
+    state.practiceCombinationStarted = true;
   }
 
   function savePlayerDeckSelection() {
@@ -900,6 +950,10 @@
     elements.setupModeValue.disabled = state.stage === "mastery";
     elements.setupContentChoice.hidden = state.studyType !== "players";
     elements.setupLengthValue.textContent = `${sessionCount} ${unit}${sessionCount === 1 ? "" : "s"}`;
+    const history = getPracticeCombinationStats();
+    elements.setupHistory.textContent = history.answers
+      ? `${history.sessions} ${history.sessions === 1 ? "session" : "sessions"} · ${Math.round((history.correct / history.answers) * 100)}% correct`
+      : "Not practiced yet";
     elements.setupStart.textContent = `Start ${sessionCount} ${unit}${sessionCount === 1 ? "" : "s"}`;
   }
 
@@ -1280,6 +1334,8 @@
 
   function startSession() {
     storeActiveStudySettings();
+    state.practiceCombinationKey = getPracticeCombinationKey();
+    state.practiceCombinationStarted = false;
     if (state.studyType !== "players") {
       state.questions = buildKnowledgeSession();
       state.questionIndex = 0;
@@ -1499,6 +1555,7 @@
       : normalizeAnswer(selected) === normalizeAnswer(question.correct);
     if (correct) state.score += 1;
     state.answers.push({ question, selected, correct });
+    recordPracticeCombination(correct);
     if (question.kind === "knowledge") {
       recordKnowledgeProgress(question, correct);
     } else {
