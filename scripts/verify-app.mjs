@@ -647,7 +647,9 @@ try {
     const results = document.querySelector('[data-view="results"]').classList.contains('is-active');
     const changePracticeButton = document.querySelector('.result-actions [data-action="deck"]');
     const changePracticeLabel = changePracticeButton?.textContent.trim();
-    changePracticeButton?.click();
+    const resultsBackAction = document.querySelector('#header-back').dataset.action;
+    const resultsBackLabel = document.querySelector('#header-back').getAttribute('aria-label');
+    document.querySelector('#header-back').click();
     const completedSettingsPreserved =
       document.querySelector('[data-view="setup"]').classList.contains('is-active') &&
       document.querySelector('#setup-title').textContent === 'Most famous' &&
@@ -702,6 +704,8 @@ try {
       masteredPlayers: masteredPlayerIds.length,
       masteryHistoryPersisted,
       changePracticeLabel,
+      resultsBackAction,
+      resultsBackLabel,
       completedSettingsPreserved,
       masteryHistory,
       masteryHistoryAfterLengthChange,
@@ -712,7 +716,7 @@ try {
       returnedToRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active')
     };
   })()`);
-  if (!masteryFlow.results || masteryFlow.questionCount !== 32 || !masteryFlow.noAdjacentPlayer || !masteryFlow.everyPlayerAskedFourFacts || !masteryFlow.plainProgress || !masteryFlow.feedbackStayedFocused || masteryFlow.nextLabels.slice(0, -1).some((label) => label !== 'Next fact →') || masteryFlow.nextLabels.at(-1) !== 'See results →' || masteryFlow.masteredPlayers !== 8 || !masteryFlow.masteryHistoryPersisted || masteryFlow.changePracticeLabel !== 'Change practice' || !masteryFlow.completedSettingsPreserved || masteryFlow.masteryHistory !== '1 session · 100% correct' || masteryFlow.masteryHistoryAfterLengthChange !== masteryFlow.masteryHistory || masteryFlow.playerProgress['Most famous'] !== '✓ Mastered' || masteryFlow.playerProgress['Full roster'] !== '8 of 72 mastered' || masteryFlow.lineupProgress.some((detail) => !/^0 of \d+ mastered$/.test(detail)) || masteryFlow.triviaMixedProgress !== '1 of 40 mastered' || !masteryFlow.triviaPackProgress.startsWith('1 of ') || !masteryFlow.returnedToRoster) throw new Error(`Mastery flow failed: ${JSON.stringify(masteryFlow)}`);
+  if (!masteryFlow.results || masteryFlow.questionCount !== 32 || !masteryFlow.noAdjacentPlayer || !masteryFlow.everyPlayerAskedFourFacts || !masteryFlow.plainProgress || !masteryFlow.feedbackStayedFocused || masteryFlow.nextLabels.slice(0, -1).some((label) => label !== 'Next fact →') || masteryFlow.nextLabels.at(-1) !== 'See results →' || masteryFlow.masteredPlayers !== 8 || !masteryFlow.masteryHistoryPersisted || masteryFlow.changePracticeLabel !== 'Change practice' || masteryFlow.resultsBackAction !== 'deck' || masteryFlow.resultsBackLabel !== 'Back to Most famous setup' || !masteryFlow.completedSettingsPreserved || masteryFlow.masteryHistory !== '1 session · 100% correct' || masteryFlow.masteryHistoryAfterLengthChange !== masteryFlow.masteryHistory || masteryFlow.playerProgress['Most famous'] !== '✓ Mastered' || masteryFlow.playerProgress['Full roster'] !== '8 of 72 mastered' || masteryFlow.lineupProgress.some((detail) => !/^0 of \d+ mastered$/.test(detail)) || masteryFlow.triviaMixedProgress !== '1 of 40 mastered' || !masteryFlow.triviaPackProgress.startsWith('1 of ') || !masteryFlow.returnedToRoster) throw new Error(`Mastery flow failed: ${JSON.stringify(masteryFlow)}`);
 
   if (process.env.CAPTURE_DIR) {
     await evaluate(client, `(() => {

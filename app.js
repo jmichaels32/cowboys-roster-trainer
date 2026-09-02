@@ -826,8 +826,16 @@
     document.title = viewTitles[viewName] ?? "Player Decks";
     elements.headerBack.hidden = viewName === "dashboard";
     elements.headerBack.parentElement.classList.toggle("has-back", viewName !== "dashboard");
-    elements.headerBack.dataset.action = viewName === "roster" ? "deck" : "home";
-    elements.headerBack.setAttribute("aria-label", viewName === "roster" ? `Back to ${playerDeck.title}` : "Back to decks");
+    const returnsToSetup = viewName === "roster" || viewName === "results";
+    elements.headerBack.dataset.action = returnsToSetup ? "deck" : "home";
+    elements.headerBack.setAttribute(
+      "aria-label",
+      viewName === "roster"
+        ? `Back to ${playerDeck.title}`
+        : viewName === "results"
+          ? `Back to ${getActivePack().title} setup`
+          : "Back to decks",
+    );
     elements.browsePlayers.hidden = viewName !== "setup" || !playerDeck.browseable;
     elements.dataDate.textContent = formatDate(playerDeck.updated);
     elements.dataSource.href = playerDeck.source;
