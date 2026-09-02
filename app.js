@@ -656,6 +656,18 @@
     return deckPlayers.reduce((total, player) => total + knownSkillCount(player.id), 0);
   }
 
+  function getPackageMastery(pack) {
+    if (state.studyType === "players") {
+      const packagePlayers = getDeckPlayers(pack);
+      return { mastered: learnedCount(packagePlayers), total: packagePlayers.length };
+    }
+    const questions = getKnowledgeQuestions(state.studyType, pack.id);
+    return {
+      mastered: questions.filter((question) => progress.knowledge?.[question.id]?.mastered === true).length,
+      total: questions.length,
+    };
+  }
+
   function positionName(position, withCode = true) {
     const name = POSITION_NAMES[position] ?? position;
     return withCode && name !== position ? `${name} · ${position}` : name;
@@ -894,14 +906,14 @@
   function openSessionOptions(control) {
     const sessionSize = getActiveQuestionCount();
     const activePackageId = getActivePackageId();
-    const packageOptions = getStudyPacks().map((pack) => ({
-      value: pack.id,
-      label: pack.title,
-      detail:
-        state.studyType === "players"
-          ? `${getDeckPlayers(pack).length} players`
-          : `${getKnowledgeQuestions(state.studyType, pack.id).length} questions`,
-    }));
+    const packageOptions = getStudyPacks().map((pack) => {
+      const mastery = getPackageMastery(pack);
+      return {
+        value: pack.id,
+        label: pack.title,
+        detail: `${mastery.mastered} of ${mastery.total} mastered`,
+      };
+    });
     const optionSets = {
       package: {
         title: state.studyType === "players" ? "Package" : "Topic",
@@ -1240,6 +1252,29 @@
     return shuffle(available).slice(0, count).map(prepareKnowledgeQuestion);
   }
 
+  function buildMasterySession(sessionPlayers, deckPlayers) {
+    const remaining = sessionPlayers.map((player) => ({ player, skills: shuffle(getSkills()) }));
+    const questions = [];
+    let previousPlayerId = null;
+
+    while (remaining.some(({ skills }) => skills.length)) {
+      const available = remaining.filter(
+        ({ player, skills }) => skills.length && (player.id !== previousPlayerId || sessionPlayers.length === 1),
+      );
+      const candidates = available.length ? available : remaining.filter(({ skills }) => skills.length);
+      const mostFactsLeft = Math.max(...candidates.map(({ skills }) => skills.length));
+      const next = shuffle(candidates.filter(({ skills }) => skills.length === mostFactsLeft))[0];
+      const skill = next.skills.pop();
+      questions.push({
+        ...buildQuestion(next.player, skill, deckPlayers, true),
+        fullCheck: true,
+      });
+      previousPlayerId = next.player.id;
+    }
+
+    return questions;
+  }
+
   function startSession() {
     storeActiveStudySettings();
     if (state.studyType !== "players") {
@@ -1255,20 +1290,11 @@
       return;
     }
     const deckPlayers = getDeckPlayers();
-    const skills = getSkills();
     const requestedMode = state.stage === "mastery" ? "mixed" : state.mode;
     const sessionPlayers = chooseSessionPlayers(deckPlayers, state.length, requestedMode);
     state.questions =
       state.stage === "mastery"
-        ? sessionPlayers.flatMap((player, playerIndex) =>
-            skills.map((skill, factIndex) => ({
-              ...buildQuestion(player, skill, deckPlayers, true),
-              fullCheck: true,
-              playerIndex,
-              playerTotal: sessionPlayers.length,
-              factIndex,
-            })),
-          )
+        ? buildMasterySession(sessionPlayers, deckPlayers)
         : sessionPlayers.map((player) => {
             const mode = state.mode === "mixed" ? choosePracticeSkill(player, state.stage) : state.mode;
             return buildQuestion(player, mode, deckPlayers);
@@ -1301,6 +1327,9 @@
   }
 
   function renderPlayerFeedback(question) {
+    if (question.fullCheck) {
+      return `<div class="feedback-title"><strong>${h(question.correctFeedback)}</strong></div>`;
+    }
     const player = question.player;
     const facts = state.playerDeckId === "nfl-top-100"
       ? [
@@ -1346,9 +1375,7 @@
     const current = state.questionIndex + 1;
     const total = state.questions.length;
     state.answerLocked = false;
-    elements.gameProgressText.textContent = question.fullCheck
-      ? `Player ${question.playerIndex + 1}/${question.playerTotal} · Fact ${question.factIndex + 1}/${getSkills().length}`
-      : `${current} of ${total}`;
+    elements.gameProgressText.textContent = `${current} of ${total}`;
     elements.gameProgress.setAttribute("aria-valuemax", total);
     elements.gameProgress.setAttribute("aria-valuenow", current);
     elements.gameProgressBar.style.width = `${(current / total) * 100}%`;
@@ -1393,9 +1420,7 @@
       current === total
         ? "See results"
           : question.fullCheck
-            ? question.factIndex === getSkills().length - 1
-              ? "Next player"
-              : "Next fact"
+            ? "Next fact"
           : question.studyType === "players"
             ? "Next card"
             : "Next question";
@@ -1453,6 +1478,7 @@
       correct: current.correct + (correct ? 1 : 0),
       streak: correct ? current.streak + 1 : 0,
       lastSeen: progress.totalAnswers + 1,
+      mastered: state.stage === "recall" ? correct : current.mastered === true,
     };
     progress.totalAnswers += 1;
     progress.totalCorrect += correct ? 1 : 0;
@@ -1476,15 +1502,17 @@
       recordProgress(question.player.id, question.mode, correct, state.stage);
     }
     const skills = getSkills();
-    if (question.kind !== "knowledge" && question.fullCheck && question.factIndex === skills.length - 1) {
+    if (question.kind !== "knowledge" && question.fullCheck) {
       const playerAnswers = state.answers.filter(
         (answer) => answer.question.fullCheck && answer.question.player.id === question.player.id,
       );
-      const wasVerified = progress.players[question.player.id].verified;
-      const passed = playerAnswers.length === skills.length && playerAnswers.every((answer) => answer.correct);
-      progress.players[question.player.id].verified = passed;
-      if (passed && !wasVerified) addDailyVerifiedPlayer(question.player.id);
-      saveProgress();
+      if (playerAnswers.length === skills.length) {
+        const wasVerified = progress.players[question.player.id].verified;
+        const passed = playerAnswers.every((answer) => answer.correct);
+        progress.players[question.player.id].verified = passed;
+        if (passed && !wasVerified) addDailyVerifiedPlayer(question.player.id);
+        saveProgress();
+      }
     }
     elements.gameScore.textContent = state.score;
 

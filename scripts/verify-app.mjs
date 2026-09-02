@@ -148,7 +148,8 @@ try {
     document.querySelector('#setup-package').click();
     const packageDialogOpened = document.querySelector('#session-option-dialog').open;
     const packageCount = document.querySelectorAll('[data-setup-kind="package"]').length;
-    const packageHasCounts = [...document.querySelectorAll('[data-setup-kind="package"] small')].every((item) => /players/.test(item.textContent));
+    const packageDetails = [...document.querySelectorAll('[data-setup-kind="package"] small')].map((item) => item.textContent);
+    const packageHasCounts = packageDetails.every((detail) => /\\d+ of \\d+ mastered/.test(detail));
     document.querySelector('[data-setup-kind="package"][data-setup-value="offense"]').click();
     const changedPackage = document.querySelector('#setup-title').textContent;
     document.querySelector('#setup-package').click();
@@ -167,7 +168,7 @@ try {
     touch('touchend', 180, 305);
     const swipeReturned = document.querySelector('[data-view="dashboard"]').classList.contains('is-active');
     document.querySelector('[data-player-deck="cowboys"]').click();
-    return { ...initial, packageDialogOpened, packageCount, packageHasCounts, changedPackage, dialogOpened, selectedMode, startLabel, swipeReturned };
+    return { ...initial, packageDialogOpened, packageCount, packageDetails, packageHasCounts, changedPackage, dialogOpened, selectedMode, startLabel, swipeReturned };
   })()`);
   if (!setup.active || setup.training || setup.packageTitle !== 'Most famous' || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 8 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned) throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
 
@@ -182,7 +183,7 @@ try {
     };
     document.querySelector('#setup-package').click();
     const lineupPackCount = document.querySelectorAll('[data-setup-kind="package"]').length;
-    const lineupCounts = [...document.querySelectorAll('[data-setup-kind="package"] small')].every((item) => /questions/.test(item.textContent));
+    const lineupCounts = [...document.querySelectorAll('[data-setup-kind="package"] small')].every((item) => /\\d+ of \\d+ mastered/.test(item.textContent));
     document.querySelector('[data-setup-kind="package"][data-setup-value="special-teams"]').click();
     const specialTeamsStart = document.querySelector('#setup-start').textContent;
     document.querySelector('#setup-start').click();
@@ -208,7 +209,7 @@ try {
     };
     document.querySelector('#setup-package').click();
     const triviaPackCount = document.querySelectorAll('[data-setup-kind="package"]').length;
-    const triviaCounts = [...document.querySelectorAll('[data-setup-kind="package"] small')].every((item) => /questions/.test(item.textContent));
+    const triviaCounts = [...document.querySelectorAll('[data-setup-kind="package"] small')].every((item) => /\\d+ of \\d+ mastered/.test(item.textContent));
     document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();
     document.querySelector('#setup-start').click();
     const triviaTraining = document.querySelector('[data-view="training"]').classList.contains('is-active');
@@ -466,7 +467,7 @@ try {
     document.querySelector('#browse-players').click();
     return { setup, packageOptions, playerQuestion, playerFeedback, lineup, triviaQuestion, triviaFeedback, roster, returnedToCowboysRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active') };
   })()`);
-  if (patriotsDeck.setup.header !== 'Patriots roster' || patriotsDeck.setup.title !== 'Most famous' || !patriotsDeck.setup.switchVisible || patriotsDeck.setup.visibleStudyTypes.join('|') !== 'Players|Lineup|Trivia' || !patriotsDeck.setup.rosterVisible || patriotsDeck.setup.footerSource !== 'official Patriots roster' || patriotsDeck.setup.footerHref !== 'https://www.patriots.com/team/players-roster/' || patriotsDeck.setup.overflow || patriotsDeck.packageOptions.length !== 8 || patriotsDeck.packageOptions.find((option) => option.title === 'Most famous')?.detail !== '8 players' || !patriotsDeck.playerQuestion.training || !patriotsDeck.playerQuestion.localHeadshot || !patriotsDeck.playerQuestion.fourChoices || !patriotsDeck.playerFeedback.rosterFacts || !patriotsDeck.playerFeedback.nflFactsAbsent || !patriotsDeck.lineup.training || patriotsDeck.lineup.packCount !== 5 || !patriotsDeck.lineup.fourChoices || !patriotsDeck.lineup.patriotsOnly || !patriotsDeck.lineup.visualAbsent || !patriotsDeck.triviaQuestion.training || patriotsDeck.triviaQuestion.packCount !== 5 || !patriotsDeck.triviaQuestion.fourChoices || !patriotsDeck.triviaQuestion.visualAbsent || !patriotsDeck.triviaFeedback.localImage || !patriotsDeck.triviaFeedback.answer || !patriotsDeck.triviaFeedback.fact || !patriotsDeck.roster.active || patriotsDeck.roster.count !== patriotsDeck.roster.expectedCount || patriotsDeck.roster.count !== 77 || !patriotsDeck.roster.localHeadshots || patriotsDeck.roster.collegeMarks !== 77 || patriotsDeck.roster.overflow || !patriotsDeck.returnedToCowboysRoster) throw new Error(`Patriots deck failed: ${JSON.stringify(patriotsDeck)}`);
+  if (patriotsDeck.setup.header !== 'Patriots roster' || patriotsDeck.setup.title !== 'Most famous' || !patriotsDeck.setup.switchVisible || patriotsDeck.setup.visibleStudyTypes.join('|') !== 'Players|Lineup|Trivia' || !patriotsDeck.setup.rosterVisible || patriotsDeck.setup.footerSource !== 'official Patriots roster' || patriotsDeck.setup.footerHref !== 'https://www.patriots.com/team/players-roster/' || patriotsDeck.setup.overflow || patriotsDeck.packageOptions.length !== 8 || patriotsDeck.packageOptions.find((option) => option.title === 'Most famous')?.detail !== '0 of 8 mastered' || !patriotsDeck.playerQuestion.training || !patriotsDeck.playerQuestion.localHeadshot || !patriotsDeck.playerQuestion.fourChoices || !patriotsDeck.playerFeedback.rosterFacts || !patriotsDeck.playerFeedback.nflFactsAbsent || !patriotsDeck.lineup.training || patriotsDeck.lineup.packCount !== 5 || !patriotsDeck.lineup.fourChoices || !patriotsDeck.lineup.patriotsOnly || !patriotsDeck.lineup.visualAbsent || !patriotsDeck.triviaQuestion.training || patriotsDeck.triviaQuestion.packCount !== 5 || !patriotsDeck.triviaQuestion.fourChoices || !patriotsDeck.triviaQuestion.visualAbsent || !patriotsDeck.triviaFeedback.localImage || !patriotsDeck.triviaFeedback.answer || !patriotsDeck.triviaFeedback.fact || !patriotsDeck.roster.active || patriotsDeck.roster.count !== patriotsDeck.roster.expectedCount || patriotsDeck.roster.count !== 77 || !patriotsDeck.roster.localHeadshots || patriotsDeck.roster.collegeMarks !== 77 || patriotsDeck.roster.overflow || !patriotsDeck.returnedToCowboysRoster) throw new Error(`Patriots deck failed: ${JSON.stringify(patriotsDeck)}`);
 
   if (process.env.CAPTURE_DIR) {
     await evaluate(client, `(() => {
@@ -567,11 +568,11 @@ try {
     return { setup, packageOptions, modeOptions, playerQuestion, playerFeedback, playerOptionSignature, triviaSetup, triviaPacks, triviaQuestion, triviaFeedback, triviaOptionSignature, returnedToCowboysRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active') };
   })()`);
   const expectedGroups = [
-    { title: 'Top 10', detail: '10 players' },
-    { title: 'Top 25', detail: '25 players' },
-    { title: 'Top 50', detail: '50 players' },
-    { title: 'Top 75', detail: '75 players' },
-    { title: 'Top 100', detail: '100 players' },
+    { title: 'Top 10', detail: '0 of 10 mastered' },
+    { title: 'Top 25', detail: '0 of 25 mastered' },
+    { title: 'Top 50', detail: '0 of 50 mastered' },
+    { title: 'Top 75', detail: '0 of 75 mastered' },
+    { title: 'Top 100', detail: '0 of 100 mastered' },
   ];
   if (nflDeck.setup.header !== 'NFL Top 100' || nflDeck.setup.title !== 'Top 10' || nflDeck.setup.visibleStudyTypes.join('|') !== 'Players|Trivia' || !nflDeck.setup.lineupHidden || !nflDeck.setup.rosterHidden || nflDeck.setup.switchColumns.split(' ').length !== 2 || !nflDeck.setup.dataDate.includes('2026') || nflDeck.setup.overflow || JSON.stringify(nflDeck.packageOptions) !== JSON.stringify(expectedGroups) || !nflDeck.modeOptions.some((mode) => mode.includes('Teams')) || !nflDeck.modeOptions.some((mode) => mode.includes('Rankings')) || !nflDeck.playerQuestion.training || !nflDeck.playerQuestion.localHeadshot || !nflDeck.playerQuestion.promptMentionsTeam || !nflDeck.playerQuestion.fourChoices || !nflDeck.playerFeedback.teamAndRank || !nflDeck.playerFeedback.cowboyFactsAbsent || nflDeck.playerOptionSignature !== knowledgeModes.lineupOptionSignature || !nflDeck.triviaSetup.selected || nflDeck.triviaSetup.title !== 'Mixed' || !nflDeck.triviaSetup.contentHidden || nflDeck.triviaPacks.join('|') !== 'Mixed|Divisions|League structure|Schedule' || !nflDeck.triviaQuestion.visualAbsent || !nflDeck.triviaQuestion.labelHidden || !nflDeck.triviaQuestion.fourChoices || !nflDeck.triviaFeedback.answer || !nflDeck.triviaFeedback.fact || !nflDeck.triviaFeedback.imageAbsent || nflDeck.triviaOptionSignature !== knowledgeModes.lineupOptionSignature || !nflDeck.returnedToCowboysRoster) throw new Error(`NFL deck failed: ${JSON.stringify(nflDeck)}`);
 
@@ -596,6 +597,119 @@ try {
       document.querySelector('[data-action="exit-session"]').click();
       document.querySelector('#header-back').click();
       document.querySelector('[data-player-deck="cowboys"]').click();
+      document.querySelector('#browse-players').click();
+    })()`);
+  }
+
+  const masteryFlow = await evaluate(client, `(() => {
+    document.querySelector('#header-back').click();
+    document.querySelector('#setup-stage-value').click();
+    document.querySelector('[data-setup-kind="stage"][data-setup-value="mastery"]').click();
+    document.querySelector('#setup-start').click();
+
+    const playerIds = [];
+    const progressLabels = [];
+    const nextLabels = [];
+    let feedbackStayedFocused = true;
+    for (let index = 0; index < 20; index += 1) {
+      const prompt = document.querySelector('#question-title').textContent;
+      const visualName = document.querySelector('#question-visual img')?.alt.replace(/ headshot$/, '')
+        ?? document.querySelector('.question-player strong')?.textContent;
+      const player = window.COWBOYS_ROSTER.players.find((candidate) => candidate.name === visualName || prompt.includes(candidate.name));
+      if (!player) throw new Error('Could not resolve mastery player from the rendered question.');
+      const answer = prompt.startsWith('Who is this player')
+        ? player.name
+        : prompt.startsWith('What number')
+          ? player.number
+          : prompt.startsWith('What position')
+            ? player.position
+            : player.college;
+      playerIds.push(player.id);
+      progressLabels.push(document.querySelector('#game-progress-text').textContent);
+      const input = document.querySelector('#recall-input');
+      input.value = answer;
+      document.querySelector('#recall-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      feedbackStayedFocused &&= !document.querySelector('.feedback-facts') && document.querySelector('#answer-feedback').textContent.trim() === '✓ Correct';
+      nextLabels.push(document.querySelector('#next-wrap button').textContent.replace(/\\s+/g, ' ').trim());
+      document.querySelector('#next-wrap button').click();
+    }
+
+    const stored = JSON.parse(localStorage.getItem('cowboys-roster-lab-v1'));
+    const masteredPlayerIds = Object.entries(stored.players).filter(([, value]) => value.verified).map(([id]) => id);
+    const results = document.querySelector('[data-view="results"]').classList.contains('is-active');
+    document.querySelector('.result-actions [data-action="home"]').click();
+    document.querySelector('[data-player-deck="cowboys"]').click();
+    document.querySelector('#setup-package').click();
+    const playerProgress = Object.fromEntries([...document.querySelectorAll('[data-setup-kind="package"]')].map((option) => [
+      option.querySelector('strong').textContent,
+      option.querySelector('small').textContent,
+    ]));
+    document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();
+
+    document.querySelector('[data-study-type="lineup"]').click();
+    document.querySelector('#setup-package').click();
+    const lineupProgress = [...document.querySelectorAll('[data-setup-kind="package"] small')].map((item) => item.textContent);
+    document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();
+
+    document.querySelector('[data-study-type="trivia"]').click();
+    document.querySelector('#setup-stage-value').click();
+    document.querySelector('[data-setup-kind="stage"][data-setup-value="recall"]').click();
+    document.querySelector('#setup-start').click();
+    const triviaPrompt = document.querySelector('#question-title').textContent;
+    const triviaQuestion = window.COWBOYS_TRIVIA.questions.find((question) => question.prompt === triviaPrompt);
+    const triviaInput = document.querySelector('#recall-input');
+    triviaInput.value = triviaQuestion.correct;
+    document.querySelector('#recall-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    document.querySelector('[data-action="exit-session"]').click();
+    document.querySelector('#setup-package').click();
+    const triviaProgress = Object.fromEntries([...document.querySelectorAll('[data-setup-kind="package"]')].map((option) => [
+      option.dataset.setupValue,
+      option.querySelector('small').textContent,
+    ]));
+    document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();
+    document.querySelector('[data-study-type="players"]').click();
+    document.querySelector('#browse-players').click();
+
+    return {
+      results,
+      questionCount: playerIds.length,
+      noAdjacentPlayer: playerIds.every((id, index) => index === 0 || id !== playerIds[index - 1]),
+      everyPlayerAskedFourFacts: [...new Set(playerIds)].every((id) => playerIds.filter((candidate) => candidate === id).length === 4),
+      plainProgress: progressLabels.every((label, index) => label === (index + 1) + ' of 20'),
+      nextLabels,
+      feedbackStayedFocused,
+      masteredPlayers: masteredPlayerIds.length,
+      playerProgress,
+      lineupProgress,
+      triviaMixedProgress: triviaProgress.mixed,
+      triviaPackProgress: triviaProgress[triviaQuestion.pack],
+      returnedToRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active')
+    };
+  })()`);
+  if (!masteryFlow.results || masteryFlow.questionCount !== 20 || !masteryFlow.noAdjacentPlayer || !masteryFlow.everyPlayerAskedFourFacts || !masteryFlow.plainProgress || !masteryFlow.feedbackStayedFocused || masteryFlow.nextLabels.slice(0, -1).some((label) => label !== 'Next fact →') || masteryFlow.nextLabels.at(-1) !== 'See results →' || masteryFlow.masteredPlayers !== 5 || masteryFlow.playerProgress['Most famous'] !== '5 of 8 mastered' || masteryFlow.playerProgress['Full roster'] !== '5 of 72 mastered' || masteryFlow.lineupProgress.some((detail) => !/^0 of \d+ mastered$/.test(detail)) || masteryFlow.triviaMixedProgress !== '1 of 40 mastered' || !masteryFlow.triviaPackProgress.startsWith('1 of ') || !masteryFlow.returnedToRoster) throw new Error(`Mastery flow failed: ${JSON.stringify(masteryFlow)}`);
+
+  if (process.env.CAPTURE_DIR) {
+    await evaluate(client, `(() => {
+      document.querySelector('#header-back').click();
+      document.querySelector('#setup-package').click();
+    })()`);
+    await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 200))');
+    let screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await writeFile(join(process.env.CAPTURE_DIR, 'group-mastery-progress.png'), Buffer.from(screenshot.data, 'base64'));
+    await evaluate(client, `(() => {
+      document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();
+      document.querySelector('#setup-stage-value').click();
+      document.querySelector('[data-setup-kind="stage"][data-setup-value="mastery"]').click();
+      document.querySelector('#setup-start').click();
+      const input = document.querySelector('#recall-input');
+      input.value = 'wrong answer';
+      document.querySelector('#recall-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    })()`);
+    await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 200))');
+    screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await writeFile(join(process.env.CAPTURE_DIR, 'mastery-focused-feedback.png'), Buffer.from(screenshot.data, 'base64'));
+    await evaluate(client, `(() => {
+      document.querySelector('[data-action="exit-session"]').click();
       document.querySelector('#browse-players').click();
     })()`);
   }

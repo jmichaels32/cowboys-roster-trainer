@@ -1412,6 +1412,10 @@ a {
   font-size: 15px;
 }
 
+.feedback-title:only-child {
+  margin-bottom: 0;
+}
+
 .feedback-facts {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
