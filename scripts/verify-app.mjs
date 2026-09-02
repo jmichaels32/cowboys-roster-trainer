@@ -418,7 +418,8 @@ try {
     const feedbackLabels = [...document.querySelectorAll('.feedback-facts span')].map((label) => label.textContent);
     const playerFeedback = {
       rosterFacts: feedbackLabels.includes('Number') && feedbackLabels.includes('College'),
-      nflFactsAbsent: !feedbackLabels.includes('Team') && !feedbackLabels.includes('Rank')
+      nflFactsAbsent: !feedbackLabels.includes('Team') && !feedbackLabels.includes('Rank'),
+      physicalContext: /(?:Rookie|Year \\d+) · \\d+′\\d+″ · \\d+ lb/.test(document.querySelector('.feedback-player-meta')?.textContent ?? '')
     };
     document.querySelector('[data-action="exit-session"]').click();
     document.querySelector('[data-study-type="lineup"]').click();
@@ -470,7 +471,7 @@ try {
     document.querySelector('#browse-players').click();
     return { setup, packageOptions, playerQuestion, playerFeedback, lineup, triviaQuestion, triviaFeedback, roster, returnedToCowboysRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active') };
   })()`);
-  if (patriotsDeck.setup.header !== 'Patriots roster' || patriotsDeck.setup.title !== 'Most famous' || !patriotsDeck.setup.switchVisible || patriotsDeck.setup.visibleStudyTypes.join('|') !== 'Players|Lineup|Trivia' || !patriotsDeck.setup.rosterVisible || patriotsDeck.setup.footerSource !== 'official Patriots roster' || patriotsDeck.setup.footerHref !== 'https://www.patriots.com/team/players-roster/' || patriotsDeck.setup.overflow || patriotsDeck.packageOptions.length !== 8 || patriotsDeck.packageOptions.find((option) => option.title === 'Most famous')?.detail !== '0 of 8 mastered' || !patriotsDeck.playerQuestion.training || !patriotsDeck.playerQuestion.localHeadshot || !patriotsDeck.playerQuestion.fourChoices || !patriotsDeck.playerFeedback.rosterFacts || !patriotsDeck.playerFeedback.nflFactsAbsent || !patriotsDeck.lineup.training || patriotsDeck.lineup.packCount !== 5 || !patriotsDeck.lineup.fourChoices || !patriotsDeck.lineup.patriotsOnly || !patriotsDeck.lineup.visualAbsent || !patriotsDeck.triviaQuestion.training || patriotsDeck.triviaQuestion.packCount !== 5 || !patriotsDeck.triviaQuestion.fourChoices || !patriotsDeck.triviaQuestion.visualAbsent || !patriotsDeck.triviaFeedback.localImage || !patriotsDeck.triviaFeedback.answer || !patriotsDeck.triviaFeedback.fact || !patriotsDeck.roster.active || patriotsDeck.roster.count !== patriotsDeck.roster.expectedCount || patriotsDeck.roster.count !== 77 || !patriotsDeck.roster.localHeadshots || patriotsDeck.roster.collegeMarks !== 77 || patriotsDeck.roster.overflow || !patriotsDeck.returnedToCowboysRoster) throw new Error(`Patriots deck failed: ${JSON.stringify(patriotsDeck)}`);
+  if (patriotsDeck.setup.header !== 'Patriots roster' || patriotsDeck.setup.title !== 'Most famous' || !patriotsDeck.setup.switchVisible || patriotsDeck.setup.visibleStudyTypes.join('|') !== 'Players|Lineup|Trivia' || !patriotsDeck.setup.rosterVisible || patriotsDeck.setup.footerSource !== 'official Patriots roster' || patriotsDeck.setup.footerHref !== 'https://www.patriots.com/team/players-roster/' || patriotsDeck.setup.overflow || patriotsDeck.packageOptions.length !== 8 || patriotsDeck.packageOptions.find((option) => option.title === 'Most famous')?.detail !== '0 of 8 mastered' || !patriotsDeck.playerQuestion.training || !patriotsDeck.playerQuestion.localHeadshot || !patriotsDeck.playerQuestion.fourChoices || !patriotsDeck.playerFeedback.rosterFacts || !patriotsDeck.playerFeedback.nflFactsAbsent || !patriotsDeck.playerFeedback.physicalContext || !patriotsDeck.lineup.training || patriotsDeck.lineup.packCount !== 5 || !patriotsDeck.lineup.fourChoices || !patriotsDeck.lineup.patriotsOnly || !patriotsDeck.lineup.visualAbsent || !patriotsDeck.triviaQuestion.training || patriotsDeck.triviaQuestion.packCount !== 5 || !patriotsDeck.triviaQuestion.fourChoices || !patriotsDeck.triviaQuestion.visualAbsent || !patriotsDeck.triviaFeedback.localImage || !patriotsDeck.triviaFeedback.answer || !patriotsDeck.triviaFeedback.fact || !patriotsDeck.roster.active || patriotsDeck.roster.count !== patriotsDeck.roster.expectedCount || patriotsDeck.roster.count !== 77 || !patriotsDeck.roster.localHeadshots || patriotsDeck.roster.collegeMarks !== 77 || patriotsDeck.roster.overflow || !patriotsDeck.returnedToCowboysRoster) throw new Error(`Patriots deck failed: ${JSON.stringify(patriotsDeck)}`);
 
   if (process.env.CAPTURE_DIR) {
     await evaluate(client, `(() => {
@@ -633,8 +634,10 @@ try {
       progressLabels.push(document.querySelector('#game-progress-text').textContent);
       const input = document.querySelector('#recall-input');
       input.value = answer;
-      document.querySelector('#recall-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-      feedbackStayedFocused &&= !document.querySelector('.feedback-facts') && document.querySelector('#answer-feedback').textContent.trim() === '✓ Correct';
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      feedbackStayedFocused &&= !document.querySelector('.feedback-facts') && !document.querySelector('.feedback-title');
+      const gradedSubmit = document.querySelector('.recall-submit');
+      feedbackStayedFocused &&= gradedSubmit.disabled && gradedSubmit.textContent.trim() === '✓ Correct' && gradedSubmit.classList.contains('is-correct');
       nextLabels.push(document.querySelector('#next-wrap button').textContent.replace(/\\s+/g, ' ').trim());
       document.querySelector('#next-wrap button').click();
     }
@@ -798,10 +801,10 @@ try {
     const firstPlayer = document.querySelector('#question-visual img')?.alt.replace(/ headshot$/, '');
     const input = document.querySelector('#recall-input');
     input.value = 'SHAVON REVEL!!!';
-    document.querySelector('#recall-form').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    input.dispatchEvent(new Event('input', { bubbles: true }));
     return {
       firstPlayer,
-      acceptedSuffixlessName: document.querySelector('#game-score').textContent === '1' && document.querySelector('#answer-feedback').textContent.includes('Correct'),
+      acceptedSuffixlessName: document.querySelector('#game-score').textContent === '1' && document.querySelector('.recall-submit').textContent.trim() === '✓ Correct',
     };
   })()`);
   if (untouchedFirst.firstPlayer !== 'Shavon Revel Jr.' || !untouchedFirst.acceptedSuffixlessName) throw new Error(`Untouched scheduling or answer tolerance failed: ${JSON.stringify(untouchedFirst)}`);

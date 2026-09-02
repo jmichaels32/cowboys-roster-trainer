@@ -1398,9 +1398,8 @@
     if (question.visual === "number") {
       return `<div class="number-stimulus" aria-label="Jersey number ${h(question.player.number)}"><div><strong>${h(question.player.number)}</strong><span>${h(question.player.team ?? "Dallas Cowboys")}</span></div></div>`;
     }
-    const secondary = state.playerDeckId !== "nfl-top-100"
-      ? `<span>${h(question.player.experience === "R" ? "Rookie" : `Year ${question.player.experience}`)}</span>`
-      : "";
+    const profileSummary = playerProfileSummary(question.player);
+    const secondary = profileSummary ? `<span>${h(profileSummary)}</span>` : "";
     return `
       <div class="question-player">
         ${headshot(question.player, "small", true)}
@@ -1409,9 +1408,26 @@
       </div>`;
   }
 
-  function renderPlayerFeedback(question) {
+  function playerProfileSummary(player) {
+    if (state.playerDeckId === "nfl-top-100") return "";
+    return [
+      player.experience ? (player.experience === "R" ? "Rookie" : `Year ${player.experience}`) : "",
+      player.height ? formatHeight(player.height) : "",
+      player.weight ? `${player.weight} lb` : "",
+    ].filter(Boolean).join(" · ");
+  }
+
+  function renderPlayerFeedback(question, correct) {
+    const profileSummary = question.visual === "player" ? "" : playerProfileSummary(question.player);
+    const profile = profileSummary ? `<p class="feedback-player-meta">${h(profileSummary)}</p>` : "";
+    const status = question.responseType === "typed"
+      ? ""
+      : `<div class="feedback-title"><strong>${h(question.correctFeedback)}</strong></div>`;
     if (question.fullCheck) {
-      return `<div class="feedback-title"><strong>${h(question.correctFeedback)}</strong></div>`;
+      const correction = question.responseType === "typed" && !correct
+        ? `<p class="feedback-correct-answer">${h(question.correctDisplay)}</p>`
+        : "";
+      return `${status}${correction}${profile}`;
     }
     const player = question.player;
     const facts = state.playerDeckId === "nfl-top-100"
@@ -1428,7 +1444,8 @@
           ["College", player.college],
         ];
     return `
-      <div class="feedback-title"><strong>${h(question.correctFeedback)}</strong></div>
+      ${status}
+      ${profile}
       <div class="feedback-facts">
         ${facts.map(([label, value]) => `<div><span>${h(label)}</span><strong>${h(value)}</strong></div>`).join("")}
       </div>`;
@@ -1446,7 +1463,7 @@
   function renderTriviaFeedback(question, correct) {
     return `
       <div class="trivia-answer-copy">
-        <p class="trivia-result">${correct ? "Correct" : "Incorrect"}</p>
+        ${question.responseType === "typed" ? "" : `<p class="trivia-result">${correct ? "Correct" : "Incorrect"}</p>`}
         <h2>${h(question.correctDisplay)}</h2>
         <p class="trivia-fact">${h(question.detail)}</p>
       </div>
@@ -1508,10 +1525,32 @@
             ? "Next card"
             : "Next question";
     elements.nextButton.innerHTML = `${nextLabel} <span aria-hidden="true">→</span>`;
-    if (question.responseType === "typed") {
-      document.querySelector("#recall-input").focus({ preventScroll: true });
-    }
     document.querySelector(".training-view").scrollIntoView({ block: "start" });
+    if (question.responseType === "typed") focusRecallInput();
+  }
+
+  function focusRecallInput() {
+    const input = document.querySelector("#recall-input");
+    if (!input) return;
+    input.focus({ preventScroll: true });
+    const positionAboveKeyboard = () => {
+      if (!input.isConnected || document.activeElement !== input) return;
+      const viewport = window.visualViewport;
+      const viewportTop = viewport?.offsetTop ?? 0;
+      const viewportBottom = viewportTop + (viewport?.height ?? window.innerHeight);
+      const inputRect = input.getBoundingClientRect();
+      const bottomGap = 14;
+      const topGap = 12;
+      const delta = inputRect.bottom > viewportBottom - bottomGap
+        ? inputRect.bottom - (viewportBottom - bottomGap)
+        : inputRect.top < viewportTop + topGap
+          ? inputRect.top - (viewportTop + topGap)
+          : 0;
+      if (Math.abs(delta) > 1) window.scrollBy({ top: delta, behavior: "smooth" });
+    };
+    requestAnimationFrame(positionAboveKeyboard);
+    setTimeout(positionAboveKeyboard, 180);
+    setTimeout(positionAboveKeyboard, 360);
   }
 
   function normalizeAnswer(value) {
@@ -1546,6 +1585,12 @@
     if (question.mode === "rankings" && question.correct === "Top 3") accepted.push("Top three");
 
     return accepted.some((candidate) => normalizeAnswer(candidate) === normalized);
+  }
+
+  function questionAnswerMatches(question, answer) {
+    return question.kind === "knowledge"
+      ? knowledgeAnswerMatches(question, answer)
+      : playerAnswerMatches(question, answer);
   }
 
   function recordProgress(playerId, skill, correct, stage) {
@@ -1604,9 +1649,7 @@
     state.answerLocked = true;
     const question = state.questions[state.questionIndex];
     const selected = answer.trim();
-    const correct = question.kind === "knowledge"
-      ? knowledgeAnswerMatches(question, selected)
-      : playerAnswerMatches(question, selected);
+    const correct = questionAnswerMatches(question, selected);
     if (correct) state.score += 1;
     state.answers.push({ question, selected, correct });
     recordPracticeCombination(correct);
@@ -1646,9 +1689,10 @@
       input.disabled = true;
       submit.disabled = true;
       input.classList.add(correct ? "is-correct" : "is-wrong");
+      submit.textContent = correct ? "✓ Correct" : "✕ Incorrect";
+      submit.classList.add(correct ? "is-correct" : "is-wrong");
     }
 
-    elements.answerFeedback.hidden = false;
     elements.answerFeedback.classList.add(correct ? "is-correct" : "is-wrong");
     const isTrivia = question.studyType === "trivia";
     elements.answerFeedback.classList.toggle("is-trivia", isTrivia);
@@ -1656,12 +1700,13 @@
       ? question.studyType === "trivia"
         ? renderTriviaFeedback(question, correct)
         : `
-        <div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>
+        ${question.responseType === "typed" ? (!correct ? `<p class="feedback-correct-answer">${h(question.correctDisplay)}</p>` : "") : `<div class="feedback-title"><strong>${correct ? "✓ Correct" : `Incorrect — ${h(question.correctDisplay)}`}</strong></div>`}
         <p class="knowledge-detail">${h(question.detail)}</p>`
       : renderPlayerFeedback({
           ...question,
           correctFeedback: correct ? "✓ Correct" : `Incorrect — ${question.correctDisplay}`,
-        });
+        }, correct);
+    elements.answerFeedback.hidden = !elements.answerFeedback.innerHTML.trim();
     elements.answerFeedback.querySelector(".trivia-reveal img")?.addEventListener("error", (event) => {
       event.currentTarget.closest(".trivia-reveal")?.remove();
     }, { once: true });
@@ -1994,6 +2039,14 @@
   );
 
   elements.rosterSearch.addEventListener("input", renderRoster);
+  document.addEventListener("input", (event) => {
+    if (!event.target.matches("#recall-input") || event.isComposing || state.answerLocked) return;
+    const answer = event.target.value.trim();
+    const question = state.questions[state.questionIndex];
+    if (answer && question?.responseType === "typed" && questionAnswerMatches(question, answer)) {
+      answerQuestion(answer);
+    }
+  });
   elements.rosterControlsDialog.addEventListener("click", (event) => {
     if (event.target === elements.rosterControlsDialog) elements.rosterControlsDialog.close();
   });
