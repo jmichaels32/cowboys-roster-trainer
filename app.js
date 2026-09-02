@@ -911,7 +911,10 @@
       return {
         value: pack.id,
         label: pack.title,
-        detail: `${mastery.mastered} of ${mastery.total} mastered`,
+        detail:
+          mastery.total > 0 && mastery.mastered === mastery.total
+            ? "✓ Mastered"
+            : `${mastery.mastered} of ${mastery.total} mastered`,
       };
     });
     const optionSets = {

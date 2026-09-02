@@ -605,13 +605,15 @@ try {
     document.querySelector('#header-back').click();
     document.querySelector('#setup-stage-value').click();
     document.querySelector('[data-setup-kind="stage"][data-setup-value="mastery"]').click();
+    document.querySelector('#setup-length-value').click();
+    document.querySelector('[data-setup-kind="length"][data-setup-value="all"]').click();
     document.querySelector('#setup-start').click();
 
     const playerIds = [];
     const progressLabels = [];
     const nextLabels = [];
     let feedbackStayedFocused = true;
-    for (let index = 0; index < 20; index += 1) {
+    for (let index = 0; index < 32; index += 1) {
       const prompt = document.querySelector('#question-title').textContent;
       const visualName = document.querySelector('#question-visual img')?.alt.replace(/ headshot$/, '')
         ?? document.querySelector('.question-player strong')?.textContent;
@@ -675,7 +677,7 @@ try {
       questionCount: playerIds.length,
       noAdjacentPlayer: playerIds.every((id, index) => index === 0 || id !== playerIds[index - 1]),
       everyPlayerAskedFourFacts: [...new Set(playerIds)].every((id) => playerIds.filter((candidate) => candidate === id).length === 4),
-      plainProgress: progressLabels.every((label, index) => label === (index + 1) + ' of 20'),
+      plainProgress: progressLabels.every((label, index) => label === (index + 1) + ' of 32'),
       nextLabels,
       feedbackStayedFocused,
       masteredPlayers: masteredPlayerIds.length,
@@ -686,7 +688,7 @@ try {
       returnedToRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active')
     };
   })()`);
-  if (!masteryFlow.results || masteryFlow.questionCount !== 20 || !masteryFlow.noAdjacentPlayer || !masteryFlow.everyPlayerAskedFourFacts || !masteryFlow.plainProgress || !masteryFlow.feedbackStayedFocused || masteryFlow.nextLabels.slice(0, -1).some((label) => label !== 'Next fact →') || masteryFlow.nextLabels.at(-1) !== 'See results →' || masteryFlow.masteredPlayers !== 5 || masteryFlow.playerProgress['Most famous'] !== '5 of 8 mastered' || masteryFlow.playerProgress['Full roster'] !== '5 of 72 mastered' || masteryFlow.lineupProgress.some((detail) => !/^0 of \d+ mastered$/.test(detail)) || masteryFlow.triviaMixedProgress !== '1 of 40 mastered' || !masteryFlow.triviaPackProgress.startsWith('1 of ') || !masteryFlow.returnedToRoster) throw new Error(`Mastery flow failed: ${JSON.stringify(masteryFlow)}`);
+  if (!masteryFlow.results || masteryFlow.questionCount !== 32 || !masteryFlow.noAdjacentPlayer || !masteryFlow.everyPlayerAskedFourFacts || !masteryFlow.plainProgress || !masteryFlow.feedbackStayedFocused || masteryFlow.nextLabels.slice(0, -1).some((label) => label !== 'Next fact →') || masteryFlow.nextLabels.at(-1) !== 'See results →' || masteryFlow.masteredPlayers !== 8 || masteryFlow.playerProgress['Most famous'] !== '✓ Mastered' || masteryFlow.playerProgress['Full roster'] !== '8 of 72 mastered' || masteryFlow.lineupProgress.some((detail) => !/^0 of \d+ mastered$/.test(detail)) || masteryFlow.triviaMixedProgress !== '1 of 40 mastered' || !masteryFlow.triviaPackProgress.startsWith('1 of ') || !masteryFlow.returnedToRoster) throw new Error(`Mastery flow failed: ${JSON.stringify(masteryFlow)}`);
 
   if (process.env.CAPTURE_DIR) {
     await evaluate(client, `(() => {
