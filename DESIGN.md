@@ -36,7 +36,8 @@ spacing:
 The app teaches football players from selectable decks. The initial decks are:
 
 1. Cowboys roster
-2. NFL Top 100
+2. Patriots roster
+3. NFL Top 100
 
 Decks own their player set, progress, and optional accent. The app shell remains neutral so adding another team or league-wide deck never requires a redesign.
 
@@ -52,6 +53,8 @@ The NFL Top 100 deck contains two study types:
 2. `Trivia` teaches durable league-wide structure, divisions, and schedule basics.
 
 NFL Top 100 has no Lineup mode. Do not show study types a deck does not support.
+
+The Patriots deck begins with `Players`: face/name, jersey number, position, and college, using the same packages and roster browser as Dallas. Lineup and Trivia stay absent until their content is deliberately built and verified. When a deck supports only one study type, hide the segmented control instead of showing a one-option switch.
 
 ## First rule: remove unnecessary text
 
@@ -111,7 +114,7 @@ Roster rows are compact reference cards. On phones, target roughly 102px per row
 
 Roster sorting covers visible factual attributes that produce a meaningful order: name, jersey number, position, college, height, weight, and depth chart. Learning progress and practice priority are internal scheduling inputs, not player-browser controls. Directional physical sorts name their direction (`Tallest first`, `Heaviest first`) rather than leaving ascending/descending ambiguous.
 
-Deck rows are destinations, not selectable settings. Tapping an available deck opens it immediately; there is no separate “Study [deck]” button. Unavailable decks remain visibly disabled with a concise availability state. Player browsing belongs inside the selected deck, and Back/swipe returns from Players to that deck before returning to the deck list.
+Deck rows are destinations, not selectable settings. Tapping an available deck opens it immediately; there is no separate “Study [deck]” button. Unavailable decks remain visibly disabled with a concise availability state. Player browsing belongs inside roster decks, and Back/swipe returns from Players to that deck before returning to the deck list. League-wide ranked decks may omit the roster browser when their player groups already provide the useful navigation.
 
 Use `touch-action: manipulation` on the application surface and controls to prevent accidental double-tap zoom without disabling pinch zoom or setting a restrictive viewport scale.
 
@@ -125,11 +128,13 @@ Recognition choices use one shared rectangular option component across Players, 
 
 Trivia alone may add a verified historical image after the answer is revealed because the image supports recall. Center it above the answer explanation at its natural aspect ratio, constrain its height on phones, and use only the shared subtle corner radius—no added frame, border, shadow, forced subject crop, or visible caption. If a sourced file contains a baked decorative matte, flag it in the image registry and trim only that matte in presentation. Concise subject labels, provenance, relationship notes, credits, and alt text remain in the bundled data for validation and accessibility rather than becoming on-screen description. Prefer the exact person or event; if an exact event image is unavailable, use a directly related subject and record that relationship honestly in metadata. Images are downloaded once, optimized as local WebP assets, and never fetched during practice.
 
-The Cowboys player facts are face/name, jersey number, roster position, and college. NFL Top 100 player facts are face/name, current team, position, and rank. A normal session selects distinct players from the chosen package and asks one chosen fact per player; hidden accuracy, streak, recency, and completion data prioritize both players and facts. Mastery asks all four deck-specific facts for each selected player. Height, weight, roster status, and depth-chart position remain Cowboys reference data unless the product model is explicitly expanded later.
+Team-roster player facts are face/name, jersey number, roster position, and college. NFL Top 100 player facts are face/name, current team, position, and rank. A normal session selects distinct players from the chosen package and asks one chosen fact per player; hidden accuracy, streak, recency, and completion data prioritize both players and facts. Mastery asks all four deck-specific facts for each selected player. Height, weight, roster status, and depth-chart position remain roster-browser reference data unless the product model is explicitly expanded later.
 
 NFL Top 100 packages are nested rank thresholds: Top 10, Top 25, Top 50, Top 75, and Top 100. When the league has announced the final players but not their exact order, include them in every threshold under the honest label `Top 3`; never invent interim ranks. The updater pulls the official NFL list, caches all headshots as local WebP assets, and replaces the pending label once the remaining ranks publish. NFL trivia is source-backed and bundled offline. It stays text-first when no meaningful recall image exists.
 
-The top bar is contextual, not branded: “Decks” on the deck picker and the selected deck name on its screens. The package name is a large selector above session setup. Its sheet lists eight football-relevant packages and their player counts: Most famous, Starters, 2nd string, 3rd string, Offense, Defense, Practice squad, and Full roster. `Most famous` is deliberately limited to eight nationally recognizable players. This makes the deck → package hierarchy visible without explanatory copy.
+The top bar is contextual, not branded: “Decks” on the deck picker and the selected deck name on its screens. The package name is a large selector above session setup. Team-roster sheets list eight football-relevant packages and their player counts: Most famous, Starters, 2nd string, 3rd string, Offense, Defense, Practice squad, and Full roster. `Most famous` is deliberately limited to eight nationally recognizable players per team. This makes the deck → package hierarchy visible without explanatory copy.
+
+Deck provenance in the footer is contextual. It names and links the active deck’s official source rather than implying every deck comes from Dallas. New roster decks use unique player IDs so progress cannot collide across teams. Prefer bundled local headshots for new decks to preserve offline study; remote images are legacy data to migrate rather than a precedent.
 
 ## Content rules
 

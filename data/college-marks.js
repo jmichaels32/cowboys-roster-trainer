@@ -4,6 +4,18 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/alabama.png",
     "label": "AL"
   },
+  "Arizona": {
+    "src": "assets/college-marks/arizona.png",
+    "label": "AR"
+  },
+  "Arkansas": {
+    "src": "assets/college-marks/arkansas.png",
+    "label": "AR"
+  },
+  "Auburn": {
+    "src": "assets/college-marks/auburn.png",
+    "label": "AU"
+  },
   "Baylor": {
     "src": "assets/college-marks/baylor.png",
     "label": "BA"
@@ -12,17 +24,40 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/boston-college.png",
     "label": "BC"
   },
+  "Cal Poly": {
+    "src": "assets/college-marks/cal-poly.png",
+    "label": "CP"
+  },
   "California": {
     "src": "assets/college-marks/california.png",
     "label": "CA"
+  },
+  "Campbell University": {
+    "src": "assets/college-marks/campbell-university.png",
+    "label": "CU"
+  },
+  "Cincinnati": {
+    "src": "assets/college-marks/cincinnati.png",
+    "label": "CI"
   },
   "Colorado State": {
     "src": "assets/college-marks/colorado-state.png",
     "label": "CS"
   },
+  "Culver-Stockton": {
+    "label": "CS"
+  },
   "East Carolina": {
     "src": "assets/college-marks/east-carolina.png",
     "label": "EC"
+  },
+  "Eastern Michigan": {
+    "src": "assets/college-marks/eastern-michigan.png",
+    "label": "EM"
+  },
+  "Eastern Washington": {
+    "src": "assets/college-marks/eastern-washington.png",
+    "label": "EW"
   },
   "Florida": {
     "src": "assets/college-marks/florida.png",
@@ -32,9 +67,20 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/florida-a-m.png",
     "label": "FAM"
   },
+  "Florida State": {
+    "src": "assets/college-marks/florida-state.png",
+    "label": "FS"
+  },
   "Fresno State": {
     "src": "assets/college-marks/fresno-state.png",
     "label": "FS"
+  },
+  "Friends U.": {
+    "label": "FU"
+  },
+  "Georgetown": {
+    "src": "assets/college-marks/georgetown.png",
+    "label": "GE"
   },
   "Georgia": {
     "src": "assets/college-marks/georgia.png",
@@ -43,6 +89,18 @@ window.COLLEGE_MARKS = {
   "Georgia Southern": {
     "src": "assets/college-marks/georgia-southern.png",
     "label": "GS"
+  },
+  "Houston": {
+    "src": "assets/college-marks/houston.png",
+    "label": "HO"
+  },
+  "Idaho": {
+    "src": "assets/college-marks/idaho.png",
+    "label": "ID"
+  },
+  "Illinois": {
+    "src": "assets/college-marks/illinois.png",
+    "label": "IL"
   },
   "Jackson State University": {
     "src": "assets/college-marks/jackson-state-university.png",
@@ -56,13 +114,32 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/kansas-state.png",
     "label": "KS"
   },
+  "LSU": {
+    "src": "assets/college-marks/lsu.png",
+    "label": "LS"
+  },
+  "Liberty": {
+    "src": "assets/college-marks/liberty.png",
+    "label": "LI"
+  },
   "Loughborough (UK)": {
     "src": "assets/college-marks/loughborough-uk.png",
     "label": "LO"
   },
+  "Louisiana Tech": {
+    "src": "assets/college-marks/louisiana-tech.png",
+    "label": "LT"
+  },
   "Louisiana-Lafayette": {
     "src": "assets/college-marks/louisiana-lafayette.png",
     "label": "LL"
+  },
+  "Miami": {
+    "src": "assets/college-marks/miami.png",
+    "label": "MI"
+  },
+  "Miami (Ohio)": {
+    "label": "MI"
   },
   "Michigan": {
     "src": "assets/college-marks/michigan.png",
@@ -71,6 +148,9 @@ window.COLLEGE_MARKS = {
   "Michigan State": {
     "src": "assets/college-marks/michigan-state.png",
     "label": "MS"
+  },
+  "Middle Tennessee State": {
+    "label": "MTS"
   },
   "Minnesota": {
     "src": "assets/college-marks/minnesota.png",
@@ -88,13 +168,28 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/missouri.png",
     "label": "MI"
   },
+  "Morgan State": {
+    "src": "assets/college-marks/morgan-state.png",
+    "label": "MS"
+  },
+  "Nevada": {
+    "src": "assets/college-marks/nevada.png",
+    "label": "NE"
+  },
   "North Carolina": {
     "src": "assets/college-marks/north-carolina.png",
     "label": "NC"
   },
+  "North Carolina State": {
+    "label": "NCS"
+  },
   "North Dakota State": {
     "src": "assets/college-marks/north-dakota-state.png",
     "label": "NDS"
+  },
+  "North Texas": {
+    "src": "assets/college-marks/north-texas.png",
+    "label": "NT"
   },
   "Notre Dame": {
     "src": "assets/college-marks/notre-dame.png",
@@ -112,6 +207,9 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/oregon.png",
     "label": "OR"
   },
+  "Penn": {
+    "label": "PE"
+  },
   "Penn State": {
     "src": "assets/college-marks/penn-state.png",
     "label": "PS"
@@ -127,6 +225,10 @@ window.COLLEGE_MARKS = {
   "SMU": {
     "src": "assets/college-marks/smu.png",
     "label": "SM"
+  },
+  "South Alabama": {
+    "src": "assets/college-marks/south-alabama.png",
+    "label": "SA"
   },
   "South Carolina State": {
     "src": "assets/college-marks/south-carolina-state.png",
@@ -164,9 +266,16 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/texas-a-m.png",
     "label": "TAM"
   },
+  "Texas Christian": {
+    "label": "TC"
+  },
   "Texas Tech": {
     "src": "assets/college-marks/texas-tech.png",
     "label": "TT"
+  },
+  "Toledo": {
+    "src": "assets/college-marks/toledo.png",
+    "label": "TO"
   },
   "Troy": {
     "src": "assets/college-marks/troy.png",
@@ -176,6 +285,10 @@ window.COLLEGE_MARKS = {
     "src": "assets/college-marks/tulsa.png",
     "label": "TU"
   },
+  "UC Davis": {
+    "src": "assets/college-marks/uc-davis.png",
+    "label": "UD"
+  },
   "UCF": {
     "src": "assets/college-marks/ucf.png",
     "label": "UC"
@@ -183,6 +296,22 @@ window.COLLEGE_MARKS = {
   "UCLA": {
     "src": "assets/college-marks/ucla.png",
     "label": "UC"
+  },
+  "USC": {
+    "src": "assets/college-marks/usc.png",
+    "label": "US"
+  },
+  "Utah": {
+    "src": "assets/college-marks/utah.png",
+    "label": "UT"
+  },
+  "Vanderbilt": {
+    "src": "assets/college-marks/vanderbilt.png",
+    "label": "VA"
+  },
+  "Virginia": {
+    "src": "assets/college-marks/virginia.png",
+    "label": "VI"
   },
   "Virginia Tech": {
     "src": "assets/college-marks/virginia-tech.png",
@@ -195,6 +324,10 @@ window.COLLEGE_MARKS = {
   "Washington State": {
     "src": "assets/college-marks/washington-state.png",
     "label": "WS"
+  },
+  "Western Michigan": {
+    "src": "assets/college-marks/western-michigan.png",
+    "label": "WM"
   },
   "Wisconsin": {
     "src": "assets/college-marks/wisconsin.png",

@@ -7,11 +7,13 @@ A dependency-free, mobile-first flashcard trainer for learning football players 
 ## Decks
 
 - Cowboys roster: available now, using the official roster data
+- Patriots roster: 77 rostered players with depth groups and offline headshots
 - NFL Top 100: 100 players and headshots bundled offline from the official 2026 list; the final three remain labeled `Top 3` until their exact order publishes
 
 ## Training
 
 - Three Cowboys study types: Players, Lineup, and Trivia
+- Patriots Players mode with the same eight roster groups and searchable player browser
 - Two NFL Top 100 study types: Players and league-wide Trivia
 - Eight player groups: most famous, starters, second string, third string, offense, defense, practice squad, and the complete roster
 - One-tap recommended lessons that advance from recognition to recall and mastery as you improve
@@ -28,7 +30,7 @@ A dependency-free, mobile-first flashcard trainer for learning football players 
 - Device-local daily reports with answer totals, accuracy, players verified, and a Wordle-style share summary
 - Searchable roster browser with group and position filters plus factual sorting by name, number, position, college, height, weight, or depth chart
 
-The Cowboys data was generated from the [official Cowboys roster](https://www.dallascowboys.com/team/players-roster/). Headshots remain hosted by the official NFL/Cowboys image CDN.
+The team-roster data comes from the official [Cowboys](https://www.dallascowboys.com/team/players-roster/) and [Patriots](https://www.patriots.com/team/players-roster/) pages. Patriots headshots are bundled offline; Cowboys headshots currently remain hosted by the official NFL/Cowboys image CDN.
 
 The NFL Top 100 data comes from the official NFL countdown. Its player headshots are cached in the app for offline practice.
 
@@ -81,6 +83,14 @@ npm run update:nfl-top-100
 ```
 
 That updater reads the official 2026 countdown pages, validates the ranks, downloads all headshots as local WebP files, and regenerates `data/nfl-top-100.js`.
+
+Refresh New England with:
+
+```bash
+npm run update:patriots
+```
+
+The shared roster updater reads the official team page, merges ESPN’s published depth chart, validates the eight-player `Most famous` group, and caches Patriots headshots locally.
 
 ## Notes
 

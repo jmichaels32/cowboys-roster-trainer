@@ -6,12 +6,18 @@ import { resolve } from "node:path";
 import vm from "node:vm";
 
 const projectRoot = resolve(new URL("..", import.meta.url).pathname);
-const rosterSource = await readFile(resolve(projectRoot, "data/roster.js"), "utf8");
+const rosterSources = await Promise.all([
+  readFile(resolve(projectRoot, "data/roster.js"), "utf8"),
+  readFile(resolve(projectRoot, "data/patriots-roster.js"), "utf8"),
+]);
 const rosterContext = { window: {} };
 vm.createContext(rosterContext);
-vm.runInContext(rosterSource, rosterContext);
+rosterSources.forEach((source) => vm.runInContext(source, rosterContext));
 
-const colleges = [...new Set(rosterContext.window.COWBOYS_ROSTER.players.map((player) => player.college).filter(Boolean))].sort();
+const colleges = [...new Set([
+  ...rosterContext.window.COWBOYS_ROSTER.players,
+  ...rosterContext.window.PATRIOTS_ROSTER.players,
+].map((player) => player.college).filter(Boolean))].sort();
 const aliases = {
   "Jackson State University": "Jackson State",
   "Louisiana-Lafayette": "Louisiana",

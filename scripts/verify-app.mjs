@@ -95,14 +95,24 @@ try {
     if (await evaluate(client, "document.readyState !== 'complete' || !document.querySelector('[data-player-deck]')")) throw new Error("App not ready");
   });
 
+  if (process.env.CAPTURE_DIR) {
+    await mkdir(process.env.CAPTURE_DIR, { recursive: true });
+    const screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await writeFile(join(process.env.CAPTURE_DIR, 'deck-list.png'), Buffer.from(screenshot.data, 'base64'));
+  }
+
   const deckStates = await evaluate(client, `(() => {
     const cards = [...document.querySelectorAll('[data-player-deck]')];
+    const patriotsCard = document.querySelector('[data-player-deck="patriots"]');
+    const nflCard = document.querySelector('[data-player-deck="nfl-top-100"]');
     const landing = {
       cardCount: cards.length,
       header: document.querySelector('#header-context').textContent,
       oldBrandVisible: document.querySelector('.site-header').textContent.includes('Player Decks'),
-      nflEnabled: !cards[1].disabled,
-      nflLabel: cards[1].textContent.replace(/\\s+/g, ' ').trim(),
+      patriotsEnabled: !patriotsCard.disabled,
+      patriotsLabel: patriotsCard.textContent.replace(/\\s+/g, ' ').trim(),
+      nflEnabled: !nflCard.disabled,
+      nflLabel: nflCard.textContent.replace(/\\s+/g, ' ').trim(),
       studyRosterVisible: /Study\\s+Cowboys\\s+roster/i.test(document.body.textContent),
       playersShortcutHidden: document.querySelector('#browse-players').hidden,
       touchAction: getComputedStyle(document.body).touchAction,
@@ -116,7 +126,7 @@ try {
     cards[0].click();
     return { ...landing, enteredDeck: document.querySelector('[data-view="setup"]').classList.contains('is-active') };
   })()`);
-  if (deckStates.cardCount !== 2 || deckStates.header !== "Decks" || deckStates.oldBrandVisible || !deckStates.nflEnabled || !deckStates.nflLabel.includes("0 of 100 learned") || deckStates.studyRosterVisible || !deckStates.playersShortcutHidden || deckStates.touchAction !== "manipulation" || deckStates.palette.canvas !== "rgb(246, 247, 251)" || deckStates.palette.header !== "rgb(255, 255, 255)" || deckStates.palette.text !== "rgb(27, 30, 40)" || deckStates.overflow || !deckStates.enteredDeck) throw new Error(`Deck home failed: ${JSON.stringify(deckStates)}`);
+  if (deckStates.cardCount !== 3 || deckStates.header !== "Decks" || deckStates.oldBrandVisible || !deckStates.patriotsEnabled || !deckStates.patriotsLabel.includes("0 of 77 learned") || !deckStates.nflEnabled || !deckStates.nflLabel.includes("0 of 100 learned") || deckStates.studyRosterVisible || !deckStates.playersShortcutHidden || deckStates.touchAction !== "manipulation" || deckStates.palette.canvas !== "rgb(246, 247, 251)" || deckStates.palette.header !== "rgb(255, 255, 255)" || deckStates.palette.text !== "rgb(27, 30, 40)" || deckStates.overflow || !deckStates.enteredDeck) throw new Error(`Deck home failed: ${JSON.stringify(deckStates)}`);
 
   const setup = await evaluate(client, `(() => {
     const setupView = document.querySelector('[data-view="setup"]');
@@ -370,6 +380,85 @@ try {
     };
   })()`);
   if (cleared.value || !cleared.focused || !cleared.clearHidden || cleared.cards !== cleared.total || cleared.marks !== cleared.total || cleared.marksWithImages < cleared.total - 2 || cleared.maxCardHeight > 116) throw new Error(`Roster clear failed: ${JSON.stringify(cleared)}`);
+
+  const patriotsDeck = await evaluate(client, `(() => {
+    document.querySelector('#header-back').click();
+    document.querySelector('#header-back').click();
+    document.querySelector('[data-player-deck="patriots"]').click();
+    const setup = {
+      header: document.querySelector('#header-context').textContent,
+      title: document.querySelector('#setup-title').textContent,
+      switchHidden: document.querySelector('.study-type-switch').hidden,
+      playersVisible: !document.querySelector('[data-study-type="players"]').hidden,
+      lineupHidden: document.querySelector('[data-study-type="lineup"]').hidden,
+      triviaHidden: document.querySelector('[data-study-type="trivia"]').hidden,
+      rosterVisible: !document.querySelector('#browse-players').hidden,
+      footerSource: document.querySelector('#data-source').textContent,
+      footerHref: document.querySelector('#data-source').getAttribute('href'),
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+    };
+    document.querySelector('#setup-package').click();
+    const packageOptions = [...document.querySelectorAll('[data-setup-kind="package"]')].map((option) => ({
+      title: option.querySelector('strong').textContent,
+      detail: option.querySelector('small').textContent
+    }));
+    document.querySelector('[data-setup-kind="package"][data-setup-value="famous"]').click();
+    document.querySelector('#setup-mode-value').click();
+    document.querySelector('[data-setup-kind="mode"][data-setup-value="faces"]').click();
+    document.querySelector('#setup-start').click();
+    const playerQuestion = {
+      training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
+      localHeadshot: document.querySelector('#question-visual img')?.getAttribute('src')?.startsWith('assets/patriots/') ?? false,
+      fourChoices: document.querySelectorAll('.answer-button').length === 4
+    };
+    document.querySelector('.answer-button').click();
+    const feedbackLabels = [...document.querySelectorAll('.feedback-facts span')].map((label) => label.textContent);
+    const playerFeedback = {
+      rosterFacts: feedbackLabels.includes('Number') && feedbackLabels.includes('College'),
+      nflFactsAbsent: !feedbackLabels.includes('Team') && !feedbackLabels.includes('Rank')
+    };
+    document.querySelector('[data-action="exit-session"]').click();
+    document.querySelector('#browse-players').click();
+    const roster = {
+      active: document.querySelector('[data-view="roster"]').classList.contains('is-active'),
+      count: document.querySelectorAll('.player-card').length,
+      expectedCount: window.PATRIOTS_ROSTER.players.length,
+      localHeadshots: [...document.querySelectorAll('.player-card .headshot img')].every((image) => image.getAttribute('src').startsWith('assets/patriots/')),
+      collegeMarks: document.querySelectorAll('.college-mark').length,
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
+    };
+    document.querySelector('#header-back').click();
+    document.querySelector('#header-back').click();
+    document.querySelector('[data-player-deck="cowboys"]').click();
+    document.querySelector('#browse-players').click();
+    return { setup, packageOptions, playerQuestion, playerFeedback, roster, returnedToCowboysRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active') };
+  })()`);
+  if (patriotsDeck.setup.header !== 'Patriots roster' || patriotsDeck.setup.title !== 'Most famous' || !patriotsDeck.setup.switchHidden || !patriotsDeck.setup.playersVisible || !patriotsDeck.setup.lineupHidden || !patriotsDeck.setup.triviaHidden || !patriotsDeck.setup.rosterVisible || patriotsDeck.setup.footerSource !== 'official Patriots roster' || patriotsDeck.setup.footerHref !== 'https://www.patriots.com/team/players-roster/' || patriotsDeck.setup.overflow || patriotsDeck.packageOptions.length !== 8 || patriotsDeck.packageOptions.find((option) => option.title === 'Most famous')?.detail !== '8 players' || !patriotsDeck.playerQuestion.training || !patriotsDeck.playerQuestion.localHeadshot || !patriotsDeck.playerQuestion.fourChoices || !patriotsDeck.playerFeedback.rosterFacts || !patriotsDeck.playerFeedback.nflFactsAbsent || !patriotsDeck.roster.active || patriotsDeck.roster.count !== patriotsDeck.roster.expectedCount || patriotsDeck.roster.count !== 77 || !patriotsDeck.roster.localHeadshots || patriotsDeck.roster.collegeMarks !== 77 || patriotsDeck.roster.overflow || !patriotsDeck.returnedToCowboysRoster) throw new Error(`Patriots deck failed: ${JSON.stringify(patriotsDeck)}`);
+
+  if (process.env.CAPTURE_DIR) {
+    await evaluate(client, `(() => {
+      document.querySelector('#header-back').click();
+      document.querySelector('#header-back').click();
+      document.querySelector('[data-player-deck="patriots"]').click();
+    })()`);
+    await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 200))');
+    let screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await writeFile(join(process.env.CAPTURE_DIR, 'patriots-setup.png'), Buffer.from(screenshot.data, 'base64'));
+    await evaluate(client, `(() => {
+      document.querySelector('#setup-mode-value').click();
+      document.querySelector('[data-setup-kind="mode"][data-setup-value="faces"]').click();
+      document.querySelector('#setup-start').click();
+    })()`);
+    await evaluate(client, 'new Promise((resolve) => setTimeout(resolve, 320))');
+    screenshot = await client.call('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
+    await writeFile(join(process.env.CAPTURE_DIR, 'patriots-player-question.png'), Buffer.from(screenshot.data, 'base64'));
+    await evaluate(client, `(() => {
+      document.querySelector('[data-action="exit-session"]').click();
+      document.querySelector('#header-back').click();
+      document.querySelector('[data-player-deck="cowboys"]').click();
+      document.querySelector('#browse-players').click();
+    })()`);
+  }
 
   const nflDeck = await evaluate(client, `(() => {
     document.querySelector('#header-back').click();

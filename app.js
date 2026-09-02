@@ -9,6 +9,8 @@
   }
 
   const players = rosterData.players;
+  const patriotsData = window.PATRIOTS_ROSTER ?? { meta: {}, players: [] };
+  const patriotsPlayers = patriotsData.players ?? [];
   const nflTop100Data = window.NFL_TOP_100 ?? { meta: {}, players: [] };
   const nflTop100Players = nflTop100Data.players ?? [];
   const collegeMarks = window.COLLEGE_MARKS ?? {};
@@ -17,8 +19,8 @@
   const STORAGE_KEY = "cowboys-roster-lab-v1";
   const PLAYER_DECK_KEY = "player-decks-selected-v1";
   const STUDY_SETTINGS_KEY = "cowboys-study-settings-v1";
-  const OFFENSE = new Set(["QB", "RB", "FB", "WR", "TE", "C", "G", "T", "OL"]);
-  const DEFENSE = new Set(["DT", "OLB", "LB", "CB", "S", "DB"]);
+  const OFFENSE = new Set(["QB", "RB", "FB", "WR", "TE", "C", "G", "T", "OT", "OG", "OL"]);
+  const DEFENSE = new Set(["DE", "DT", "DL", "NT", "OLB", "ILB", "MLB", "LB", "CB", "S", "FS", "SS", "SAF", "DB"]);
   const COWBOYS_SKILLS = ["faces", "numbers", "positions", "colleges"];
   const NFL_SKILLS = ["faces", "teams", "positions", "rankings"];
   const SKILL_LABELS = {
@@ -38,17 +40,21 @@
     TE: "Tight end",
     C: "Center",
     G: "Guard",
+    OG: "Offensive guard",
     T: "Tackle",
     OL: "Offensive line",
     OT: "Offensive tackle",
     DE: "Defensive end",
+    DL: "Defensive line",
     DT: "Defensive tackle",
+    NT: "Nose tackle",
     OLB: "Outside linebacker",
     ILB: "Inside linebacker",
     MLB: "Middle linebacker",
     LB: "Linebacker",
     CB: "Cornerback",
     FS: "Free safety",
+    SS: "Strong safety",
     SAF: "Safety",
     S: "Safety",
     DB: "Defensive back",
@@ -57,7 +63,7 @@
     LS: "Long snapper",
   };
 
-  const cowboysGroups = [
+  const rosterGroups = [
     {
       id: "famous",
       title: "Most famous",
@@ -112,12 +118,30 @@
       title: "Cowboys roster",
       mark: "DAL",
       players,
-      groups: cowboysGroups,
+      groups: rosterGroups,
       skills: COWBOYS_SKILLS,
       studyTypes: ["players", "lineup", "trivia"],
       trivia: cowboysTriviaData,
       updated: rosterData.meta.updated,
+      source: rosterData.meta.source,
+      sourceLabel: "official Cowboys roster",
+      browseable: true,
       available: true,
+    },
+    {
+      id: "patriots",
+      title: "Patriots roster",
+      mark: "NE",
+      players: patriotsPlayers,
+      groups: rosterGroups,
+      skills: COWBOYS_SKILLS,
+      studyTypes: ["players"],
+      trivia: { packs: [], questions: [] },
+      updated: patriotsData.meta.updated,
+      source: patriotsData.meta.source,
+      sourceLabel: "official Patriots roster",
+      browseable: true,
+      available: patriotsPlayers.length >= 50,
     },
     {
       id: "nfl-top-100",
@@ -129,6 +153,9 @@
       studyTypes: ["players", "trivia"],
       trivia: nflTriviaData,
       updated: nflTop100Data.meta.updated,
+      source: nflTop100Data.meta.sourceUrls?.[0],
+      sourceLabel: "official NFL countdown",
+      browseable: false,
       available: nflTop100Players.length === 100,
     },
   ].map((deck) => ({ ...deck, size: deck.players.length }));
@@ -201,6 +228,7 @@
     playerDeckList: document.querySelector("#player-deck-list"),
     browsePlayers: document.querySelector("#browse-players"),
     dataDate: document.querySelector("#data-date"),
+    dataSource: document.querySelector("#data-source"),
     setupView: document.querySelector('[data-view="setup"]'),
     studyTypeSwitch: document.querySelector(".study-type-switch"),
     studyTypeButtons: [...document.querySelectorAll("[data-study-type]")],
@@ -658,6 +686,9 @@
       "Practice Squad": "Practice squad",
       "Reserve/Injured": "IR",
       "Reserve/Designated to Return": "Designated return",
+      "Reserve/Injured; Designated for Return": "Designated return",
+      "Reserve/Non-Football Injury": "NFI",
+      "Reserve/Physically Unable to Perform": "PUP",
     };
     return labels[status] ?? status;
   }
@@ -693,8 +724,10 @@
     elements.headerBack.parentElement.classList.toggle("has-back", viewName !== "dashboard");
     elements.headerBack.dataset.action = viewName === "roster" ? "deck" : "home";
     elements.headerBack.setAttribute("aria-label", viewName === "roster" ? `Back to ${playerDeck.title}` : "Back to decks");
-    elements.browsePlayers.hidden = viewName !== "setup" || playerDeck.id !== "cowboys";
+    elements.browsePlayers.hidden = viewName !== "setup" || !playerDeck.browseable;
     elements.dataDate.textContent = formatDate(playerDeck.updated);
+    elements.dataSource.href = playerDeck.source;
+    elements.dataSource.textContent = playerDeck.sourceLabel;
     if (viewName !== "roster" && elements.rosterControlsDialog.open) elements.rosterControlsDialog.close();
     if (viewName !== "setup" && elements.sessionOptionDialog.open) elements.sessionOptionDialog.close();
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -840,6 +873,7 @@
       button.setAttribute("aria-pressed", String(selected));
       button.classList.toggle("is-selected", selected);
     });
+    elements.studyTypeSwitch.hidden = getSupportedStudyTypes().length === 1;
     elements.studyTypeSwitch.style.gridTemplateColumns = `repeat(${getSupportedStudyTypes().length}, minmax(0, 1fr))`;
     elements.setupTitle.textContent = pack.title;
     elements.setupPackage.setAttribute("aria-label", `${pack.title}. Change ${state.studyType === "players" ? "package" : "topic"}`);
@@ -1249,7 +1283,7 @@
     if (question.visual === "number") {
       return `<div class="number-stimulus" aria-label="Jersey number ${h(question.player.number)}"><div><strong>${h(question.player.number)}</strong><span>${h(question.player.team ?? "Dallas Cowboys")}</span></div></div>`;
     }
-    const secondary = state.playerDeckId === "cowboys"
+    const secondary = state.playerDeckId !== "nfl-top-100"
       ? `<span>${h(question.player.experience === "R" ? "Rookie" : `Year ${question.player.experience}`)}</span>`
       : "";
     return `
@@ -1571,16 +1605,18 @@
   }
 
   function populatePositionFilter() {
-    const positions = [...new Set(players.map((player) => player.position))].sort();
-    elements.positionFilterOptions.insertAdjacentHTML(
-      "beforeend",
-      positions
+    const positions = [...new Set(getAllPlayers().map((player) => player.position))].sort();
+    elements.positionFilterOptions.innerHTML = `
+      <label class="roster-choice"><input type="radio" name="position" value="all" /><span>All</span></label>
+      ${positions
         .map(
           (position) =>
             `<label class="roster-choice"><input type="radio" name="position" value="${h(position)}" /><span>${h(position)}</span></label>`,
         )
-        .join(""),
-    );
+        .join("")}`;
+    if (state.rosterFilters.position !== "all" && !positions.includes(state.rosterFilters.position)) {
+      state.rosterFilters.position = "all";
+    }
   }
 
   function setRosterControlDraft() {
@@ -1645,7 +1681,7 @@
     const selectedGroup = state.rosterFilters.group;
     const selectedPosition = state.rosterFilters.position;
     const selectedSort = state.rosterFilters.sort;
-    const filtered = players.filter((player) => {
+    const filtered = getAllPlayers().filter((player) => {
       const matchesGroup = getDeck(selectedGroup).filter(player);
       const matchesPosition = selectedPosition === "all" || player.position === selectedPosition;
       const haystack = `${player.name} ${player.number} ${player.position} ${player.college} ${player.height} ${player.weight} ${player.depth ?? ""} ${player.depthPosition ?? ""} ${player.status}`.toLowerCase();
@@ -1683,6 +1719,7 @@
   }
 
   function openRoster() {
+    populatePositionFilter();
     renderRoster();
     showView("roster");
   }
@@ -1735,6 +1772,8 @@
     const playerDeckTarget = event.target.closest("[data-player-deck]");
     if (playerDeckTarget) {
       state.playerDeckId = playerDeckTarget.dataset.playerDeck;
+      state.rosterFilters = { group: "all", position: "all", sort: "name" };
+      elements.rosterSearch.value = "";
       savePlayerDeckSelection();
       openRecommendedSetup();
       return;
@@ -1834,7 +1873,8 @@
     }
   });
 
-  elements.dataDate.textContent = formatDate(rosterData.meta.updated);
-  populatePositionFilter();
+  elements.dataDate.textContent = formatDate(getPlayerDeck().updated);
+  elements.dataSource.href = getPlayerDeck().source;
+  elements.dataSource.textContent = getPlayerDeck().sourceLabel;
   renderDashboard();
 })();

@@ -13,12 +13,14 @@ const files = [
   "styles.css",
   "favicon.svg",
   "data/roster.js",
+  "data/patriots-roster.js",
   "data/college-marks.js",
   "data/cowboys-trivia.js",
   "data/nfl-top-100.js",
   "data/nfl-trivia.js",
   "assets/college-marks",
   "assets/trivia",
+  "assets/patriots",
   "assets/nfl-top-100",
 ];
 
