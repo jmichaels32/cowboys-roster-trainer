@@ -109,6 +109,7 @@ try {
       cardCount: cards.length,
       header: document.querySelector('#header-context').textContent,
       oldBrandVisible: document.querySelector('.site-header').textContent.includes('Player Decks'),
+      teamLogos: cards.slice(0, 2).every((card) => card.querySelector('.player-deck-mark img')?.getAttribute('src')?.startsWith('assets/team-logos/')),
       patriotsEnabled: !patriotsCard.disabled,
       patriotsLabel: patriotsCard.textContent.replace(/\\s+/g, ' ').trim(),
       nflEnabled: !nflCard.disabled,
@@ -126,7 +127,7 @@ try {
     cards[0].click();
     return { ...landing, enteredDeck: document.querySelector('[data-view="setup"]').classList.contains('is-active') };
   })()`);
-  if (deckStates.cardCount !== 3 || deckStates.header !== "Decks" || deckStates.oldBrandVisible || !deckStates.patriotsEnabled || !deckStates.patriotsLabel.includes("0 of 77 learned") || !deckStates.nflEnabled || !deckStates.nflLabel.includes("0 of 100 learned") || deckStates.studyRosterVisible || !deckStates.playersShortcutHidden || deckStates.touchAction !== "manipulation" || deckStates.palette.canvas !== "rgb(246, 247, 251)" || deckStates.palette.header !== "rgb(255, 255, 255)" || deckStates.palette.text !== "rgb(27, 30, 40)" || deckStates.overflow || !deckStates.enteredDeck) throw new Error(`Deck home failed: ${JSON.stringify(deckStates)}`);
+  if (deckStates.cardCount !== 3 || deckStates.header !== "Decks" || deckStates.oldBrandVisible || !deckStates.teamLogos || !deckStates.patriotsEnabled || !deckStates.patriotsLabel.includes("0 of 77 learned") || !deckStates.nflEnabled || !deckStates.nflLabel.includes("0 of 100 learned") || deckStates.studyRosterVisible || !deckStates.playersShortcutHidden || deckStates.touchAction !== "manipulation" || deckStates.palette.canvas !== "rgb(246, 247, 251)" || deckStates.palette.header !== "rgb(255, 255, 255)" || deckStates.palette.text !== "rgb(27, 30, 40)" || deckStates.overflow || !deckStates.enteredDeck) throw new Error(`Deck home failed: ${JSON.stringify(deckStates)}`);
 
   const setup = await evaluate(client, `(() => {
     const setupView = document.querySelector('[data-view="setup"]');
@@ -388,10 +389,8 @@ try {
     const setup = {
       header: document.querySelector('#header-context').textContent,
       title: document.querySelector('#setup-title').textContent,
-      switchHidden: document.querySelector('.study-type-switch').hidden,
-      playersVisible: !document.querySelector('[data-study-type="players"]').hidden,
-      lineupHidden: document.querySelector('[data-study-type="lineup"]').hidden,
-      triviaHidden: document.querySelector('[data-study-type="trivia"]').hidden,
+      switchVisible: !document.querySelector('.study-type-switch').hidden,
+      visibleStudyTypes: [...document.querySelectorAll('[data-study-type]')].filter((button) => !button.hidden).map((button) => button.textContent),
       rosterVisible: !document.querySelector('#browse-players').hidden,
       footerSource: document.querySelector('#data-source').textContent,
       footerHref: document.querySelector('#data-source').getAttribute('href'),
@@ -418,6 +417,40 @@ try {
       nflFactsAbsent: !feedbackLabels.includes('Team') && !feedbackLabels.includes('Rank')
     };
     document.querySelector('[data-action="exit-session"]').click();
+    document.querySelector('[data-study-type="lineup"]').click();
+    document.querySelector('#setup-package').click();
+    const lineupPackCount = document.querySelectorAll('[data-setup-kind="package"]').length;
+    document.querySelector('[data-setup-kind="package"][data-setup-value="special-teams"]').click();
+    document.querySelector('#setup-start').click();
+    const patriotNames = new Set(window.PATRIOTS_ROSTER.players.map((player) => player.name));
+    const lineupChoices = [...document.querySelectorAll('.answer-button')].map((button) => button.textContent.trim());
+    const lineup = {
+      training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
+      packCount: lineupPackCount,
+      fourChoices: lineupChoices.length === 4,
+      patriotsOnly: lineupChoices.every((choice) => patriotNames.has(choice)),
+      visualAbsent: document.querySelector('#question-visual').hidden
+    };
+    document.querySelector('[data-action="exit-session"]').click();
+    document.querySelector('[data-study-type="trivia"]').click();
+    document.querySelector('#setup-package').click();
+    const triviaPackCount = document.querySelectorAll('[data-setup-kind="package"]').length;
+    document.querySelector('#session-option-dialog [data-action="close-session-options"]').click();
+    document.querySelector('#setup-start').click();
+    const triviaQuestion = {
+      training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
+      packCount: triviaPackCount,
+      fourChoices: document.querySelectorAll('.answer-button').length === 4,
+      visualAbsent: document.querySelector('#question-visual').hidden
+    };
+    document.querySelector('.answer-button').click();
+    const triviaFeedback = {
+      localImage: document.querySelector('.trivia-reveal img')?.getAttribute('src')?.startsWith('assets/trivia/patriots-') ?? false,
+      answer: Boolean(document.querySelector('.trivia-answer-copy h2')?.textContent.trim()),
+      fact: Boolean(document.querySelector('.trivia-fact')?.textContent.trim())
+    };
+    document.querySelector('[data-action="exit-session"]').click();
+    document.querySelector('[data-study-type="players"]').click();
     document.querySelector('#browse-players').click();
     const roster = {
       active: document.querySelector('[data-view="roster"]').classList.contains('is-active'),
@@ -431,9 +464,9 @@ try {
     document.querySelector('#header-back').click();
     document.querySelector('[data-player-deck="cowboys"]').click();
     document.querySelector('#browse-players').click();
-    return { setup, packageOptions, playerQuestion, playerFeedback, roster, returnedToCowboysRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active') };
+    return { setup, packageOptions, playerQuestion, playerFeedback, lineup, triviaQuestion, triviaFeedback, roster, returnedToCowboysRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active') };
   })()`);
-  if (patriotsDeck.setup.header !== 'Patriots roster' || patriotsDeck.setup.title !== 'Most famous' || !patriotsDeck.setup.switchHidden || !patriotsDeck.setup.playersVisible || !patriotsDeck.setup.lineupHidden || !patriotsDeck.setup.triviaHidden || !patriotsDeck.setup.rosterVisible || patriotsDeck.setup.footerSource !== 'official Patriots roster' || patriotsDeck.setup.footerHref !== 'https://www.patriots.com/team/players-roster/' || patriotsDeck.setup.overflow || patriotsDeck.packageOptions.length !== 8 || patriotsDeck.packageOptions.find((option) => option.title === 'Most famous')?.detail !== '8 players' || !patriotsDeck.playerQuestion.training || !patriotsDeck.playerQuestion.localHeadshot || !patriotsDeck.playerQuestion.fourChoices || !patriotsDeck.playerFeedback.rosterFacts || !patriotsDeck.playerFeedback.nflFactsAbsent || !patriotsDeck.roster.active || patriotsDeck.roster.count !== patriotsDeck.roster.expectedCount || patriotsDeck.roster.count !== 77 || !patriotsDeck.roster.localHeadshots || patriotsDeck.roster.collegeMarks !== 77 || patriotsDeck.roster.overflow || !patriotsDeck.returnedToCowboysRoster) throw new Error(`Patriots deck failed: ${JSON.stringify(patriotsDeck)}`);
+  if (patriotsDeck.setup.header !== 'Patriots roster' || patriotsDeck.setup.title !== 'Most famous' || !patriotsDeck.setup.switchVisible || patriotsDeck.setup.visibleStudyTypes.join('|') !== 'Players|Lineup|Trivia' || !patriotsDeck.setup.rosterVisible || patriotsDeck.setup.footerSource !== 'official Patriots roster' || patriotsDeck.setup.footerHref !== 'https://www.patriots.com/team/players-roster/' || patriotsDeck.setup.overflow || patriotsDeck.packageOptions.length !== 8 || patriotsDeck.packageOptions.find((option) => option.title === 'Most famous')?.detail !== '8 players' || !patriotsDeck.playerQuestion.training || !patriotsDeck.playerQuestion.localHeadshot || !patriotsDeck.playerQuestion.fourChoices || !patriotsDeck.playerFeedback.rosterFacts || !patriotsDeck.playerFeedback.nflFactsAbsent || !patriotsDeck.lineup.training || patriotsDeck.lineup.packCount !== 5 || !patriotsDeck.lineup.fourChoices || !patriotsDeck.lineup.patriotsOnly || !patriotsDeck.lineup.visualAbsent || !patriotsDeck.triviaQuestion.training || patriotsDeck.triviaQuestion.packCount !== 5 || !patriotsDeck.triviaQuestion.fourChoices || !patriotsDeck.triviaQuestion.visualAbsent || !patriotsDeck.triviaFeedback.localImage || !patriotsDeck.triviaFeedback.answer || !patriotsDeck.triviaFeedback.fact || !patriotsDeck.roster.active || patriotsDeck.roster.count !== patriotsDeck.roster.expectedCount || patriotsDeck.roster.count !== 77 || !patriotsDeck.roster.localHeadshots || patriotsDeck.roster.collegeMarks !== 77 || patriotsDeck.roster.overflow || !patriotsDeck.returnedToCowboysRoster) throw new Error(`Patriots deck failed: ${JSON.stringify(patriotsDeck)}`);
 
   if (process.env.CAPTURE_DIR) {
     await evaluate(client, `(() => {

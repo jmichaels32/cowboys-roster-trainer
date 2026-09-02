@@ -15,6 +15,7 @@
   const nflTop100Players = nflTop100Data.players ?? [];
   const collegeMarks = window.COLLEGE_MARKS ?? {};
   const cowboysTriviaData = window.COWBOYS_TRIVIA ?? { packs: [], questions: [] };
+  const patriotsTriviaData = window.PATRIOTS_TRIVIA ?? { packs: [], questions: [] };
   const nflTriviaData = window.NFL_TRIVIA ?? { packs: [], questions: [] };
   const STORAGE_KEY = "cowboys-roster-lab-v1";
   const PLAYER_DECK_KEY = "player-decks-selected-v1";
@@ -117,6 +118,7 @@
       id: "cowboys",
       title: "Cowboys roster",
       mark: "DAL",
+      logo: "assets/team-logos/cowboys.png",
       players,
       groups: rosterGroups,
       skills: COWBOYS_SKILLS,
@@ -132,11 +134,12 @@
       id: "patriots",
       title: "Patriots roster",
       mark: "NE",
+      logo: "assets/team-logos/patriots.png",
       players: patriotsPlayers,
       groups: rosterGroups,
       skills: COWBOYS_SKILLS,
-      studyTypes: ["players"],
-      trivia: { packs: [], questions: [] },
+      studyTypes: ["players", "lineup", "trivia"],
+      trivia: patriotsTriviaData,
       updated: patriotsData.meta.updated,
       source: patriotsData.meta.source,
       sourceLabel: "official Patriots roster",
@@ -457,7 +460,7 @@
   }
 
   function activeDepthPlayers(depthPosition) {
-    return players
+    return getAllPlayers()
       .filter(
         (player) =>
           player.depthPosition === depthPosition &&
@@ -471,7 +474,7 @@
     return activeDepthPlayers(depthPosition).find((player) => player.depthRank === rank);
   }
 
-  function nameDistractors(correctNames, pool = players) {
+  function nameDistractors(correctNames, pool = getAllPlayers()) {
     return shuffle(
       pool
         .filter((player) => !correctNames.includes(player.name) && player.status !== "Practice Squad")
@@ -482,7 +485,7 @@
   function lineupNameQuestion(id, pack, prompt, player, visualLabel, detail, pool) {
     if (!player) return null;
     return {
-      id: `lineup-${id}`,
+      id: state.playerDeckId === "cowboys" ? `lineup-${id}` : `${state.playerDeckId}-lineup-${id}`,
       kind: "knowledge",
       studyType: "lineup",
       pack,
@@ -501,14 +504,14 @@
   function lineupGroupQuestion(id, pack, prompt, groupPlayers, visualLabel, detail, ordered = false) {
     if (groupPlayers.length < 2) return null;
     const expected = groupPlayers.map((player) => player.name);
-    const replacements = nameDistractors(expected, players);
+    const replacements = nameDistractors(expected, getAllPlayers());
     const distractors = replacements.map((replacement, index) => {
       const alternate = [...expected];
       alternate[index % alternate.length] = replacement;
       return alternate.join(ordered ? " → " : ", ");
     });
     return {
-      id: `lineup-${id}`,
+      id: state.playerDeckId === "cowboys" ? `lineup-${id}` : `${state.playerDeckId}-lineup-${id}`,
       kind: "knowledge",
       studyType: "lineup",
       pack,
@@ -526,8 +529,9 @@
   }
 
   function getLineupQuestions() {
-    const offensePlayers = players.filter((player) => OFFENSE.has(player.position));
-    const defensePlayers = players.filter((player) => DEFENSE.has(player.position));
+    const teamPlayers = getAllPlayers();
+    const offensePlayers = teamPlayers.filter((player) => OFFENSE.has(player.position));
+    const defensePlayers = teamPlayers.filter((player) => DEFENSE.has(player.position));
     const startersAt = (positions) => positions.map((position) => playerAtDepth(position, 1)).filter(Boolean);
     const questions = [
       lineupNameQuestion("starting-qb", "offense", "Who is the starting quarterback?", playerAtDepth("QB", 1), "QB1", "Starting quarterback", offensePlayers),
@@ -540,7 +544,7 @@
       lineupNameQuestion("starting-rg", "offense", "Who starts at right guard?", playerAtDepth("RG", 1), "RG", "Starting right guard", offensePlayers),
       lineupNameQuestion("starting-rt", "offense", "Who starts at right tackle?", playerAtDepth("RT", 1), "RT", "Starting right tackle", offensePlayers),
       lineupGroupQuestion("offensive-line", "offense", "Name the starting offensive line.", startersAt(["LT", "LG", "C", "RG", "RT"]), "OL", "Left tackle through right tackle"),
-      lineupGroupQuestion("starting-receivers", "offense", "Name the starting wide receivers.", players.filter((player) => player.position === "WR" && player.depthRank === 1), "WR", "Starting wide receivers"),
+      lineupGroupQuestion("starting-receivers", "offense", "Name the starting wide receivers.", teamPlayers.filter((player) => player.position === "WR" && player.depthRank === 1), "WR", "Starting wide receivers"),
 
       lineupNameQuestion("starting-lcb", "defense", "Who starts at left cornerback?", playerAtDepth("LCB", 1), "LCB", "Starting left cornerback", defensePlayers),
       lineupNameQuestion("starting-rcb", "defense", "Who starts at right cornerback?", playerAtDepth("RCB", 1), "RCB", "Starting right cornerback", defensePlayers),
@@ -552,12 +556,14 @@
       lineupNameQuestion("starting-rde", "defense", "Who starts at right defensive end?", playerAtDepth("RDE", 1), "RDE", "Starting right defensive end", defensePlayers),
       lineupNameQuestion("starting-slb", "defense", "Who starts at strong-side linebacker?", playerAtDepth("SLB", 1), "SLB", "Starting strong-side linebacker", defensePlayers),
       lineupNameQuestion("starting-wlb", "defense", "Who starts at weak-side linebacker?", playerAtDepth("WLB", 1), "WLB", "Starting weak-side linebacker", defensePlayers),
+      lineupNameQuestion("starting-lilb", "defense", "Who starts at left inside linebacker?", playerAtDepth("LILB", 1), "LILB", "Starting left inside linebacker", defensePlayers),
+      lineupNameQuestion("starting-rilb", "defense", "Who starts at right inside linebacker?", playerAtDepth("RILB", 1), "RILB", "Starting right inside linebacker", defensePlayers),
       lineupGroupQuestion("starting-corners", "defense", "Name the starting outside cornerbacks.", startersAt(["LCB", "RCB"]), "CB", "Left and right cornerback"),
       lineupGroupQuestion("starting-safeties", "defense", "Name the starting safeties.", startersAt(["FS", "SS"]), "S", "Free and strong safety"),
 
-      lineupNameQuestion("kicker", "special-teams", "Who is the kicker?", playerAtDepth("PK", 1), "K", "Starting placekicker", players),
-      lineupNameQuestion("punter", "special-teams", "Who is the punter?", playerAtDepth("P", 1), "P", "Starting punter", players),
-      lineupNameQuestion("long-snapper", "special-teams", "Who is the long snapper?", playerAtDepth("LS", 1), "LS", "Starting long snapper", players),
+      lineupNameQuestion("kicker", "special-teams", "Who is the kicker?", playerAtDepth("PK", 1), "K", "Starting placekicker", teamPlayers),
+      lineupNameQuestion("punter", "special-teams", "Who is the punter?", playerAtDepth("P", 1), "P", "Starting punter", teamPlayers),
+      lineupNameQuestion("long-snapper", "special-teams", "Who is the long snapper?", playerAtDepth("LS", 1), "LS", "Starting long snapper", teamPlayers),
 
       lineupGroupQuestion("qb-depth", "depth-chart", "Name the quarterbacks in depth-chart order.", activeDepthPlayers("QB"), "QB", "Starter, then backup", true),
       lineupGroupQuestion("rb-depth", "depth-chart", "Name the running backs in depth-chart order.", activeDepthPlayers("RB"), "RB", "Starter through third string", true),
@@ -813,7 +819,7 @@
         const progressText = deck.available ? `${learnedCount(deck.players)} of ${deck.size} learned` : "Coming next";
         return `
           <button class="player-deck-row" type="button" data-player-deck="${h(deck.id)}" ${deck.available ? "" : "disabled"}>
-            <span class="player-deck-mark${deck.id === "nfl-top-100" ? " is-league" : ""}">${h(deck.mark)}</span>
+            <span class="player-deck-mark${deck.id === "nfl-top-100" ? " is-league" : ""}">${deck.logo ? `<img src="${h(deck.logo)}" alt="" />` : h(deck.mark)}</span>
             <span><strong>${h(deck.title)}</strong><small>${h(progressText)}</small></span>
             <span aria-hidden="true">${deck.available ? "›" : ""}</span>
           </button>`;

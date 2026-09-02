@@ -39,9 +39,9 @@ The app teaches football players from selectable decks. The initial decks are:
 2. Patriots roster
 3. NFL Top 100
 
-Decks own their player set, progress, and optional accent. The app shell remains neutral so adding another team or league-wide deck never requires a redesign.
+Decks own their player set, progress, and optional accent. Team deck rows lead with the team's bundled logo because team identity matters at the point of selection. The app shell remains neutral so adding another team or league-wide deck never requires a redesign.
 
-The Cowboys deck contains three peer study types:
+Every team roster deck contains the same three peer study types:
 
 1. `Players` teaches who each current player is through face/name, jersey number, position, and college recall.
 2. `Lineup` teaches how the current roster fits together through roles, units, special teams, and depth-chart order.
@@ -54,7 +54,7 @@ The NFL Top 100 deck contains two study types:
 
 NFL Top 100 has no Lineup mode. Do not show study types a deck does not support.
 
-The Patriots deck begins with `Players`: face/name, jersey number, position, and college, using the same packages and roster browser as Dallas. Lineup and Trivia stay absent until their content is deliberately built and verified. When a deck supports only one study type, hide the segmented control instead of showing a one-option switch.
+This contract applies to the Cowboys and Patriots now, and to every team added later. `Lineup` is generated from that team's bundled depth chart; `Trivia` is a deliberately built and verified team-specific collection. A team deck is not complete until all three modes work offline.
 
 ## First rule: remove unnecessary text
 
@@ -120,7 +120,7 @@ Use `touch-action: manipulation` on the application surface and controls to prev
 
 Session setup is one editable sentence: “Practice [level] with [content] for [length].” Each emphasized value opens a focused bottom sheet; the screen shows no setup grids, group label, deck description, progress summary, or practice explanation. Mastery fixes content to all facts. The only persistent action is “Start [length].”
 
-Inside the Cowboys deck, a compact `Players / Lineup / Trivia` segmented control sits above the package selector. It changes the learning job in place rather than pushing another screen. Each study type remembers its own topic, level, and length during use. Players retains the full editable sentence and three levels. Lineup and Trivia omit the irrelevant content control, use `questions` rather than `cards`, and offer Recognition and Typed recall. Their topic selector reuses the same full-width sheet as the Players package selector.
+Inside every team deck, a compact `Players / Lineup / Trivia` segmented control sits above the package selector. It changes the learning job in place rather than pushing another screen. Each study type remembers its own topic, level, and length during use. Players retains the full editable sentence and three levels. Lineup and Trivia omit the irrelevant content control, use `questions` rather than `cards`, and offer Recognition and Typed recall. Their topic selector reuses the same full-width sheet as the Players package selector.
 
 Lineup questions are generated from the bundled roster and published depth fields so a roster refresh also refreshes answers. Multi-player questions accept every required player in any order unless the prompt explicitly asks for depth-chart order. Trivia facts live in a separate bundled data file. Every trivia question must resolve to an authoritative source title and URL, carry a verification date, include a short paraphrased evidence note, and reference a verified local image. The image registry records its subject, alt text, credit, source page, original file URL, and bundled WebP path. The trivia validator blocks missing citations or images, invalid image files, invalid answer aliases, duplicate distractors, and empty packs. Both modes work fully offline after installation.
 

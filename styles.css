@@ -284,6 +284,17 @@ a {
   border-radius: 12px;
 }
 
+.player-deck-mark:has(img) {
+  background: var(--subtle);
+}
+
+.player-deck-mark img {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
 .player-deck-mark.is-league {
   color: var(--white);
   background: var(--blue-700);
