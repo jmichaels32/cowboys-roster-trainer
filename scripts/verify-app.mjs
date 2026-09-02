@@ -136,6 +136,7 @@ try {
       training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
       packageTitle: document.querySelector('#setup-title').textContent,
       history: document.querySelector('#setup-history').textContent,
+      historyOutsideRecipe: !document.querySelector('.session-sentence-card #setup-history'),
       sentence: document.querySelector('.session-sentence-card').innerText.replace(/\\s+/g, ' ').trim(),
       header: document.querySelector('#header-context').textContent,
       backLabel: document.querySelector('#header-back').getAttribute('aria-label'),
@@ -171,7 +172,7 @@ try {
     document.querySelector('[data-player-deck="cowboys"]').click();
     return { ...initial, packageDialogOpened, packageCount, packageDetails, packageHasCounts, changedPackage, dialogOpened, selectedMode, startLabel, swipeReturned };
   })()`);
-  if (!setup.active || setup.training || setup.packageTitle !== 'Most famous' || setup.history !== 'Not practiced yet' || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 8 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned) throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
+  if (!setup.active || setup.training || setup.packageTitle !== 'Most famous' || setup.history !== 'Not practiced yet' || !setup.historyOutsideRecipe || setup.header !== 'Cowboys roster' || !setup.sentence.includes('Practice recognition with mixed facts for 5 cards.') || setup.backLabel !== 'Back to decks' || setup.backText !== '←' || setup.backLeft > 20 || !setup.backInRail || setup.fluff || !setup.memberSummaryAbsent || setup.overflow || !setup.packageDialogOpened || setup.packageCount !== 8 || !setup.packageHasCounts || setup.changedPackage !== 'Offense' || !setup.dialogOpened || setup.selectedMode !== 'faces & names' || setup.startLabel !== 'Start 5 cards' || !setup.swipeReturned) throw new Error(`Setup flow failed: ${JSON.stringify(setup)}`);
 
   const knowledgeModes = await evaluate(client, `(() => {
     document.querySelector('[data-study-type="lineup"]').click();

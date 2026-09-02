@@ -1034,10 +1034,12 @@ a {
 
 .setup-history {
   margin: 10px 0 0;
+  padding-inline: 12px;
   color: var(--muted);
   font-size: 13px;
   font-weight: 750;
   line-height: 1.4;
+  text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
