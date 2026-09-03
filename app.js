@@ -1394,17 +1394,14 @@
 
   function renderQuestionVisual(question) {
     if (question.kind === "knowledge") return "";
-    if (question.visual === "headshot") return headshot(question.player, "full", true);
+    if (question.visual === "headshot") return playerPhotoWithProfile(question.player, "full");
     if (question.visual === "number") {
       return `<div class="number-stimulus" aria-label="Jersey number ${h(question.player.number)}"><div><strong>${h(question.player.number)}</strong><span>${h(question.player.team ?? "Dallas Cowboys")}</span></div></div>`;
     }
-    const profileSummary = playerProfileSummary(question.player);
-    const secondary = profileSummary ? `<span>${h(profileSummary)}</span>` : "";
     return `
       <div class="question-player">
-        ${headshot(question.player, "small", true)}
+        ${playerPhotoWithProfile(question.player, "small")}
         <strong>${h(question.player.name)}</strong>
-        ${secondary}
       </div>`;
   }
 
@@ -1417,9 +1414,18 @@
     ].filter(Boolean).join(" · ");
   }
 
+  function playerPhotoWithProfile(player, variant) {
+    const photo = headshot(player, variant, true);
+    const profileSummary = playerProfileSummary(player);
+    if (!profileSummary) return photo;
+    return `
+      <div class="player-photo-context">
+        ${photo}
+        <span class="player-photo-meta">${h(profileSummary)}</span>
+      </div>`;
+  }
+
   function renderPlayerFeedback(question, correct) {
-    const profileSummary = question.visual === "player" ? "" : playerProfileSummary(question.player);
-    const profile = profileSummary ? `<p class="feedback-player-meta">${h(profileSummary)}</p>` : "";
     const status = question.responseType === "typed"
       ? ""
       : `<div class="feedback-title"><strong>${h(question.correctFeedback)}</strong></div>`;
@@ -1427,7 +1433,7 @@
       const correction = question.responseType === "typed" && !correct
         ? `<p class="feedback-correct-answer">${h(question.correctDisplay)}</p>`
         : "";
-      return `${status}${correction}${profile}`;
+      return `${status}${correction}`;
     }
     const player = question.player;
     const facts = state.playerDeckId === "nfl-top-100"
@@ -1445,7 +1451,6 @@
         ];
     return `
       ${status}
-      ${profile}
       <div class="feedback-facts">
         ${facts.map(([label, value]) => `<div><span>${h(label)}</span><strong>${h(value)}</strong></div>`).join("")}
       </div>`;

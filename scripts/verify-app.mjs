@@ -412,14 +412,14 @@ try {
     const playerQuestion = {
       training: document.querySelector('[data-view="training"]').classList.contains('is-active'),
       localHeadshot: document.querySelector('#question-visual img')?.getAttribute('src')?.startsWith('assets/patriots/') ?? false,
-      fourChoices: document.querySelectorAll('.answer-button').length === 4
+      fourChoices: document.querySelectorAll('.answer-button').length === 4,
+      physicalContext: /(?:Rookie|Year \\d+) · \\d+′\\d+″ · \\d+ lb/.test(document.querySelector('.player-photo-meta')?.textContent ?? '')
     };
     document.querySelector('.answer-button').click();
     const feedbackLabels = [...document.querySelectorAll('.feedback-facts span')].map((label) => label.textContent);
     const playerFeedback = {
       rosterFacts: feedbackLabels.includes('Number') && feedbackLabels.includes('College'),
-      nflFactsAbsent: !feedbackLabels.includes('Team') && !feedbackLabels.includes('Rank'),
-      physicalContext: /(?:Rookie|Year \\d+) · \\d+′\\d+″ · \\d+ lb/.test(document.querySelector('.feedback-player-meta')?.textContent ?? '')
+      nflFactsAbsent: !feedbackLabels.includes('Team') && !feedbackLabels.includes('Rank')
     };
     document.querySelector('[data-action="exit-session"]').click();
     document.querySelector('[data-study-type="lineup"]').click();
@@ -471,7 +471,7 @@ try {
     document.querySelector('#browse-players').click();
     return { setup, packageOptions, playerQuestion, playerFeedback, lineup, triviaQuestion, triviaFeedback, roster, returnedToCowboysRoster: document.querySelector('[data-view="roster"]').classList.contains('is-active') };
   })()`);
-  if (patriotsDeck.setup.header !== 'Patriots roster' || patriotsDeck.setup.title !== 'Most famous' || !patriotsDeck.setup.switchVisible || patriotsDeck.setup.visibleStudyTypes.join('|') !== 'Players|Lineup|Trivia' || !patriotsDeck.setup.rosterVisible || patriotsDeck.setup.footerSource !== 'official Patriots roster' || patriotsDeck.setup.footerHref !== 'https://www.patriots.com/team/players-roster/' || patriotsDeck.setup.overflow || patriotsDeck.packageOptions.length !== 8 || patriotsDeck.packageOptions.find((option) => option.title === 'Most famous')?.detail !== '0 of 8 mastered' || !patriotsDeck.playerQuestion.training || !patriotsDeck.playerQuestion.localHeadshot || !patriotsDeck.playerQuestion.fourChoices || !patriotsDeck.playerFeedback.rosterFacts || !patriotsDeck.playerFeedback.nflFactsAbsent || !patriotsDeck.playerFeedback.physicalContext || !patriotsDeck.lineup.training || patriotsDeck.lineup.packCount !== 5 || !patriotsDeck.lineup.fourChoices || !patriotsDeck.lineup.patriotsOnly || !patriotsDeck.lineup.visualAbsent || !patriotsDeck.triviaQuestion.training || patriotsDeck.triviaQuestion.packCount !== 5 || !patriotsDeck.triviaQuestion.fourChoices || !patriotsDeck.triviaQuestion.visualAbsent || !patriotsDeck.triviaFeedback.localImage || !patriotsDeck.triviaFeedback.answer || !patriotsDeck.triviaFeedback.fact || !patriotsDeck.roster.active || patriotsDeck.roster.count !== patriotsDeck.roster.expectedCount || patriotsDeck.roster.count !== 77 || !patriotsDeck.roster.localHeadshots || patriotsDeck.roster.collegeMarks !== 77 || patriotsDeck.roster.overflow || !patriotsDeck.returnedToCowboysRoster) throw new Error(`Patriots deck failed: ${JSON.stringify(patriotsDeck)}`);
+  if (patriotsDeck.setup.header !== 'Patriots roster' || patriotsDeck.setup.title !== 'Most famous' || !patriotsDeck.setup.switchVisible || patriotsDeck.setup.visibleStudyTypes.join('|') !== 'Players|Lineup|Trivia' || !patriotsDeck.setup.rosterVisible || patriotsDeck.setup.footerSource !== 'official Patriots roster' || patriotsDeck.setup.footerHref !== 'https://www.patriots.com/team/players-roster/' || patriotsDeck.setup.overflow || patriotsDeck.packageOptions.length !== 8 || patriotsDeck.packageOptions.find((option) => option.title === 'Most famous')?.detail !== '0 of 8 mastered' || !patriotsDeck.playerQuestion.training || !patriotsDeck.playerQuestion.localHeadshot || !patriotsDeck.playerQuestion.fourChoices || !patriotsDeck.playerQuestion.physicalContext || !patriotsDeck.playerFeedback.rosterFacts || !patriotsDeck.playerFeedback.nflFactsAbsent || !patriotsDeck.lineup.training || patriotsDeck.lineup.packCount !== 5 || !patriotsDeck.lineup.fourChoices || !patriotsDeck.lineup.patriotsOnly || !patriotsDeck.lineup.visualAbsent || !patriotsDeck.triviaQuestion.training || patriotsDeck.triviaQuestion.packCount !== 5 || !patriotsDeck.triviaQuestion.fourChoices || !patriotsDeck.triviaQuestion.visualAbsent || !patriotsDeck.triviaFeedback.localImage || !patriotsDeck.triviaFeedback.answer || !patriotsDeck.triviaFeedback.fact || !patriotsDeck.roster.active || patriotsDeck.roster.count !== patriotsDeck.roster.expectedCount || patriotsDeck.roster.count !== 77 || !patriotsDeck.roster.localHeadshots || patriotsDeck.roster.collegeMarks !== 77 || patriotsDeck.roster.overflow || !patriotsDeck.returnedToCowboysRoster) throw new Error(`Patriots deck failed: ${JSON.stringify(patriotsDeck)}`);
 
   if (process.env.CAPTURE_DIR) {
     await evaluate(client, `(() => {
