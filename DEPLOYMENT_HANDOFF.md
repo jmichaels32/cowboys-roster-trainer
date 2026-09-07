@@ -15,18 +15,18 @@ Do not launch or use an iOS Simulator.
 - Dad's phone is paired and Developer Mode is enabled.
 - Xcode 16.3 can build the app, but cannot mount its developer image on the
   iPhone 17 Pro (`kAMDMobileImageMounterPersonalizedBundleMissingVariantError`).
-- macOS is 15.2. Software Update offers Sequoia 15.7.9 and Tahoe 26.6.2.
-- The intended local route is to update macOS, install Xcode 26, then deploy.
+- macOS is updated to Tahoe 26.6.2.
+- The App Store offers Xcode 26.6; installation is the remaining toolchain step.
 
 ## Resume after the macOS/Xcode update
 
 1. Confirm the active toolchain with `xcodebuild -version` and `xcode-select -p`.
 2. If needed, select the new Xcode and complete its first-launch setup.
-3. In this repository, run `npm run ios:sync`.
-4. Keep Dad's phone unlocked and connected.
-5. Build specifically for UDID `00008150-000C70221AD2401C`, install the app,
-   and launch `com.jmichaels.cowboysrostertrainer`.
-6. Do not open a simulator.
+3. Keep the intended phone unlocked and connected.
+4. Run `npm run ios:run:dad` for Dr. Michaels' phone or
+   `npm run ios:run:mine` for Jack's phone. Each command syncs, builds, installs,
+   and launches only on that explicitly configured device.
+5. Do not open a simulator.
 
 ## TestFlight detour
 
